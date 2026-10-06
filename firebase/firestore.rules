@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // 사용자 프로필: 로그인한 사용자는 누구나 읽을 수 있고, 본인만 작성
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isUser(uid)
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.displayName.size() <= 30;
+      allow delete: if false;
+    }
+
+    // 도감 기록: 공개 기록은 로그인한 모든 사용자가, 비공개 기록은 본인만 읽을 수 있음
+    match /entries/{entryId} {
+      function validNewEntry(data) {
+        return data.keys().hasAll(['ownerId', 'ownerName', 'scientificName', 'score',
+                                   'photoUrl', 'capturedAt', 'isPublic', 'createdAt'])
+          && data.scientificName is string && data.scientificName.size() > 0
+          && data.score is number
+          && data.photoUrl is string
+          && data.capturedAt is timestamp
+          && data.isPublic is bool
+          && data.memo is string && data.memo.size() <= 1000
+          && data.createdAt == request.time;
+      }
+
+      allow read: if signedIn() && (
+        resource == null
+        || resource.data.isPublic == true
+        || resource.data.ownerId == request.auth.uid
+      );
+      allow create: if isUser(request.resource.data.ownerId) && validNewEntry(request.resource.data);
+      // 식별 결과·촬영 정보는 수정할 수 없고, 공개 여부와 메모만 변경 가능
+      allow update: if isUser(resource.data.ownerId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isPublic', 'memo'])
+        && request.resource.data.isPublic is bool
+        && request.resource.data.memo is string && request.resource.data.memo.size() <= 1000;
+      allow delete: if isUser(resource.data.ownerId);
+    }
+  }
+}

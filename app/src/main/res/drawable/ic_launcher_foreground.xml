@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 잎사귀 모양의 런처 아이콘 (108dp 캔버스, 가운데 72dp 가 안전 영역) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,34C52,34 36,46 36,64c0,3 0.5,5.5 1.5,8C33,77 31,80 31,80l3,2c0,0 2.5,-3.5 6,-7.5c3,2.5 7.5,4 12.5,4C70,78.5 77,60 74,34z" />
+    <path
+        android:fillColor="#B1F1BC"
+        android:pathData="M40.5,74.5C46,65 55,54 66,44l1.5,1.5C57,55 48.5,66 43,76z" />
+</vector>

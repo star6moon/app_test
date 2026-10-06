@@ -1,0 +1,15 @@
+# Gradle / Android Studio
+.gradle/
+build/
+/local.properties
+/captures
+.externalNativeBuild/
+.cxx/
+*.iml
+.idea/
+.DS_Store
+.kotlin/
+
+# Firebase 설정 파일 (각자 Firebase 콘솔에서 내려받아 app/ 아래에 둡니다)
+app/google-services.json
+.firebase/
