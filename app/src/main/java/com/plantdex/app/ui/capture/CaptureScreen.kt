@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -119,6 +120,11 @@ private fun CameraPermissionGate(content: @Composable () -> Unit) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
         cameraGranted = result[Manifest.permission.CAMERA] == true || granted(Manifest.permission.CAMERA)
         askedOnce = true
+    }
+    // 설정 앱에서 권한을 허용하고 돌아온 경우를 반영합니다.
+    LifecycleResumeEffect(Unit) {
+        cameraGranted = granted(Manifest.permission.CAMERA)
+        onPauseOrDispose { }
     }
     val permissions = arrayOf(
         Manifest.permission.CAMERA,

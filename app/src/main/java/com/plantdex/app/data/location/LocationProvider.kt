@@ -12,6 +12,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.plantdex.app.data.model.CaptureLocation
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
@@ -34,7 +35,7 @@ class LocationProvider(private val context: Context) {
     @SuppressLint("MissingPermission") // hasPermission() 으로 확인
     suspend fun currentLocation(): CaptureLocation? {
         if (!hasPermission()) return null
-        val location = runCatching {
+        val location = orNull {
             withTimeoutOrNull(LOCATION_TIMEOUT_MS) {
                 val tokenSource = CancellationTokenSource()
                 try {
@@ -44,7 +45,7 @@ class LocationProvider(private val context: Context) {
                     tokenSource.cancel()
                 }
             } ?: fusedClient.lastLocation.await()
-        }.getOrNull() ?: return null
+        } ?: return null
 
         return CaptureLocation(
             latitude = location.latitude,
@@ -57,7 +58,7 @@ class LocationProvider(private val context: Context) {
     private suspend fun placeName(latitude: Double, longitude: Double): String? {
         if (!Geocoder.isPresent()) return null
         val geocoder = Geocoder(context, Locale.getDefault())
-        val address = runCatching {
+        val address = orNull {
             withTimeoutOrNull(GEOCODE_TIMEOUT_MS) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     suspendCancellableCoroutine<Address?> { cont ->
@@ -78,12 +79,21 @@ class LocationProvider(private val context: Context) {
                     }
                 }
             }
-        }.getOrNull() ?: return null
+        } ?: return null
 
         return listOfNotNull(address.adminArea, address.locality ?: address.subAdminArea, address.subLocality)
             .distinct()
             .joinToString(" ")
             .ifBlank { null }
+    }
+
+    /** 실패하면 null. 단, 코루틴 취소는 그대로 전파합니다. */
+    private inline fun <T> orNull(block: () -> T?): T? = try {
+        block()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        null
     }
 
     private companion object {

@@ -3,6 +3,7 @@ package com.plantdex.app.data.plantnet
 import com.plantdex.app.data.model.PlantCandidate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -71,6 +72,8 @@ class PlantNetIdentifier(
             }
         } catch (e: IOException) {
             throw PlantIdentificationException("네트워크 연결을 확인해 주세요.", e)
+        } catch (e: SerializationException) {
+            throw PlantIdentificationException("식별 결과를 해석하지 못했습니다.", e)
         }
     }
 

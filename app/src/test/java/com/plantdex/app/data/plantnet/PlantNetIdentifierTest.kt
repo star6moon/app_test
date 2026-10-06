@@ -106,6 +106,18 @@ class PlantNetIdentifierTest {
         }
     }
 
+    @Test
+    fun `malformed success response becomes identification exception`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(200).setBody("""{"results":[{"species":{}}]}"""))
+
+        try {
+            identifier().identify(image)
+            fail("예외가 발생해야 합니다")
+        } catch (e: PlantIdentificationException) {
+            assertTrue(e.message!!.contains("해석"))
+        }
+    }
+
     private companion object {
         val SAMPLE_RESPONSE = """
             {

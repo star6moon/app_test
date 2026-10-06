@@ -23,8 +23,11 @@ data class AuthUiState(
 ) {
     val canSubmit: Boolean
         get() = !isLoading && email.isNotBlank() && password.length >= 6 &&
-            (!isSignUp || displayName.isNotBlank())
+            (!isSignUp || displayName.isNotBlank() && displayName.trim().length <= MAX_NAME_LENGTH)
 }
+
+/** firestore.rules 의 users/{uid}.displayName 길이 제한과 같아야 합니다. */
+const val MAX_NAME_LENGTH = 30
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
@@ -32,7 +35,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     fun toggleMode() = _uiState.update { it.copy(isSignUp = !it.isSignUp, errorMessage = null) }
-    fun onDisplayNameChange(value: String) = _uiState.update { it.copy(displayName = value) }
+    fun onDisplayNameChange(value: String) = _uiState.update { it.copy(displayName = value.take(MAX_NAME_LENGTH)) }
     fun onEmailChange(value: String) = _uiState.update { it.copy(email = value) }
     fun onPasswordChange(value: String) = _uiState.update { it.copy(password = value) }
 
@@ -48,7 +51,8 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                     authRepository.signIn(state.email, state.password)
                 }
                 // 성공하면 AuthRepository.currentUser 가 바뀌면서 메인 화면으로 전환됩니다.
-                _uiState.update { it.copy(isLoading = false) }
+                // ViewModel 이 Activity 범위라 로그아웃 후 입력값이 남지 않도록 초기화합니다.
+                _uiState.value = AuthUiState()
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.toMessage()) }
             }

@@ -11,6 +11,7 @@ import com.plantdex.app.data.plantnet.PlantIdentifier
 import com.plantdex.app.data.repository.AuthRepository
 import com.plantdex.app.data.repository.CollectionRepository
 import com.plantdex.app.util.ImageUtils
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -75,6 +76,8 @@ class CaptureViewModel(
             val prepared = try {
                 ImageUtils.prepareForUpload(rawFile, File(workDir, "plant_$shutterAt.jpg"))
                     .also { rawFile.delete() }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 _uiState.value = CaptureUiState.Failed(null, "사진을 처리하지 못했습니다: ${e.message}")
                 return@launch
@@ -143,6 +146,8 @@ class CaptureViewModel(
                 val id = collectionRepository.addEntry(owner, state.photo, plant, state.memo, state.isPublic)
                 state.photo.file.delete()
                 _uiState.value = CaptureUiState.Saved(id)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 updateResults { it.copy(isSaving = false, saveError = "저장하지 못했습니다: ${e.message}") }
             }
