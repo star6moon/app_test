@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -340,30 +339,16 @@ private suspend fun animateSafely(state: CameraPositionState, update: CameraUpda
     }
 }
 
-/** 개별 기록 마커: 종 아이콘 + 식물 이름 */
+/** 개별 기록 마커: 식물 그림만 (이름은 누르면 아래 카드로 보여줍니다) */
 @Composable
 private fun PlantMarker(item: PlantMapItem) {
     Surface(
-        shape = RoundedCornerShape(50),
+        shape = CircleShape,
         color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
         // 마커는 비트맵으로 그려져 그림자가 보이지 않으므로 테두리로 구분합니다.
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
-        Row(
-            Modifier.padding(start = 3.dp, end = 10.dp, top = 3.dp, bottom = 3.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PlantBadge(item.art, size = 26.dp)
-            Spacer(Modifier.width(6.dp))
-            Text(
-                item.name,
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.widthIn(max = 120.dp),
-            )
-        }
+        PlantBadge(item.art, modifier = Modifier.padding(2.dp), size = 34.dp)
     }
 }
 
@@ -380,40 +365,31 @@ private fun StackedBadges(summary: ClusterSummary<PlantMapItem>, size: Dp) {
     }
 }
 
-/** 묶음 마커: 겹친 종 아이콘 + "능소화 등 4종" + 기록 수 */
+/** 묶음 마커: 많이 기록된 종부터 겹친 그림 + 오른쪽 위 기록 수 */
 @Composable
 private fun ClusterMarker(summary: ClusterSummary<PlantMapItem>) {
-    Surface(
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-    ) {
-        Row(
-            Modifier.padding(start = 3.dp, end = 4.dp, top = 3.dp, bottom = 3.dp),
-            verticalAlignment = Alignment.CenterVertically,
+    // 숫자 배지가 마커 비트맵 밖으로 잘리지 않도록 그림 묶음에 위·오른쪽 여백을 둡니다.
+    Box {
+        Surface(
+            modifier = Modifier.padding(top = 8.dp, end = 8.dp),
+            shape = RoundedCornerShape(50),
+            color = MaterialTheme.colorScheme.primaryContainer,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
         ) {
-            StackedBadges(summary, size = 26.dp)
-            Spacer(Modifier.width(6.dp))
+            Box(Modifier.padding(3.dp)) { StackedBadges(summary, size = 32.dp) }
+        }
+        Surface(
+            modifier = Modifier.align(Alignment.TopEnd),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+        ) {
             Text(
-                summary.label,
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.widthIn(max = 140.dp),
+                if (summary.recordCount > 99) "99+" else summary.recordCount.toString(),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
             )
-            Spacer(Modifier.width(6.dp))
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            ) {
-                Text(
-                    if (summary.recordCount > 99) "99+" else summary.recordCount.toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
-                )
-            }
         }
     }
 }
