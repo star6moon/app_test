@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,6 +54,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,10 +69,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.compose.AsyncImage
+import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -201,7 +205,11 @@ private fun PlantMap(
             CameraUpdateFactory.newLatLngBounds(bounds, 160)
         }
         selection = null
-        coroutineScope.launch { cameraPositionState.animate(update, 400) }
+        coroutineScope.launch {
+            // 패널 높이만큼의 지도 여백이 사라진 다음 프레임에 이동해야 화면이 좁을 때도 실패하지 않습니다.
+            withFrameNanos { }
+            animateSafely(cameraPositionState, update, 400)
+        }
     }
 
     // 범위(내 도감/모두)를 바꿀 때마다 기록이 모두 보이도록 카메라를 맞춥니다.
@@ -216,7 +224,7 @@ private fun PlantMap(
             val bounds = LatLngBounds.builder().apply { positions.forEach { include(it) } }.build()
             CameraUpdateFactory.newLatLngBounds(bounds, 120)
         }
-        cameraPositionState.animate(update, 600)
+        animateSafely(cameraPositionState, update, 600)
     }
 
     val bottomPadding = when (selection) {
@@ -304,6 +312,18 @@ private fun PlantMap(
     }
 }
 
+/**
+ * 영역 맞춤(newLatLngBounds)은 지도가 여백보다 작으면 IllegalStateException 을 던집니다.
+ * 가로 화면 등에서 앱이 종료되지 않도록 그 경우는 이동을 건너뜁니다.
+ */
+private suspend fun animateSafely(state: CameraPositionState, update: CameraUpdate, durationMs: Int) {
+    try {
+        state.animate(update, durationMs)
+    } catch (e: IllegalStateException) {
+        // 이동 생략
+    }
+}
+
 /** 개별 기록 마커: 종 아이콘 + 식물 이름 */
 @Composable
 private fun PlantMarker(item: PlantMapItem) {
@@ -311,7 +331,8 @@ private fun PlantMarker(item: PlantMapItem) {
         shape = RoundedCornerShape(50),
         color = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        shadowElevation = 2.dp,
+        // 마커는 비트맵으로 그려져 그림자가 보이지 않으므로 테두리로 구분합니다.
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
         Row(
             Modifier.padding(start = 3.dp, end = 10.dp, top = 3.dp, bottom = 3.dp),
@@ -350,7 +371,7 @@ private fun ClusterMarker(summary: ClusterSummary<PlantMapItem>) {
         shape = RoundedCornerShape(50),
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        shadowElevation = 3.dp,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
     ) {
         Row(
             Modifier.padding(start = 3.dp, end = 4.dp, top = 3.dp, bottom = 3.dp),
