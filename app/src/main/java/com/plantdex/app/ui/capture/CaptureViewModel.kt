@@ -77,8 +77,8 @@ class CaptureViewModel(
     private var pendingLocation: Deferred<CaptureLocation?>? = null
     private var identifyJob: Job? = null
 
-    /** 식별 시점에 내가 이미 발견한 도감 종 id */
-    private var collectedSpeciesIds: Set<String> = emptySet()
+    /** 식별 시점에 내가 이미 발견한 도감 종 id. 불러오지 못했으면 null (모름) */
+    private var collectedSpeciesIds: Set<String>? = null
 
     /** 셔터를 누른 순간: 촬영 시각을 기록하고 위치 조회를 바로 시작합니다. */
     fun onShutter() {
@@ -137,13 +137,15 @@ class CaptureViewModel(
     /** 도감 정보는 부가 기능이라 실패해도 식별 결과는 그대로 보여줍니다. */
     private suspend fun catalogBadges(candidates: List<PlantCandidate>): List<CandidateBadge> = try {
         val catalog = withContext(Dispatchers.Default) { catalogRepository.catalog }
-        collectedSpeciesIds = loadCollectedSpeciesIds(catalog)
+        val collected = loadCollectedSpeciesIds(catalog)
+        collectedSpeciesIds = collected
         candidates.map { candidate ->
             val species = catalog.match(candidate.scientificName)
             if (species == null) {
                 CandidateBadge(emptyList(), isNew = false)
             } else {
-                CandidateBadge(catalog.catalogsOf(species.id), isNew = species.id !in collectedSpeciesIds)
+                // 내 기록을 불러오지 못했으면 NEW 여부를 단정하지 않습니다.
+                CandidateBadge(catalog.catalogsOf(species.id), isNew = collected != null && species.id !in collected)
             }
         }
     } catch (e: CancellationException) {
@@ -152,24 +154,25 @@ class CaptureViewModel(
         emptyList()
     }
 
-    private suspend fun loadCollectedSpeciesIds(catalog: PlantCatalog): Set<String> {
-        val uid = authRepository.currentUser.value?.uid ?: return emptySet()
+    private suspend fun loadCollectedSpeciesIds(catalog: PlantCatalog): Set<String>? {
+        val uid = authRepository.currentUser.value?.uid ?: return null
         val entries = try {
             withTimeoutOrNull(3_000) { collectionRepository.observeMyEntries(uid).first() }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             null
-        }
-        return entries.orEmpty().mapNotNull { catalog.match(it.scientificName)?.id }.toSet()
+        } ?: return null
+        return entries.mapNotNull { catalog.match(it.scientificName)?.id }.toSet()
     }
 
     /** 처음 발견한 종이면 "🎉 새로 발견! 서양민들레 — 🏙️ 도시의 꽃 13/40 · 🌸 봄꽃 9/34" */
     private fun discoveryMessage(plant: PlantCandidate): String? {
         val catalog = runCatching { catalogRepository.catalog }.getOrNull() ?: return null
         val species = catalog.match(plant.scientificName) ?: return null
-        if (species.id in collectedSpeciesIds) return null
-        val collected = collectedSpeciesIds + species.id
+        val known = collectedSpeciesIds ?: return null
+        if (species.id in known) return null
+        val collected = known + species.id
         collectedSpeciesIds = collected
         val progress = catalog.catalogsOf(species.id).joinToString(" · ") { c ->
             "${c.emoji} ${c.title} ${c.speciesIds.count { it in collected }}/${c.speciesIds.size}"

@@ -123,7 +123,6 @@ fun PlantMapScreen(
                 is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = s.message)
                 is LoadState.Success -> PlantMap(
                     data = s.data,
-                    scope = scope,
                     onEntryClick = onEntryClick,
                     modifier = modifier,
                 )
@@ -136,7 +135,6 @@ fun PlantMapScreen(
 @Composable
 private fun PlantMap(
     data: PlantMapData,
-    scope: MapScope,
     onEntryClick: (entryId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -158,7 +156,7 @@ private fun PlantMap(
 
     // 범위(내 도감/모두)를 바꿀 때마다 기록이 모두 보이도록 카메라를 맞춥니다.
     val hasItems = data.items.isNotEmpty()
-    LaunchedEffect(mapLoaded, scope, hasItems) {
+    LaunchedEffect(mapLoaded, data.scope, hasItems) {
         if (!mapLoaded || !hasItems) return@LaunchedEffect
         selected = null
         val positions = data.items.map { it.latLng }

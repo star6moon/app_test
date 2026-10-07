@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import java.util.Locale
@@ -47,6 +46,8 @@ data class PlantMapItem(
 }
 
 data class PlantMapData(
+    /** 이 데이터를 만든 범위. 범위를 바꾸면 새 데이터가 올 때까지 이전 지도를 그대로 보여줍니다. */
+    val scope: MapScope,
     val items: List<PlantMapItem>,
     /** 위치 정보가 없어 지도에 표시하지 못한 기록 수 */
     val withoutLocation: Int,
@@ -69,17 +70,19 @@ class PlantMapViewModel(
                 MapScope.Everyone -> collectionRepository.observeFeed()
             }
             entries
-                .transformLatest<List<CollectionEntry>, LoadState<PlantMapData>> { emitMapData(it) }
-                .onStart { emit(LoadState.Loading) }
+                .transformLatest<List<CollectionEntry>, LoadState<PlantMapData>> { emitMapData(scope, it) }
                 .catch { emit(LoadState.Error(it.toMessage())) }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LoadState.Loading)
 
     /** 저장된 이름으로 먼저 보여주고, 보는 사람 언어의 이름을 찾으면 다시 보여줍니다. */
-    private suspend fun FlowCollector<LoadState<PlantMapData>>.emitMapData(entries: List<CollectionEntry>) {
+    private suspend fun FlowCollector<LoadState<PlantMapData>>.emitMapData(
+        scope: MapScope,
+        entries: List<CollectionEntry>,
+    ) {
         val located = entries.filter { it.location != null }
         val withoutLocation = entries.size - located.size
-        emit(LoadState.Success(PlantMapData(located.map { it.toItem(it.displayName) }, withoutLocation)))
+        emit(LoadState.Success(PlantMapData(scope, located.map { it.toItem(it.displayName) }, withoutLocation)))
 
         val locale = Locale.getDefault()
         val language = locale.toLanguageTag().substringBefore('-').lowercase()
@@ -97,7 +100,7 @@ class PlantMapViewModel(
                 }
             }.awaitAll()
         }
-        emit(LoadState.Success(PlantMapData(localized, withoutLocation)))
+        emit(LoadState.Success(PlantMapData(scope, localized, withoutLocation)))
     }
 
     fun setScope(scope: MapScope) {
