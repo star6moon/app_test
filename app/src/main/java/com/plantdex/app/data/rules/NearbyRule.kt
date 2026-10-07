@@ -19,7 +19,7 @@ data class NearbyRecord(
  * (한 자리에서 같은 식물을 반복 등록해 도감·지도를 채우는 것을 막습니다.)
  */
 object NearbyRule {
-    const val MIN_DISTANCE_METERS = 100.0
+    const val MIN_DISTANCE_METERS = 10.0
 
     /** [location] 에서 반경 안에 있는 같은 종의 내 기록 중 가장 가까운 것. 없으면 null. */
     fun findNearby(
