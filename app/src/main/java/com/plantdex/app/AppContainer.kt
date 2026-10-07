@@ -5,6 +5,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
+import com.plantdex.app.data.catalog.CatalogRepository
 import com.plantdex.app.data.location.LocationProvider
 import com.plantdex.app.data.names.GbifWikidataNameLocalizer
 import com.plantdex.app.data.names.PlantNameLocalizer
@@ -45,4 +46,7 @@ class AppContainer(context: Context) {
     )
 
     val locationProvider = LocationProvider(context.applicationContext)
+
+    /** 앱에 내장된 주제별 도감 목록 */
+    val catalogRepository = CatalogRepository(context.applicationContext)
 }

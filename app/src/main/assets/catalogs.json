@@ -1,0 +1,1211 @@
+{
+ "version": 1,
+ "species": [
+  {
+   "id": "dandelion_west",
+   "name": "서양민들레",
+   "scientificName": "Taraxacum officinale",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "길가·잔디밭 어디서나. 꽃받침이 뒤로 젖혀져요"
+  },
+  {
+   "id": "dandelion",
+   "name": "민들레",
+   "scientificName": "Taraxacum mongolicum",
+   "synonyms": [
+    "Taraxacum platycarpum",
+    "Taraxacum coreanum"
+   ],
+   "acceptGenus": false,
+   "hint": "토종 민들레. 꽃받침이 꽃을 꼭 감싸요"
+  },
+  {
+   "id": "white_clover",
+   "name": "토끼풀",
+   "scientificName": "Trifolium repens",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "잔디밭의 클로버. 흰 공 모양 꽃"
+  },
+  {
+   "id": "forsythia",
+   "name": "개나리",
+   "scientificName": "Forsythia koreana",
+   "synonyms": [
+    "Forsythia × intermedia",
+    "Forsythia suspensa",
+    "Forsythia viridissima"
+   ],
+   "acceptGenus": true,
+   "hint": "봄 울타리를 노랗게 물들이는 꽃"
+  },
+  {
+   "id": "cherry",
+   "name": "벚나무",
+   "scientificName": "Prunus × yedoensis",
+   "synonyms": [
+    "Cerasus × yedoensis",
+    "Prunus serrulata",
+    "Prunus jamasakura",
+    "Prunus speciosa",
+    "Prunus sargentii"
+   ],
+   "acceptGenus": false,
+   "hint": "잎보다 꽃이 먼저 피는 봄 가로수"
+  },
+  {
+   "id": "magnolia",
+   "name": "목련",
+   "scientificName": "Magnolia denudata",
+   "synonyms": [
+    "Yulania denudata",
+    "Magnolia kobus",
+    "Magnolia × soulangeana",
+    "Magnolia liliiflora"
+   ],
+   "acceptGenus": false,
+   "hint": "이른 봄 커다란 흰 꽃봉오리"
+  },
+  {
+   "id": "ginkgo",
+   "name": "은행나무",
+   "scientificName": "Ginkgo biloba",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "부채꼴 잎, 가을이면 노랗게"
+  },
+  {
+   "id": "metasequoia",
+   "name": "메타세쿼이아",
+   "scientificName": "Metasequoia glyptostroboides",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "살아있는 화석. 원뿔 모양 가로수"
+  },
+  {
+   "id": "shepherds_purse",
+   "name": "냉이",
+   "scientificName": "Capsella bursa-pastoris",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "하트 모양 열매가 달리는 봄나물"
+  },
+  {
+   "id": "violet",
+   "name": "제비꽃",
+   "scientificName": "Viola mandshurica",
+   "synonyms": [
+    "Viola philippica",
+    "Viola yedoensis"
+   ],
+   "acceptGenus": true,
+   "hint": "양지바른 길가의 보라색 작은 꽃"
+  },
+  {
+   "id": "trigonotis",
+   "name": "꽃마리",
+   "scientificName": "Trigonotis peduncularis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "돌돌 말린 꽃대에 아주 작은 하늘색 꽃"
+  },
+  {
+   "id": "fleabane",
+   "name": "개망초",
+   "scientificName": "Erigeron annuus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "계란후라이를 닮은 꽃. 빈터 어디에나"
+  },
+  {
+   "id": "coreopsis",
+   "name": "큰금계국",
+   "scientificName": "Coreopsis lanceolata",
+   "synonyms": [
+    "Coreopsis grandiflora",
+    "Coreopsis basalis"
+   ],
+   "acceptGenus": false,
+   "hint": "초여름 길가를 노랗게 덮어요"
+  },
+  {
+   "id": "cosmos",
+   "name": "코스모스",
+   "scientificName": "Cosmos bipinnatus",
+   "synonyms": [
+    "Cosmos sulphureus"
+   ],
+   "acceptGenus": false,
+   "hint": "가을 길가의 대표 꽃"
+  },
+  {
+   "id": "hibiscus",
+   "name": "무궁화",
+   "scientificName": "Hibiscus syriacus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "나라꽃. 여름 내내 피고 지기를 반복해요"
+  },
+  {
+   "id": "fringe_tree",
+   "name": "이팝나무",
+   "scientificName": "Chionanthus retusus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "5월 가로수에 쌀밥 같은 흰 꽃"
+  },
+  {
+   "id": "crape_myrtle",
+   "name": "배롱나무",
+   "scientificName": "Lagerstroemia indica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "백 일 동안 피는 분홍 꽃, 매끈한 줄기"
+  },
+  {
+   "id": "trumpet_creeper",
+   "name": "능소화",
+   "scientificName": "Campsis grandiflora",
+   "synonyms": [
+    "Campsis radicans",
+    "Campsis × tagliabuana"
+   ],
+   "acceptGenus": false,
+   "hint": "담장을 타고 오르는 주황색 나팔 꽃"
+  },
+  {
+   "id": "hydrangea",
+   "name": "수국",
+   "scientificName": "Hydrangea macrophylla",
+   "synonyms": [
+    "Hydrangea serrata"
+   ],
+   "acceptGenus": false,
+   "hint": "초여름의 커다란 공 모양 꽃송이"
+  },
+  {
+   "id": "petunia",
+   "name": "페튜니아",
+   "scientificName": "Petunia × atkinsiana",
+   "synonyms": [
+    "Petunia × hybrida",
+    "Petunia hybrida",
+    "Calibrachoa parviflora"
+   ],
+   "acceptGenus": true,
+   "hint": "화단과 화분의 나팔 모양 꽃"
+  },
+  {
+   "id": "pansy",
+   "name": "팬지",
+   "scientificName": "Viola × wittrockiana",
+   "synonyms": [
+    "Viola tricolor",
+    "Viola cornuta"
+   ],
+   "acceptGenus": false,
+   "hint": "봄 화단의 얼굴 무늬 꽃"
+  },
+  {
+   "id": "plantain",
+   "name": "질경이",
+   "scientificName": "Plantago asiatica",
+   "synonyms": [
+    "Plantago major"
+   ],
+   "acceptGenus": false,
+   "hint": "밟혀도 잘 자라는 길가의 풀"
+  },
+  {
+   "id": "woodsorrel",
+   "name": "괭이밥",
+   "scientificName": "Oxalis corniculata",
+   "synonyms": [
+    "Oxalis stricta",
+    "Oxalis dillenii"
+   ],
+   "acceptGenus": false,
+   "hint": "하트 잎 세 장과 작은 노란 꽃"
+  },
+  {
+   "id": "celandine",
+   "name": "애기똥풀",
+   "scientificName": "Chelidonium majus",
+   "synonyms": [
+    "Chelidonium asiaticum"
+   ],
+   "acceptGenus": false,
+   "hint": "줄기를 꺾으면 노란 즙이 나와요"
+  },
+  {
+   "id": "speedwell",
+   "name": "봄까치꽃",
+   "scientificName": "Veronica persica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "이른 봄 땅에 붙어 피는 작은 하늘색 꽃"
+  },
+  {
+   "id": "henbit",
+   "name": "광대나물",
+   "scientificName": "Lamium amplexicaule",
+   "synonyms": [
+    "Lamium purpureum"
+   ],
+   "acceptGenus": false,
+   "hint": "층층이 달린 잎 사이의 분홍 꽃"
+  },
+  {
+   "id": "cornus_officinalis",
+   "name": "산수유",
+   "scientificName": "Cornus officinalis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "이른 봄 노란 꽃, 가을엔 빨간 열매"
+  },
+  {
+   "id": "plum",
+   "name": "매화",
+   "scientificName": "Prunus mume",
+   "synonyms": [
+    "Armeniaca mume"
+   ],
+   "acceptGenus": false,
+   "hint": "겨울 끝자락에 가장 먼저 피는 꽃"
+  },
+  {
+   "id": "lilac",
+   "name": "라일락",
+   "scientificName": "Syringa vulgaris",
+   "synonyms": [
+    "Syringa oblata",
+    "Syringa patula"
+   ],
+   "acceptGenus": true,
+   "hint": "4~5월 진한 향기의 보라색 꽃"
+  },
+  {
+   "id": "liriope",
+   "name": "맥문동",
+   "scientificName": "Liriope muscari",
+   "synonyms": [
+    "Liriope platyphylla",
+    "Liriope spicata"
+   ],
+   "acceptGenus": false,
+   "hint": "그늘진 화단의 보라색 꽃이삭"
+  },
+  {
+   "id": "moss_phlox",
+   "name": "꽃잔디",
+   "scientificName": "Phlox subulata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄 화단을 덮는 분홍 융단"
+  },
+  {
+   "id": "azalea_city",
+   "name": "영산홍",
+   "scientificName": "Rhododendron indicum",
+   "synonyms": [
+    "Rhododendron × pulchrum",
+    "Rhododendron simsii",
+    "Rhododendron × obtusum",
+    "Rhododendron obtusum"
+   ],
+   "acceptGenus": false,
+   "hint": "봄 화단과 아파트 단지의 진분홍 꽃"
+  },
+  {
+   "id": "rose",
+   "name": "장미",
+   "scientificName": "Rosa chinensis",
+   "synonyms": [
+    "Rosa × odorata",
+    "Rosa multiflora",
+    "Rosa × hybrida"
+   ],
+   "acceptGenus": true,
+   "hint": "5월 담장을 장식하는 꽃의 여왕"
+  },
+  {
+   "id": "tulip",
+   "name": "튤립",
+   "scientificName": "Tulipa gesneriana",
+   "synonyms": [],
+   "acceptGenus": true,
+   "hint": "봄 화단의 대표 알뿌리 꽃"
+  },
+  {
+   "id": "morning_glory",
+   "name": "나팔꽃",
+   "scientificName": "Ipomoea nil",
+   "synonyms": [
+    "Ipomoea purpurea",
+    "Ipomoea hederacea"
+   ],
+   "acceptGenus": false,
+   "hint": "아침에 피었다 낮에 오므라드는 덩굴 꽃"
+  },
+  {
+   "id": "sunflower",
+   "name": "해바라기",
+   "scientificName": "Helianthus annuus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "해를 닮은 커다란 여름 꽃"
+  },
+  {
+   "id": "marigold",
+   "name": "메리골드",
+   "scientificName": "Tagetes erecta",
+   "synonyms": [
+    "Tagetes patula"
+   ],
+   "acceptGenus": false,
+   "hint": "가을 화단의 주황·노랑 꽃"
+  },
+  {
+   "id": "spirea",
+   "name": "조팝나무",
+   "scientificName": "Spiraea prunifolia",
+   "synonyms": [
+    "Spiraea thunbergii",
+    "Spiraea cantoniensis"
+   ],
+   "acceptGenus": false,
+   "hint": "봄에 하얀 꽃이 가지를 따라 줄줄이"
+  },
+  {
+   "id": "maple",
+   "name": "단풍나무",
+   "scientificName": "Acer palmatum",
+   "synonyms": [
+    "Acer pictum",
+    "Acer pseudosieboldianum"
+   ],
+   "acceptGenus": true,
+   "hint": "손바닥 모양 잎, 가을이면 붉게"
+  },
+  {
+   "id": "euonymus",
+   "name": "사철나무",
+   "scientificName": "Euonymus japonicus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "사계절 푸른 생울타리 나무"
+  },
+  {
+   "id": "jindallae",
+   "name": "진달래",
+   "scientificName": "Rhododendron mucronulatum",
+   "synonyms": [
+    "Rhododendron dauricum"
+   ],
+   "acceptGenus": false,
+   "hint": "이른 봄 잎보다 먼저 피는 분홍 꽃"
+  },
+  {
+   "id": "royal_azalea",
+   "name": "철쭉",
+   "scientificName": "Rhododendron schlippenbachii",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "진달래가 진 뒤 잎과 함께 피는 연분홍 꽃"
+  },
+  {
+   "id": "korean_azalea",
+   "name": "산철쭉",
+   "scientificName": "Rhododendron yedoense",
+   "synonyms": [
+    "Rhododendron poukhanense"
+   ],
+   "acceptGenus": false,
+   "hint": "계곡과 능선에 무리 지어 피는 진분홍 꽃"
+  },
+  {
+   "id": "spicebush",
+   "name": "생강나무",
+   "scientificName": "Lindera obtusiloba",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "이른 봄 산의 노란 꽃. 잎에서 생강 냄새"
+  },
+  {
+   "id": "hepatica",
+   "name": "노루귀",
+   "scientificName": "Hepatica asiatica",
+   "synonyms": [
+    "Anemone hepatica",
+    "Hepatica nobilis"
+   ],
+   "acceptGenus": false,
+   "hint": "이른 봄 낙엽 사이로 솜털 덮인 꽃대"
+  },
+  {
+   "id": "erythronium",
+   "name": "얼레지",
+   "scientificName": "Erythronium japonicum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "꽃잎을 뒤로 젖힌 보라색 봄꽃"
+  },
+  {
+   "id": "adonis",
+   "name": "복수초",
+   "scientificName": "Adonis amurensis",
+   "synonyms": [
+    "Adonis ramosa",
+    "Adonis multiflora"
+   ],
+   "acceptGenus": false,
+   "hint": "눈 속에서 피어나는 노란 꽃"
+  },
+  {
+   "id": "iris_rossii",
+   "name": "각시붓꽃",
+   "scientificName": "Iris rossii",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄 산자락의 키 작은 보라색 붓꽃"
+  },
+  {
+   "id": "lily_of_valley",
+   "name": "은방울꽃",
+   "scientificName": "Convallaria majalis",
+   "synonyms": [
+    "Convallaria keiskei"
+   ],
+   "acceptGenus": false,
+   "hint": "방울 모양의 향기로운 흰 꽃"
+  },
+  {
+   "id": "solomons_seal",
+   "name": "둥굴레",
+   "scientificName": "Polygonatum odoratum",
+   "synonyms": [],
+   "acceptGenus": true,
+   "hint": "활처럼 휜 줄기에 매달린 종 모양 꽃"
+  },
+  {
+   "id": "bleeding_heart",
+   "name": "금낭화",
+   "scientificName": "Lamprocapnos spectabilis",
+   "synonyms": [
+    "Dicentra spectabilis"
+   ],
+   "acceptGenus": false,
+   "hint": "하트 모양 분홍 꽃이 줄지어 달려요"
+  },
+  {
+   "id": "kousa",
+   "name": "산딸나무",
+   "scientificName": "Cornus kousa",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "초여름 층층이 피는 십자 모양 흰 꽃"
+  },
+  {
+   "id": "tiger_lily",
+   "name": "참나리",
+   "scientificName": "Lilium lancifolium",
+   "synonyms": [
+    "Lilium tigrinum"
+   ],
+   "acceptGenus": false,
+   "hint": "주황 꽃잎에 검은 점, 잎겨드랑이에 주아"
+  },
+  {
+   "id": "daylily",
+   "name": "원추리",
+   "scientificName": "Hemerocallis fulva",
+   "synonyms": [],
+   "acceptGenus": true,
+   "hint": "하루만 피는 주황색 여름 꽃"
+  },
+  {
+   "id": "gujeolcho",
+   "name": "구절초",
+   "scientificName": "Chrysanthemum zawadskii",
+   "synonyms": [
+    "Dendranthema zawadskii"
+   ],
+   "acceptGenus": false,
+   "hint": "가을 산의 흰·연분홍 들국화"
+  },
+  {
+   "id": "yomena",
+   "name": "쑥부쟁이",
+   "scientificName": "Aster yomena",
+   "synonyms": [
+    "Kalimeris yomena",
+    "Aster indicus",
+    "Kalimeris indica",
+    "Kalimeris incisa",
+    "Aster incisus"
+   ],
+   "acceptGenus": false,
+   "hint": "가을 들과 산의 연보라 들국화"
+  },
+  {
+   "id": "sanguk",
+   "name": "산국",
+   "scientificName": "Chrysanthemum indicum",
+   "synonyms": [
+    "Dendranthema indicum",
+    "Chrysanthemum boreale"
+   ],
+   "acceptGenus": false,
+   "hint": "가을 산의 작은 노란 들국화, 진한 향기"
+  },
+  {
+   "id": "aconite",
+   "name": "투구꽃",
+   "scientificName": "Aconitum jaluense",
+   "synonyms": [],
+   "acceptGenus": true,
+   "hint": "투구를 닮은 보라색 가을 꽃 (독초)"
+  },
+  {
+   "id": "mongolian_oak",
+   "name": "신갈나무",
+   "scientificName": "Quercus mongolica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "우리 산에 가장 흔한 참나무"
+  },
+  {
+   "id": "red_pine",
+   "name": "소나무",
+   "scientificName": "Pinus densiflora",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "붉은 줄기의 늘 푸른 우리 나무"
+  },
+  {
+   "id": "oyama_magnolia",
+   "name": "함박꽃나무",
+   "scientificName": "Magnolia sieboldii",
+   "synonyms": [
+    "Oyama sieboldii"
+   ],
+   "acceptGenus": false,
+   "hint": "초여름 깊은 산의 향기로운 흰 꽃"
+  },
+  {
+   "id": "astilbe",
+   "name": "노루오줌",
+   "scientificName": "Astilbe chinensis",
+   "synonyms": [
+    "Astilbe rubra"
+   ],
+   "acceptGenus": false,
+   "hint": "여름 산 습지의 분홍 꽃이삭"
+  },
+  {
+   "id": "loosestrife",
+   "name": "큰까치수염",
+   "scientificName": "Lysimachia clethroides",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "한쪽으로 휜 흰 꽃이삭"
+  },
+  {
+   "id": "impatiens",
+   "name": "물봉선",
+   "scientificName": "Impatiens textorii",
+   "synonyms": [
+    "Impatiens textori"
+   ],
+   "acceptGenus": false,
+   "hint": "가을 계곡가의 자주색 꽃"
+  },
+  {
+   "id": "balloon_flower",
+   "name": "도라지",
+   "scientificName": "Platycodon grandiflorus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "여름의 보라·흰색 별 모양 꽃"
+  },
+  {
+   "id": "pasque",
+   "name": "할미꽃",
+   "scientificName": "Pulsatilla koreana",
+   "synonyms": [
+    "Pulsatilla cernua"
+   ],
+   "acceptGenus": false,
+   "hint": "양지바른 무덤가의 고개 숙인 자주색 꽃"
+  },
+  {
+   "id": "silvergrass",
+   "name": "억새",
+   "scientificName": "Miscanthus sinensis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을 산 능선을 은빛으로 물들여요"
+  },
+  {
+   "id": "iris_sanguinea",
+   "name": "붓꽃",
+   "scientificName": "Iris sanguinea",
+   "synonyms": [
+    "Iris sibirica"
+   ],
+   "acceptGenus": false,
+   "hint": "초여름 풀밭의 보라색 꽃"
+  },
+  {
+   "id": "rugosa",
+   "name": "해당화",
+   "scientificName": "Rosa rugosa",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "바닷가 모래땅의 진분홍 들장미"
+  },
+  {
+   "id": "beach_bindweed",
+   "name": "갯메꽃",
+   "scientificName": "Calystegia soldanella",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "모래 위를 기는 분홍 나팔꽃"
+  },
+  {
+   "id": "beach_vitex",
+   "name": "순비기나무",
+   "scientificName": "Vitex rotundifolia",
+   "synonyms": [
+    "Vitex trifolia"
+   ],
+   "acceptGenus": false,
+   "hint": "모래땅을 덮는 향기로운 보라 꽃"
+  },
+  {
+   "id": "glehnia",
+   "name": "갯방풍",
+   "scientificName": "Glehnia littoralis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "모래사장의 두툼한 잎과 흰 꽃"
+  },
+  {
+   "id": "limonium",
+   "name": "갯질경",
+   "scientificName": "Limonium tetragonum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "갯벌 가장자리의 작은 노란 꽃"
+  },
+  {
+   "id": "ixeris_repens",
+   "name": "갯씀바귀",
+   "scientificName": "Ixeris repens",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "모래 위로 뻗는 노란 꽃"
+  },
+  {
+   "id": "seaside_aster",
+   "name": "해국",
+   "scientificName": "Aster spathulifolius",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "바닷가 바위틈의 연보라 가을 꽃"
+  },
+  {
+   "id": "lysimachia_maur",
+   "name": "갯까치수염",
+   "scientificName": "Lysimachia mauritiana",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "해안 바위의 두꺼운 잎과 흰 꽃"
+  },
+  {
+   "id": "kobomugi",
+   "name": "통보리사초",
+   "scientificName": "Carex kobomugi",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "모래언덕을 붙잡는 사초"
+  },
+  {
+   "id": "beach_pea",
+   "name": "갯완두",
+   "scientificName": "Lathyrus japonicus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "해변 모래의 자주색 콩꽃"
+  },
+  {
+   "id": "black_pine",
+   "name": "곰솔",
+   "scientificName": "Pinus thunbergii",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "바닷바람에 강한 검은 줄기 소나무"
+  },
+  {
+   "id": "camellia",
+   "name": "동백나무",
+   "scientificName": "Camellia japonica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "겨울부터 봄까지 피는 붉은 꽃"
+  },
+  {
+   "id": "pittosporum",
+   "name": "돈나무",
+   "scientificName": "Pittosporum tobira",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "남해안의 윤기 나는 잎과 향기로운 흰 꽃"
+  },
+  {
+   "id": "suaeda",
+   "name": "칠면초",
+   "scientificName": "Suaeda japonica",
+   "synonyms": [
+    "Suaeda maritima"
+   ],
+   "acceptGenus": false,
+   "hint": "갯벌을 붉게 물들이는 염생식물"
+  },
+  {
+   "id": "salicornia",
+   "name": "퉁퉁마디",
+   "scientificName": "Salicornia europaea",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "갯벌의 마디진 줄기 (함초)"
+  },
+  {
+   "id": "farfugium",
+   "name": "털머위",
+   "scientificName": "Farfugium japonicum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "늦가을 남쪽 바닷가의 노란 꽃"
+  },
+  {
+   "id": "hispid_aster",
+   "name": "갯쑥부쟁이",
+   "scientificName": "Aster hispidus",
+   "synonyms": [
+    "Heteropappus hispidus"
+   ],
+   "acceptGenus": false,
+   "hint": "바닷가 풀밭의 연보라 들국화"
+  },
+  {
+   "id": "lotus",
+   "name": "연꽃",
+   "scientificName": "Nelumbo nucifera",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "연못의 커다란 분홍 꽃과 둥근 잎"
+  },
+  {
+   "id": "water_lily",
+   "name": "수련",
+   "scientificName": "Nymphaea tetragona",
+   "synonyms": [],
+   "acceptGenus": true,
+   "hint": "물 위에 뜬 잎과 꽃. 낮에 피고 밤에 오므려요"
+  },
+  {
+   "id": "cattail",
+   "name": "부들",
+   "scientificName": "Typha orientalis",
+   "synonyms": [],
+   "acceptGenus": true,
+   "hint": "핫도그 모양의 갈색 이삭"
+  },
+  {
+   "id": "yellow_iris",
+   "name": "노랑꽃창포",
+   "scientificName": "Iris pseudacorus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "물가의 노란 붓꽃"
+  },
+  {
+   "id": "reed",
+   "name": "갈대",
+   "scientificName": "Phragmites australis",
+   "synonyms": [
+    "Phragmites communis"
+   ],
+   "acceptGenus": false,
+   "hint": "물가와 갯벌의 키 큰 풀"
+  },
+  {
+   "id": "amur_silvergrass",
+   "name": "물억새",
+   "scientificName": "Miscanthus sacchariflorus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "강가를 하얗게 덮는 가을 억새"
+  },
+  {
+   "id": "tearthumb",
+   "name": "고마리",
+   "scientificName": "Persicaria thunbergii",
+   "synonyms": [
+    "Polygonum thunbergii"
+   ],
+   "acceptGenus": false,
+   "hint": "개울가의 분홍·흰 작은 꽃 무리"
+  },
+  {
+   "id": "pussy_willow",
+   "name": "갯버들",
+   "scientificName": "Salix gracilistyla",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "이른 봄 개울가의 보송한 버들강아지"
+  },
+  {
+   "id": "water_hyacinth",
+   "name": "부레옥잠",
+   "scientificName": "Pontederia crassipes",
+   "synonyms": [
+    "Eichhornia crassipes"
+   ],
+   "acceptGenus": false,
+   "hint": "부풀어 오른 잎자루로 물에 떠요"
+  },
+  {
+   "id": "sweet_flag",
+   "name": "창포",
+   "scientificName": "Acorus calamus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "단오에 머리를 감던 향기로운 잎"
+  },
+  {
+   "id": "holly",
+   "name": "호랑가시나무",
+   "scientificName": "Ilex cornuta",
+   "synonyms": [
+    "Ilex aquifolium"
+   ],
+   "acceptGenus": false,
+   "hint": "가시 돋친 잎과 빨간 겨울 열매"
+  },
+  {
+   "id": "nandina",
+   "name": "남천",
+   "scientificName": "Nandina domestica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "겨울에 붉게 물드는 잎과 빨간 열매"
+  },
+  {
+   "id": "fatsia",
+   "name": "팔손이",
+   "scientificName": "Fatsia japonica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "손바닥 잎, 초겨울 흰 꽃"
+  },
+  {
+   "id": "narcissus",
+   "name": "수선화",
+   "scientificName": "Narcissus tazetta",
+   "synonyms": [
+    "Narcissus chinensis",
+    "Narcissus pseudonarcissus"
+   ],
+   "acceptGenus": true,
+   "hint": "제주에서 한겨울에 피는 향기로운 꽃"
+  },
+  {
+   "id": "yew",
+   "name": "주목",
+   "scientificName": "Taxus cuspidata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "늘 푸른 잎과 빨간 열매"
+  },
+  {
+   "id": "juniper",
+   "name": "향나무",
+   "scientificName": "Juniperus chinensis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "향기 나는 늘 푸른 나무"
+  },
+  {
+   "id": "mistletoe",
+   "name": "겨우살이",
+   "scientificName": "Viscum coloratum",
+   "synonyms": [
+    "Viscum album"
+   ],
+   "acceptGenus": false,
+   "hint": "겨울 참나무 가지 위의 둥근 덤불"
+  }
+ ],
+ "catalogs": [
+  {
+   "id": "city",
+   "emoji": "🏙️",
+   "title": "도시의 꽃",
+   "description": "길가, 공원, 화단에서 흔히 만나는 식물",
+   "speciesIds": [
+    "dandelion_west",
+    "dandelion",
+    "white_clover",
+    "forsythia",
+    "cherry",
+    "magnolia",
+    "ginkgo",
+    "metasequoia",
+    "shepherds_purse",
+    "violet",
+    "trigonotis",
+    "fleabane",
+    "coreopsis",
+    "cosmos",
+    "hibiscus",
+    "fringe_tree",
+    "crape_myrtle",
+    "trumpet_creeper",
+    "hydrangea",
+    "petunia",
+    "pansy",
+    "plantain",
+    "woodsorrel",
+    "celandine",
+    "speedwell",
+    "henbit",
+    "cornus_officinalis",
+    "plum",
+    "lilac",
+    "liriope",
+    "moss_phlox",
+    "azalea_city",
+    "rose",
+    "tulip",
+    "morning_glory",
+    "sunflower",
+    "marigold",
+    "spirea",
+    "maple",
+    "euonymus"
+   ]
+  },
+  {
+   "id": "seaside",
+   "emoji": "🌊",
+   "title": "바닷가 식물",
+   "description": "모래사장, 갯벌, 해안 바위에서 자라는 식물",
+   "speciesIds": [
+    "rugosa",
+    "beach_bindweed",
+    "beach_vitex",
+    "glehnia",
+    "limonium",
+    "ixeris_repens",
+    "seaside_aster",
+    "lysimachia_maur",
+    "kobomugi",
+    "beach_pea",
+    "black_pine",
+    "camellia",
+    "pittosporum",
+    "euonymus",
+    "suaeda",
+    "salicornia",
+    "farfugium",
+    "hispid_aster",
+    "reed"
+   ]
+  },
+  {
+   "id": "mountain",
+   "emoji": "⛰️",
+   "title": "산의 식물",
+   "description": "숲길과 계곡, 능선에서 만나는 식물",
+   "speciesIds": [
+    "jindallae",
+    "royal_azalea",
+    "korean_azalea",
+    "spicebush",
+    "hepatica",
+    "erythronium",
+    "adonis",
+    "iris_rossii",
+    "lily_of_valley",
+    "solomons_seal",
+    "bleeding_heart",
+    "kousa",
+    "spirea",
+    "tiger_lily",
+    "daylily",
+    "gujeolcho",
+    "yomena",
+    "sanguk",
+    "aconite",
+    "mongolian_oak",
+    "red_pine",
+    "oyama_magnolia",
+    "astilbe",
+    "loosestrife",
+    "impatiens",
+    "balloon_flower",
+    "pasque",
+    "silvergrass",
+    "maple",
+    "mistletoe"
+   ]
+  },
+  {
+   "id": "wetland",
+   "emoji": "💧",
+   "title": "물가 식물",
+   "description": "연못, 개울, 강가에서 자라는 식물",
+   "speciesIds": [
+    "lotus",
+    "water_lily",
+    "cattail",
+    "yellow_iris",
+    "reed",
+    "amur_silvergrass",
+    "tearthumb",
+    "pussy_willow",
+    "water_hyacinth",
+    "sweet_flag",
+    "impatiens",
+    "iris_sanguinea",
+    "astilbe"
+   ]
+  },
+  {
+   "id": "spring",
+   "emoji": "🌸",
+   "title": "봄꽃",
+   "description": "3~5월에 피는 꽃",
+   "speciesIds": [
+    "plum",
+    "cornus_officinalis",
+    "spicebush",
+    "forsythia",
+    "jindallae",
+    "cherry",
+    "magnolia",
+    "dandelion_west",
+    "dandelion",
+    "violet",
+    "shepherds_purse",
+    "trigonotis",
+    "speedwell",
+    "henbit",
+    "pasque",
+    "hepatica",
+    "erythronium",
+    "adonis",
+    "royal_azalea",
+    "korean_azalea",
+    "azalea_city",
+    "spirea",
+    "lilac",
+    "moss_phlox",
+    "tulip",
+    "pansy",
+    "fringe_tree",
+    "iris_rossii",
+    "lily_of_valley",
+    "bleeding_heart",
+    "celandine",
+    "pussy_willow",
+    "white_clover",
+    "camellia"
+   ]
+  },
+  {
+   "id": "summer",
+   "emoji": "☀️",
+   "title": "여름꽃",
+   "description": "6~8월에 피는 꽃",
+   "speciesIds": [
+    "hibiscus",
+    "trumpet_creeper",
+    "hydrangea",
+    "crape_myrtle",
+    "coreopsis",
+    "fleabane",
+    "morning_glory",
+    "sunflower",
+    "tiger_lily",
+    "daylily",
+    "balloon_flower",
+    "lotus",
+    "water_lily",
+    "yellow_iris",
+    "rugosa",
+    "beach_bindweed",
+    "beach_vitex",
+    "loosestrife",
+    "astilbe",
+    "oyama_magnolia",
+    "kousa",
+    "iris_sanguinea",
+    "water_hyacinth",
+    "petunia",
+    "liriope",
+    "rose"
+   ]
+  },
+  {
+   "id": "autumn",
+   "emoji": "🍂",
+   "title": "가을 식물",
+   "description": "9~11월에 피는 꽃과 단풍",
+   "speciesIds": [
+    "cosmos",
+    "gujeolcho",
+    "yomena",
+    "sanguk",
+    "seaside_aster",
+    "hispid_aster",
+    "aconite",
+    "impatiens",
+    "tearthumb",
+    "silvergrass",
+    "amur_silvergrass",
+    "reed",
+    "marigold",
+    "ginkgo",
+    "maple",
+    "farfugium",
+    "suaeda"
+   ]
+  },
+  {
+   "id": "winter",
+   "emoji": "❄️",
+   "title": "겨울 식물",
+   "description": "추운 계절에도 푸르거나 꽃을 피우는 식물",
+   "speciesIds": [
+    "camellia",
+    "red_pine",
+    "black_pine",
+    "euonymus",
+    "holly",
+    "nandina",
+    "fatsia",
+    "narcissus",
+    "adonis",
+    "plum",
+    "farfugium",
+    "yew",
+    "juniper",
+    "mistletoe"
+   ]
+  }
+ ]
+}

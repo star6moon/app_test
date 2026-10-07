@@ -58,7 +58,7 @@ import com.plantdex.app.ui.components.appContainer
 import java.io.File
 
 @Composable
-fun CaptureScreen(onSaved: (entryId: String) -> Unit) {
+fun CaptureScreen(onSaved: (entryId: String, message: String?) -> Unit) {
     val context = LocalContext.current
     val container = appContainer()
     val viewModel: CaptureViewModel = viewModel(
@@ -69,6 +69,7 @@ fun CaptureScreen(onSaved: (entryId: String) -> Unit) {
                     locationProvider = container.locationProvider,
                     collectionRepository = container.collectionRepository,
                     authRepository = container.authRepository,
+                    catalogRepository = container.catalogRepository,
                     workDir = context.cacheDir,
                 )
             }
@@ -79,7 +80,7 @@ fun CaptureScreen(onSaved: (entryId: String) -> Unit) {
     LaunchedEffect(state) {
         val saved = state as? CaptureUiState.Saved ?: return@LaunchedEffect
         viewModel.reset()
-        onSaved(saved.entryId)
+        onSaved(saved.entryId, saved.message)
     }
 
     when (val s = state) {

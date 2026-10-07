@@ -10,6 +10,7 @@
 | 2 | 촬영 날짜·시간·위치 수집 | 셔터를 누른 시각, Fused Location 좌표·정확도, 역지오코딩 지명 |
 | 3 | 도감 기록·수집 | 후보 선택 + 메모 + 공개 여부 → Firebase Storage(사진) / Firestore(기록) 저장, 수집한 종 수 집계 |
 | 4 | 다른 사용자와 열람·공유 | 공개 기록 피드, 다른 사용자의 도감 보기, 기록 상세에서 공유 시트로 내보내기 |
+| 6 | 주제별 도감 | 도시·바닷가·산·물가·봄·여름·가을·겨울 8개 도감(102종). 도감별 `발견 / 전체` 수와 전체 수집률, 미발견 종 힌트, 촬영 결과의 NEW 표시 |
 | 5 | 식물 지도 | 내 도감 / 모두의 공개 기록을 Google 지도에 식물 이름 마커로 표시. 가까운 기록은 묶어서 개수로 표시 |
 
 그 밖에: 이메일 회원가입/로그인, 기록 삭제, 공개/비공개 전환, 지도 앱으로 위치 열기.
@@ -32,6 +33,7 @@ app/src/main/java/com/plantdex/app/
 │   ├── model/        # PlantCandidate, CollectionEntry, CaptureLocation, ...
 │   ├── plantnet/     # PlantIdentifier 인터페이스 + Pl@ntNet 구현 (다른 AI 로 교체 가능)
 │   ├── names/        # 학명 → 사용자 언어 이름 (GBIF, Wikidata)
+│   ├── catalog/      # 주제별 도감 목록과 기록 매칭
 │   ├── location/     # 현재 위치 + 지명 조회
 │   └── repository/   # AuthRepository, CollectionRepository (Firebase)
 ├── ui/
@@ -119,6 +121,16 @@ Android Studio 로 프로젝트를 열고 실행하거나:
 | `createdAt` | timestamp | 등록 시각 (서버 시각) |
 
 보안 규칙(`firebase/firestore.rules`): 공개 기록은 로그인한 모든 사용자가, 비공개 기록은 본인만 읽을 수 있고, 등록 후에는 공개 여부와 메모만 수정할 수 있습니다.
+
+## 주제별 도감
+
+도감 목록은 `app/src/main/assets/catalogs.json` 에 들어 있습니다. 같은 식물이 여러 도감에 들어갈 수 있습니다 (예: 동백나무 → 바닷가·봄·겨울).
+
+- **species**: `id`, `name`(표시 이름), `scientificName`, `synonyms`(AI 가 다른 학명으로 답해도 인정할 이름), `acceptGenus`(같은 속이면 모두 인정 — 원예종용), `hint`(미발견 힌트)
+- **catalogs**: `id`, `emoji`, `title`, `description`, `speciesIds`
+
+내 기록의 학명을 "속 + 종소명"으로 정규화해 매칭합니다 (저자명·변종·교잡 기호 무시). 정확히 일치하는 종이 먼저, 없으면 `acceptGenus` 종으로 인정합니다.
+도감을 고친 뒤에는 `./gradlew testDebugUnitTest` 로 검증하세요 — 없는 id 참조, 두 종이 같은 학명을 쓰는 경우 등을 잡아냅니다.
 
 ## 알아둘 점 / 다음 단계
 

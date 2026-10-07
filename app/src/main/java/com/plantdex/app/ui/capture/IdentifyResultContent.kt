@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Place
@@ -29,6 +30,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,6 +95,7 @@ fun IdentifyResultContent(
         itemsIndexed(state.candidates) { index, candidate ->
             CandidateCard(
                 candidate = candidate,
+                badge = state.badges.getOrNull(index),
                 selected = index == state.selectedIndex,
                 onClick = { onSelect(index) },
             )
@@ -155,7 +158,12 @@ private fun MetaRow(icon: ImageVector, text: String) {
 }
 
 @Composable
-private fun CandidateCard(candidate: PlantCandidate, selected: Boolean, onClick: () -> Unit) {
+private fun CandidateCard(
+    candidate: PlantCandidate,
+    badge: CandidateBadge?,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -170,7 +178,23 @@ private fun CandidateCard(candidate: PlantCandidate, selected: Boolean, onClick:
             RadioButton(selected = selected, onClick = null)
             Spacer(Modifier.width(8.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(candidate.displayName, style = MaterialTheme.typography.titleSmall)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(candidate.displayName, style = MaterialTheme.typography.titleSmall)
+                    if (badge?.isNew == true) {
+                        Spacer(Modifier.width(6.dp))
+                        Surface(
+                            shape = RoundedCornerShape(50),
+                            color = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary,
+                        ) {
+                            Text(
+                                "NEW",
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
+                            )
+                        }
+                    }
+                }
                 if (candidate.commonNames.isNotEmpty()) {
                     Text(
                         candidate.scientificName,
@@ -183,6 +207,13 @@ private fun CandidateCard(candidate: PlantCandidate, selected: Boolean, onClick:
                         "과: $it",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                if (badge != null && badge.catalogs.isNotEmpty()) {
+                    Text(
+                        badge.catalogs.joinToString(" · ") { "${it.emoji} ${it.title}" },
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
