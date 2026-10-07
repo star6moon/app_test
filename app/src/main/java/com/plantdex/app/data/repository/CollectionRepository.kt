@@ -66,6 +66,7 @@ class CollectionRepository(
                 "placeName" to location?.placeName,
                 "memo" to memo.trim(),
                 "isPublic" to isPublic,
+                "likeCount" to 0,
                 "createdAt" to FieldValue.serverTimestamp(),
             ),
         ).await()
@@ -162,6 +163,7 @@ class CollectionRepository(
             },
             memo = getString("memo").orEmpty(),
             isPublic = getBoolean("isPublic") ?: false,
+            likeCount = getLong("likeCount")?.toInt()?.coerceAtLeast(0) ?: 0,
         )
     }
 

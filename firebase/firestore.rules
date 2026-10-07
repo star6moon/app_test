@@ -18,6 +18,29 @@ service cloud.firestore {
         && request.resource.data.displayName.size() > 0
         && request.resource.data.displayName.size() <= 30;
       allow delete: if false;
+
+      // 좋아요: 본인 것만. 기록의 likeCount 가 같은 요청에서 정확히 +1 / -1 될 때만 허용
+      match /likes/{entryId} {
+        function entry() {
+          return /databases/$(database)/documents/entries/$(entryId);
+        }
+        allow read: if isUser(uid);
+        allow create: if isUser(uid)
+          && request.resource.data.keys().hasOnly(['createdAt'])
+          && request.resource.data.createdAt == request.time
+          && getAfter(entry()).data.get('likeCount', 0) == get(entry()).data.get('likeCount', 0) + 1;
+        allow delete: if isUser(uid)
+          && (!exists(entry())
+              || getAfter(entry()).data.get('likeCount', 0) == get(entry()).data.get('likeCount', 0) - 1);
+      }
+
+      // 책갈피: 본인만 읽고 쓸 수 있음
+      match /bookmarks/{entryId} {
+        allow read, delete: if isUser(uid);
+        allow create: if isUser(uid)
+          && request.resource.data.keys().hasOnly(['createdAt'])
+          && request.resource.data.createdAt == request.time;
+      }
     }
 
     // 도감 기록: 공개 기록은 로그인한 모든 사용자가, 비공개 기록은 본인만 읽을 수 있음
@@ -31,7 +54,12 @@ service cloud.firestore {
           && data.capturedAt is timestamp
           && data.isPublic is bool
           && data.memo is string && data.memo.size() <= 1000
+          && data.get('likeCount', 0) == 0
           && data.createdAt == request.time;
+      }
+
+      function myLike() {
+        return /databases/$(database)/documents/users/$(request.auth.uid)/likes/$(entryId);
       }
 
       allow read: if signedIn() && (
@@ -45,6 +73,16 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isPublic', 'memo'])
         && request.resource.data.isPublic is bool
         && request.resource.data.memo is string && request.resource.data.memo.size() <= 1000;
+      // 좋아요 수: 볼 수 있는 기록이면 누구나, 내 좋아요 문서를 만들거나 지우는 요청에서만 ±1
+      allow update: if signedIn()
+        && (resource.data.isPublic == true || resource.data.ownerId == request.auth.uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
+        && (
+          (request.resource.data.likeCount == resource.data.get('likeCount', 0) + 1
+            && !exists(myLike()) && existsAfter(myLike()))
+          || (request.resource.data.likeCount == resource.data.get('likeCount', 0) - 1
+            && exists(myLike()) && !existsAfter(myLike()))
+        );
       allow delete: if isUser(resource.data.ownerId);
     }
   }

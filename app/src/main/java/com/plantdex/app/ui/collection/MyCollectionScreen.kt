@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -61,6 +62,7 @@ fun MyCollectionScreen(
     user: UserProfile,
     onCatalogClick: (catalogId: String) -> Unit,
     onAllRecordsClick: () -> Unit,
+    onBookmarksClick: () -> Unit,
 ) {
     val container = appContainer()
     val viewModel: CatalogProgressViewModel = viewModel(
@@ -71,6 +73,7 @@ fun MyCollectionScreen(
         },
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val bookmarkIds by container.reactionRepository.myBookmarkIds.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -98,6 +101,7 @@ fun MyCollectionScreen(
                     CatalogCard(progress, onClick = { onCatalogClick(progress.catalog.id) })
                 }
                 item { AllRecordsCard(s.data, onClick = onAllRecordsClick) }
+                item { BookmarksCard(bookmarkIds?.size, onClick = onBookmarksClick) }
             }
         }
     }
@@ -191,6 +195,25 @@ private fun AllRecordsCard(progress: CollectionProgress, onClick: () -> Unit) {
                 Text("모든 기록 보기", style = MaterialTheme.typography.titleMedium)
                 Text(
                     "도감에 없는 식물까지 ${progress.recordCount}개",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+        }
+    }
+}
+
+@Composable
+private fun BookmarksCard(count: Int?, onClick: () -> Unit) {
+    OutlinedCard(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Outlined.BookmarkBorder, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text("책갈피", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    if (count == null) "불러오는 중…" else "저장한 기록 ${count}개",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

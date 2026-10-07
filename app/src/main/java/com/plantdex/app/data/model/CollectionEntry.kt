@@ -20,6 +20,8 @@ data class CollectionEntry(
     val location: CaptureLocation?,
     val memo: String,
     val isPublic: Boolean,
+    /** 좋아요 수 */
+    val likeCount: Int = 0,
 ) {
     val displayName: String get() = commonName?.takeIf { it.isNotBlank() } ?: scientificName
 }

@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.capture.CaptureScreen
+import com.plantdex.app.ui.collection.BookmarksScreen
 import com.plantdex.app.ui.collection.CatalogDetailScreen
 import com.plantdex.app.ui.collection.MyCollectionScreen
 import com.plantdex.app.ui.collection.MyRecordsScreen
@@ -46,6 +47,7 @@ import kotlin.reflect.KClass
 @Serializable data object CaptureRoute
 @Serializable data object MyCollectionRoute
 @Serializable data object MyRecordsRoute
+@Serializable data object BookmarksRoute
 @Serializable data class CatalogRoute(val catalogId: String)
 @Serializable data class EntryDetailRoute(val entryId: String)
 @Serializable data class UserCollectionRoute(val userId: String, val userName: String)
@@ -132,7 +134,11 @@ fun PlantDexNavHost(user: UserProfile) {
                     user = user,
                     onCatalogClick = { navController.navigate(CatalogRoute(it)) },
                     onAllRecordsClick = { navController.navigate(MyRecordsRoute) },
+                    onBookmarksClick = { navController.navigate(BookmarksRoute) },
                 )
+            }
+            composable<BookmarksRoute> {
+                BookmarksScreen(onEntryClick = ::openEntry, onBack = { navController.popBackStack() })
             }
             composable<CatalogRoute> { entry ->
                 CatalogDetailScreen(

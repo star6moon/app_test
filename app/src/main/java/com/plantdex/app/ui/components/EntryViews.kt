@@ -79,7 +79,7 @@ private fun EntryGridItem(entry: CollectionEntry, onClick: () -> Unit) {
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                Formatters.date(entry.capturedAt),
+                Formatters.date(entry.capturedAt) + if (entry.likeCount > 0) "  ♥ ${entry.likeCount}" else "",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

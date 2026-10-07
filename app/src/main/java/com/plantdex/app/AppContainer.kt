@@ -14,6 +14,10 @@ import com.plantdex.app.data.plantnet.PlantIdentifier
 import com.plantdex.app.data.plantnet.PlantNetIdentifier
 import com.plantdex.app.data.repository.AuthRepository
 import com.plantdex.app.data.repository.CollectionRepository
+import com.plantdex.app.data.repository.ReactionRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -30,6 +34,12 @@ class AppContainer(context: Context) {
     val authRepository = AuthRepository(Firebase.auth, Firebase.firestore)
 
     val collectionRepository = CollectionRepository(Firebase.firestore, Firebase.storage)
+
+    /** 앱이 살아 있는 동안 유지되는 작업 범위 (공유 상태 구독용) */
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    /** 좋아요·책갈피 */
+    val reactionRepository = ReactionRepository(Firebase.firestore, authRepository, appScope)
 
     /** 학명 → 사용자 언어 이름 (GBIF, Wikidata). */
     val plantNameLocalizer: PlantNameLocalizer = GbifWikidataNameLocalizer(httpClient)

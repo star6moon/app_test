@@ -60,6 +60,7 @@ import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
 import com.plantdex.app.ui.components.PlantBadge
+import com.plantdex.app.ui.components.ReactionBar
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.localizedName
 import com.plantdex.app.ui.components.rememberPlantArt
@@ -180,7 +181,8 @@ private fun EntryDetailContent(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxWidth().aspectRatio(1f),
         )
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        ReactionBar(entry, Modifier.fillMaxWidth().padding(horizontal = 8.dp))
+        Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 PlantBadge(rememberPlantArt(entry.scientificName, entry.family), size = 56.dp)
                 Spacer(Modifier.width(14.dp))

@@ -69,6 +69,7 @@ internal fun EntryCollectionContent(
     onEntryClick: (CollectionEntry) -> Unit,
     modifier: Modifier = Modifier,
     emptyBody: String? = null,
+    showSummary: Boolean = true,
 ) {
     when (state) {
         LoadState.Loading -> LoadingBox(modifier)
@@ -81,8 +82,10 @@ internal fun EntryCollectionContent(
                     entries = state.data,
                     onEntryClick = onEntryClick,
                     modifier = modifier,
-                    header = { CollectionSummary(state.data) },
+                    header = if (showSummary) summaryHeader(state.data) else null,
                 )
             }
     }
 }
+
+private fun summaryHeader(entries: List<CollectionEntry>): @Composable () -> Unit = { CollectionSummary(entries) }

@@ -41,6 +41,7 @@ import com.plantdex.app.ui.collection.EntryListViewModel
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
+import com.plantdex.app.ui.components.ReactionBar
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.localizedName
 import com.plantdex.app.util.Formatters
@@ -117,7 +118,8 @@ private fun FeedCard(entry: CollectionEntry, onClick: () -> Unit, onUserClick: (
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxWidth().aspectRatio(4f / 3f),
         )
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        ReactionBar(entry, Modifier.fillMaxWidth().padding(horizontal = 4.dp))
+        Column(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(name, style = MaterialTheme.typography.titleMedium)
             Text(entry.scientificName, style = MaterialTheme.typography.bodySmall, fontStyle = FontStyle.Italic)
             Text(
