@@ -17,6 +17,11 @@ val localProperties = Properties().apply {
 val plantNetApiKey: String = localProperties.getProperty("PLANTNET_API_KEY")
     ?: System.getenv("PLANTNET_API_KEY")
     ?: ""
+// Google Maps SDK for Android 키도 local.properties 에서 읽습니다.
+//   MAPS_API_KEY=xxxxxxxx
+val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY")
+    ?: System.getenv("MAPS_API_KEY")
+    ?: ""
 
 android {
     namespace = "com.plantdex.app"
@@ -30,6 +35,8 @@ android {
         versionName = "0.1.0"
 
         buildConfigField("String", "PLANTNET_API_KEY", "\"$plantNetApiKey\"")
+        buildConfigField("Boolean", "HAS_MAPS_API_KEY", (mapsApiKey.isNotBlank()).toString())
+        manifestPlaceholders["mapsApiKey"] = mapsApiKey
     }
 
     buildTypes {
@@ -91,6 +98,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.maps.compose)
+    implementation(libs.maps.compose.utils)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

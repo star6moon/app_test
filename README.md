@@ -10,13 +10,14 @@
 | 2 | 촬영 날짜·시간·위치 수집 | 셔터를 누른 시각, Fused Location 좌표·정확도, 역지오코딩 지명 |
 | 3 | 도감 기록·수집 | 후보 선택 + 메모 + 공개 여부 → Firebase Storage(사진) / Firestore(기록) 저장, 수집한 종 수 집계 |
 | 4 | 다른 사용자와 열람·공유 | 공개 기록 피드, 다른 사용자의 도감 보기, 기록 상세에서 공유 시트로 내보내기 |
+| 5 | 식물 지도 | 내 도감 / 모두의 공개 기록을 Google 지도에 식물 이름 마커로 표시. 가까운 기록은 묶어서 개수로 표시 |
 
 그 밖에: 이메일 회원가입/로그인, 기록 삭제, 공개/비공개 전환, 지도 앱으로 위치 열기.
 
 ## 기술 스택
 
 - Kotlin, Jetpack Compose (Material 3), Navigation Compose (type-safe routes)
-- CameraX, Google Play services Location
+- CameraX, Google Play services Location, Google Maps Compose (마커 클러스터링)
 - Firebase Auth / Cloud Firestore / Cloud Storage
 - OkHttp + kotlinx.serialization (Pl@ntNet 연동), Coil 3 (이미지 로딩)
 - minSdk 26 / targetSdk 35
@@ -71,7 +72,20 @@ firebase/                # Firestore·Storage 보안 규칙, Firestore 색인
    PLANTNET_API_KEY=발급받은_키
    ```
 
-### 3. 빌드 및 실행
+### 3. Google 지도 API 키
+
+1. [Google Cloud 콘솔](https://console.cloud.google.com/)에서 Firebase 와 **같은 프로젝트**를 선택합니다.
+2. **API 및 서비스 → 라이브러리**에서 **Maps SDK for Android** 를 검색해 **사용 설정**합니다.
+3. **API 및 서비스 → 사용자 인증 정보 → 사용자 인증 정보 만들기 → API 키**로 키를 만듭니다.
+4. (권장) 키의 **API 제한사항**을 *Maps SDK for Android* 로 제한합니다.
+5. `local.properties` 에 추가합니다.
+   ```properties
+   MAPS_API_KEY=발급받은_키
+   ```
+
+키가 없어도 앱은 빌드되며, 지도 탭에 안내 메시지가 표시됩니다.
+
+### 4. 빌드 및 실행
 
 Android Studio 로 프로젝트를 열고 실행하거나:
 

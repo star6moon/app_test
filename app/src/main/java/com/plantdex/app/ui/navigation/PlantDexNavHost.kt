@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -29,10 +30,12 @@ import com.plantdex.app.ui.collection.MyCollectionScreen
 import com.plantdex.app.ui.collection.UserCollectionScreen
 import com.plantdex.app.ui.entry.EntryDetailScreen
 import com.plantdex.app.ui.feed.FeedScreen
+import com.plantdex.app.ui.map.PlantMapScreen
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
 @Serializable data object FeedRoute
+@Serializable data object MapRoute
 @Serializable data object CaptureRoute
 @Serializable data object MyCollectionRoute
 @Serializable data class EntryDetailRoute(val entryId: String)
@@ -45,6 +48,7 @@ private enum class TopLevelDestination(
     val icon: ImageVector,
 ) {
     Feed(FeedRoute, FeedRoute::class, "둘러보기", Icons.Filled.Explore),
+    PlantMap(MapRoute, MapRoute::class, "지도", Icons.Filled.Map),
     Capture(CaptureRoute, CaptureRoute::class, "촬영", Icons.Filled.CameraAlt),
     MyCollection(MyCollectionRoute, MyCollectionRoute::class, "내 도감", Icons.AutoMirrored.Filled.MenuBook),
 }
@@ -96,6 +100,9 @@ fun PlantDexNavHost(user: UserProfile) {
         ) {
             composable<FeedRoute> {
                 FeedScreen(onEntryClick = ::openEntry, onUserClick = ::openUser)
+            }
+            composable<MapRoute> {
+                PlantMapScreen(user = user, onEntryClick = ::openEntry)
             }
             composable<CaptureRoute> {
                 CaptureScreen(

@@ -17,6 +17,7 @@ coroutines = "1.10.2"
 serialization = "1.9.0"
 okhttp = "4.12.0"
 coil = "3.2.0"
+mapsCompose = "6.7.1"
 
 junit = "4.13.2"
 
@@ -58,6 +59,9 @@ okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver",
 
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
+maps-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsCompose" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
