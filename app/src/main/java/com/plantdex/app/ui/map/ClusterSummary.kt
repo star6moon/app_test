@@ -18,6 +18,27 @@ data class ClusterSummary<T>(
     val label: String
         get() = if (groups.size == 1) "${top.name} ${recordCount}건" else "${top.name} 등 ${groups.size}종"
 
+    /**
+     * 좋아요 순으로 다시 정렬한 종 그룹 (묶음 목록 패널용).
+     * 그룹은 좋아요 합계 → 가장 많이 받은 기록 → 기록 수 → 최근 순,
+     * 그룹 안의 기록은 좋아요 → 최근 순입니다.
+     */
+    fun groupsByLikes(likes: (T) -> Int, capturedAt: (T) -> Long): List<SpeciesGroup<T>> =
+        groups
+            .map { group ->
+                group.copy(
+                    items = group.items.sortedWith(
+                        compareByDescending<T> { likes(it) }.thenByDescending { capturedAt(it) },
+                    ),
+                )
+            }
+            .sortedWith(
+                compareByDescending<SpeciesGroup<T>> { g -> g.items.sumOf { likes(it) } }
+                    .thenByDescending { g -> likes(g.items.first()) }
+                    .thenByDescending { it.items.size }
+                    .thenByDescending { capturedAt(it.items.maxBy(capturedAt)) },
+            )
+
     companion object {
         /**
          * 종별로 묶어 기록 수가 많은 순으로 정렬합니다.

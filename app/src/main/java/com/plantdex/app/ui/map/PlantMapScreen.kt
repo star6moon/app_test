@@ -227,6 +227,22 @@ private fun PlantMap(
         animateSafely(cameraPositionState, update, 600)
     }
 
+    // 패널을 열어 둔 사이 좋아요 수 등이 바뀌면 최신 기록으로 다시 채웁니다.
+    LaunchedEffect(data.items) {
+        val byId = data.items.associateBy { it.entry.id }
+        val refreshed: MapSelection? = when (val current = selection) {
+            is MapSelection.Single -> byId[current.item.entry.id]?.let { MapSelection.Single(it) }
+            is MapSelection.Group -> current.summary.groups
+                .flatMap { it.items }
+                .mapNotNull { byId[it.entry.id] }
+                .takeIf { it.isNotEmpty() }
+                ?.let { MapSelection.Group(summarize(it)) }
+            null -> return@LaunchedEffect
+        }
+        selection = refreshed
+        if (refreshed != null) panelContent = refreshed
+    }
+
     val bottomPadding = when (selection) {
         is MapSelection.Single -> 140.dp
         is MapSelection.Group -> 340.dp
@@ -481,12 +497,14 @@ private fun ClusterPanel(
                 Text("이 지역 확대해서 보기")
             }
             HorizontalDivider()
+            // 좋아요가 많은 종·기록부터 보여줍니다.
+            val groups = remember(summary) { summary.groupsByLikes({ it.entry.likeCount }, { it.entry.capturedAt }) }
             LazyColumn(
                 modifier = Modifier.heightIn(max = 240.dp),
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(summary.groups, key = { it.key }) { group ->
+                items(groups, key = { it.key }) { group ->
                     SpeciesGroupRow(group, onEntryClick)
                 }
             }
@@ -507,8 +525,9 @@ private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (en
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            val likes = group.items.sumOf { it.entry.likeCount }
             Text(
-                "${group.items.size}건",
+                if (likes > 0) "♥ $likes · ${group.items.size}건" else "${group.items.size}건",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -534,6 +553,13 @@ private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (en
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                     )
+                    if (item.entry.likeCount > 0) {
+                        Text(
+                            "♥ ${item.entry.likeCount}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                 }
             }
         }
