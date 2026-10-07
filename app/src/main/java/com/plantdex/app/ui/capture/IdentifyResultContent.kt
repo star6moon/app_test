@@ -44,6 +44,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.plantdex.app.data.model.PlantCandidate
+import com.plantdex.app.ui.components.PlantBadge
+import com.plantdex.app.ui.components.rememberPlantArt
 import com.plantdex.app.util.Formatters
 
 @Composable
@@ -176,7 +178,9 @@ private fun CandidateCard(
     ) {
         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             RadioButton(selected = selected, onClick = null)
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(4.dp))
+            PlantBadge(rememberPlantArt(candidate.scientificName, candidate.family), size = 44.dp)
+            Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(candidate.displayName, style = MaterialTheme.typography.titleSmall)

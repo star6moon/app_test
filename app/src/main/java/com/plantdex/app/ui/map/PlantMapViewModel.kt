@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
+import com.plantdex.app.data.art.PlantArt
+import com.plantdex.app.data.art.PlantArts
 import com.plantdex.app.data.catalog.CatalogRepository
-import com.plantdex.app.data.catalog.PlantIcon
-import com.plantdex.app.data.catalog.PlantIcons
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.names.PlantNameLocalizer
 import com.plantdex.app.data.repository.CollectionRepository
@@ -45,7 +45,8 @@ data class PlantMapItem(
     val latitude: Double,
     val longitude: Double,
     val speciesKey: String,
-    val icon: PlantIcon,
+    /** 종의 외형 그림 */
+    val art: PlantArt,
 ) : ClusterItem {
     val latLng: LatLng get() = LatLng(latitude, longitude)
 
@@ -128,8 +129,8 @@ class PlantMapViewModel(
             name = name,
             latitude = location.latitude,
             longitude = location.longitude,
-            speciesKey = PlantIcons.speciesKey(scientificName, catalog),
-            icon = PlantIcons.forPlant(scientificName, family, catalog),
+            speciesKey = PlantArts.speciesKey(scientificName, catalog),
+            art = PlantArts.forPlant(scientificName, family, catalog),
         )
     }
 }

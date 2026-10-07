@@ -338,7 +338,7 @@ private fun PlantMarker(item: PlantMapItem) {
             Modifier.padding(start = 3.dp, end = 10.dp, top = 3.dp, bottom = 3.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PlantBadge(item.icon, size = 26.dp)
+            PlantBadge(item.art, size = 26.dp)
             Spacer(Modifier.width(6.dp))
             Text(
                 item.name,
@@ -354,12 +354,12 @@ private fun PlantMarker(item: PlantMapItem) {
 /** 겹쳐 놓은 종 아이콘 (최대 3개) */
 @Composable
 private fun StackedBadges(summary: ClusterSummary<PlantMapItem>, size: Dp) {
-    val icons = summary.groups.take(3).map { it.items.first().icon }
+    val icons = summary.groups.take(3).map { it.items.first().art }
     val step = size * 0.55f
     Box(Modifier.width(size + step * (icons.size - 1)).height(size)) {
         // 기록이 가장 많은 종이 맨 앞(왼쪽 위)에 오도록 뒤에서부터 그립니다.
-        icons.withIndex().reversed().forEach { (index, icon) ->
-            PlantBadge(icon, size = size, modifier = Modifier.offset(x = step * index))
+        icons.withIndex().reversed().forEach { (index, art) ->
+            PlantBadge(art, size = size, modifier = Modifier.offset(x = step * index))
         }
     }
 }
@@ -421,7 +421,7 @@ private fun SelectedEntryCard(item: PlantMapItem, onClick: () -> Unit) {
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    PlantBadge(item.icon, size = 22.dp)
+                    PlantBadge(item.art, size = 22.dp)
                     Spacer(Modifier.width(6.dp))
                     Text(item.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
@@ -498,7 +498,7 @@ private fun ClusterPanel(
 private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (entryId: String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(Modifier.padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            PlantBadge(group.items.first().icon, size = 24.dp)
+            PlantBadge(group.items.first().art, size = 24.dp)
             Spacer(Modifier.width(8.dp))
             Text(
                 group.name,

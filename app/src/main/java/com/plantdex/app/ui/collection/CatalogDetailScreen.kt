@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -61,6 +60,7 @@ import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
+import com.plantdex.app.ui.components.PlantArtImage
 import com.plantdex.app.ui.components.appContainer
 
 private enum class SpeciesFilter(val label: String) { All("전체"), Collected("발견"), Missing("미발견") }
@@ -237,12 +237,11 @@ private fun SpeciesCell(number: Int, item: SpeciesProgress, onClick: () -> Unit)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface),
                 )
-            } else if (item.species.emoji.isNotBlank()) {
-                // 미발견: 종 아이콘을 흐리게 보여줍니다.
-                Text(
-                    item.species.emoji,
-                    fontSize = 40.sp,
-                    modifier = Modifier.align(Alignment.Center).alpha(0.3f),
+            } else if (item.species.art != null) {
+                // 미발견: 종 그림을 흐리게 보여줍니다.
+                PlantArtImage(
+                    art = item.species.art,
+                    modifier = Modifier.align(Alignment.Center).fillMaxSize(0.72f).clip(CircleShape).alpha(0.35f),
                 )
             } else {
                 Icon(

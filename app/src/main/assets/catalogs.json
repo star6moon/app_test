@@ -8,7 +8,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "길가·잔디밭 어디서나. 꽃받침이 뒤로 젖혀져요",
-   "emoji": "🌼"
+   "art": {
+    "form": "daisy",
+    "color": "#F7C93C",
+    "accent": "#E39B12",
+    "petals": 24
+   }
   },
   {
    "id": "dandelion",
@@ -20,7 +25,12 @@
    ],
    "acceptGenus": false,
    "hint": "토종 민들레. 꽃받침이 꽃을 꼭 감싸요",
-   "emoji": "🌼"
+   "art": {
+    "form": "daisy",
+    "color": "#F9DA6A",
+    "accent": "#E8B923",
+    "petals": 20
+   }
   },
   {
    "id": "white_clover",
@@ -29,7 +39,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "잔디밭의 클로버. 흰 공 모양 꽃",
-   "emoji": "🍀"
+   "art": {
+    "form": "leaf",
+    "color": "#4FA44A",
+    "accent": "#FFFFFF",
+    "variant": "clover"
+   }
   },
   {
    "id": "forsythia",
@@ -42,7 +57,13 @@
    ],
    "acceptGenus": true,
    "hint": "봄 울타리를 노랗게 물들이는 꽃",
-   "emoji": "💛"
+   "art": {
+    "form": "flower",
+    "color": "#F5C518",
+    "accent": "#D99A06",
+    "petals": 4,
+    "petal": "oblong"
+   }
   },
   {
    "id": "cherry",
@@ -57,7 +78,14 @@
    ],
    "acceptGenus": false,
    "hint": "잎보다 꽃이 먼저 피는 봄 가로수",
-   "emoji": "🌸"
+   "art": {
+    "form": "flower",
+    "color": "#F7C6D9",
+    "accent": "#E0628C",
+    "petals": 5,
+    "petal": "notched",
+    "variant": "stamen"
+   }
   },
   {
    "id": "magnolia",
@@ -71,7 +99,12 @@
    ],
    "acceptGenus": false,
    "hint": "이른 봄 커다란 흰 꽃봉오리",
-   "emoji": "💮"
+   "art": {
+    "form": "cup",
+    "color": "#FBF7F0",
+    "accent": "#E7B3C6",
+    "variant": "open"
+   }
   },
   {
    "id": "ginkgo",
@@ -80,7 +113,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "부채꼴 잎, 가을이면 노랗게",
-   "emoji": "🍂"
+   "art": {
+    "form": "leaf",
+    "color": "#F2C230",
+    "variant": "fan"
+   }
   },
   {
    "id": "metasequoia",
@@ -89,7 +126,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "살아있는 화석. 원뿔 모양 가로수",
-   "emoji": "🌲"
+   "art": {
+    "form": "conifer",
+    "color": "#6E9440",
+    "accent": "#8D5A2B",
+    "variant": "narrow"
+   }
   },
   {
    "id": "shepherds_purse",
@@ -98,7 +140,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "하트 모양 열매가 달리는 봄나물",
-   "emoji": "🌱"
+   "art": {
+    "form": "spike",
+    "color": "#FFFFFF",
+    "variant": "pods"
+   }
   },
   {
    "id": "violet",
@@ -110,7 +156,13 @@
    ],
    "acceptGenus": true,
    "hint": "양지바른 길가의 보라색 작은 꽃",
-   "emoji": "💜"
+   "art": {
+    "form": "flower",
+    "color": "#7E57C2",
+    "accent": "#F3EDFF",
+    "petals": 5,
+    "petal": "round"
+   }
   },
   {
    "id": "trigonotis",
@@ -119,7 +171,13 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "돌돌 말린 꽃대에 아주 작은 하늘색 꽃",
-   "emoji": "💙"
+   "art": {
+    "form": "cluster",
+    "color": "#9EC9F0",
+    "accent": "#F7D046",
+    "petals": 5,
+    "variant": "spray"
+   }
   },
   {
    "id": "fleabane",
@@ -128,7 +186,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "계란후라이를 닮은 꽃. 빈터 어디에나",
-   "emoji": "🍳"
+   "art": {
+    "form": "daisy",
+    "color": "#FFFFFF",
+    "accent": "#F5C518",
+    "petals": 28
+   }
   },
   {
    "id": "coreopsis",
@@ -140,7 +203,13 @@
    ],
    "acceptGenus": false,
    "hint": "초여름 길가를 노랗게 덮어요",
-   "emoji": "🌼"
+   "art": {
+    "form": "flower",
+    "color": "#F4C20D",
+    "accent": "#C98A06",
+    "petals": 8,
+    "petal": "notched"
+   }
   },
   {
    "id": "cosmos",
@@ -151,7 +220,13 @@
    ],
    "acceptGenus": false,
    "hint": "가을 길가의 대표 꽃",
-   "emoji": "🌸"
+   "art": {
+    "form": "flower",
+    "color": "#F28DB2",
+    "accent": "#F2C14E",
+    "petals": 8,
+    "petal": "notched"
+   }
   },
   {
    "id": "hibiscus",
@@ -160,7 +235,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "나라꽃. 여름 내내 피고 지기를 반복해요",
-   "emoji": "🌺"
+   "art": {
+    "form": "flower",
+    "color": "#E58FC0",
+    "accent": "#A3124A",
+    "petals": 5,
+    "petal": "wavy",
+    "variant": "stamen"
+   }
   },
   {
    "id": "fringe_tree",
@@ -169,7 +251,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "5월 가로수에 쌀밥 같은 흰 꽃",
-   "emoji": "🍚"
+   "art": {
+    "form": "cluster",
+    "color": "#FFFFFF",
+    "accent": "#E8F0D8",
+    "petals": 4,
+    "petal": "narrow",
+    "variant": "spray"
+   }
   },
   {
    "id": "crape_myrtle",
@@ -178,7 +267,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "백 일 동안 피는 분홍 꽃, 매끈한 줄기",
-   "emoji": "🌸"
+   "art": {
+    "form": "cluster",
+    "color": "#E86FA6",
+    "accent": "#F2C14E",
+    "petals": 6,
+    "petal": "wavy",
+    "variant": "cone"
+   }
   },
   {
    "id": "trumpet_creeper",
@@ -190,7 +286,11 @@
    ],
    "acceptGenus": false,
    "hint": "담장을 타고 오르는 주황색 나팔 꽃",
-   "emoji": "🎺"
+   "art": {
+    "form": "funnel",
+    "color": "#F28C28",
+    "accent": "#D9480F"
+   }
   },
   {
    "id": "hydrangea",
@@ -201,7 +301,13 @@
    ],
    "acceptGenus": false,
    "hint": "초여름의 커다란 공 모양 꽃송이",
-   "emoji": "💐"
+   "art": {
+    "form": "cluster",
+    "color": "#8FB3E8",
+    "accent": "#E6EEFF",
+    "petals": 4,
+    "variant": "ball"
+   }
   },
   {
    "id": "petunia",
@@ -214,7 +320,11 @@
    ],
    "acceptGenus": true,
    "hint": "화단과 화분의 나팔 모양 꽃",
-   "emoji": "🌺"
+   "art": {
+    "form": "funnel",
+    "color": "#B04AC9",
+    "accent": "#6A1B9A"
+   }
   },
   {
    "id": "pansy",
@@ -226,7 +336,14 @@
    ],
    "acceptGenus": false,
    "hint": "봄 화단의 얼굴 무늬 꽃",
-   "emoji": "🌷"
+   "art": {
+    "form": "flower",
+    "color": "#8E6BD9",
+    "accent": "#2E1A47",
+    "petals": 5,
+    "petal": "round",
+    "variant": "face"
+   }
   },
   {
    "id": "plantain",
@@ -237,7 +354,12 @@
    ],
    "acceptGenus": false,
    "hint": "밟혀도 잘 자라는 길가의 풀",
-   "emoji": "🌿"
+   "art": {
+    "form": "rosette",
+    "color": "#5E9E44",
+    "accent": "#B9C47A",
+    "variant": "spike"
+   }
   },
   {
    "id": "woodsorrel",
@@ -249,7 +371,12 @@
    ],
    "acceptGenus": false,
    "hint": "하트 잎 세 장과 작은 노란 꽃",
-   "emoji": "☘️"
+   "art": {
+    "form": "leaf",
+    "color": "#7CB342",
+    "accent": "#F7D046",
+    "variant": "clover"
+   }
   },
   {
    "id": "celandine",
@@ -260,7 +387,13 @@
    ],
    "acceptGenus": false,
    "hint": "줄기를 꺾으면 노란 즙이 나와요",
-   "emoji": "🌼"
+   "art": {
+    "form": "flower",
+    "color": "#F6CF2E",
+    "accent": "#E0A800",
+    "petals": 4,
+    "petal": "round"
+   }
   },
   {
    "id": "speedwell",
@@ -269,7 +402,13 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "이른 봄 땅에 붙어 피는 작은 하늘색 꽃",
-   "emoji": "💙"
+   "art": {
+    "form": "flower",
+    "color": "#6FA8DC",
+    "accent": "#FFFFFF",
+    "petals": 4,
+    "petal": "round"
+   }
   },
   {
    "id": "henbit",
@@ -280,7 +419,11 @@
    ],
    "acceptGenus": false,
    "hint": "층층이 달린 잎 사이의 분홍 꽃",
-   "emoji": "🌸"
+   "art": {
+    "form": "spike",
+    "color": "#C75B9B",
+    "variant": "whorl"
+   }
   },
   {
    "id": "cornus_officinalis",
@@ -289,7 +432,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "이른 봄 노란 꽃, 가을엔 빨간 열매",
-   "emoji": "🍒"
+   "art": {
+    "form": "cluster",
+    "color": "#F2C230",
+    "accent": "#E0A800",
+    "petals": 4,
+    "petal": "narrow",
+    "variant": "spray"
+   }
   },
   {
    "id": "plum",
@@ -300,7 +450,14 @@
    ],
    "acceptGenus": false,
    "hint": "겨울 끝자락에 가장 먼저 피는 꽃",
-   "emoji": "💮"
+   "art": {
+    "form": "flower",
+    "color": "#FCE4EC",
+    "accent": "#D9577F",
+    "petals": 5,
+    "petal": "round",
+    "variant": "stamen"
+   }
   },
   {
    "id": "lilac",
@@ -312,7 +469,13 @@
    ],
    "acceptGenus": true,
    "hint": "4~5월 진한 향기의 보라색 꽃",
-   "emoji": "💜"
+   "art": {
+    "form": "cluster",
+    "color": "#B39DDB",
+    "accent": "#EDE7F6",
+    "petals": 4,
+    "variant": "cone"
+   }
   },
   {
    "id": "liriope",
@@ -324,7 +487,10 @@
    ],
    "acceptGenus": false,
    "hint": "그늘진 화단의 보라색 꽃이삭",
-   "emoji": "💜"
+   "art": {
+    "form": "spike",
+    "color": "#8E6CC9"
+   }
   },
   {
    "id": "moss_phlox",
@@ -333,7 +499,13 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "봄 화단을 덮는 분홍 융단",
-   "emoji": "🌸"
+   "art": {
+    "form": "flower",
+    "color": "#F48FB1",
+    "accent": "#C2185B",
+    "petals": 5,
+    "petal": "notched"
+   }
   },
   {
    "id": "azalea_city",
@@ -347,7 +519,14 @@
    ],
    "acceptGenus": false,
    "hint": "봄 화단과 아파트 단지의 진분홍 꽃",
-   "emoji": "🌺"
+   "art": {
+    "form": "flower",
+    "color": "#E91E63",
+    "accent": "#8B0A3A",
+    "petals": 5,
+    "variant": "stamen",
+    "spots": true
+   }
   },
   {
    "id": "rose",
@@ -360,7 +539,14 @@
    ],
    "acceptGenus": true,
    "hint": "5월 담장을 장식하는 꽃의 여왕",
-   "emoji": "🌹"
+   "art": {
+    "form": "flower",
+    "color": "#E53950",
+    "accent": "#9E1B32",
+    "petals": 5,
+    "petal": "round",
+    "layers": 3
+   }
   },
   {
    "id": "tulip",
@@ -369,7 +555,10 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "봄 화단의 대표 알뿌리 꽃",
-   "emoji": "🌷"
+   "art": {
+    "form": "cup",
+    "color": "#E53935"
+   }
   },
   {
    "id": "morning_glory",
@@ -381,7 +570,11 @@
    ],
    "acceptGenus": false,
    "hint": "아침에 피었다 낮에 오므라드는 덩굴 꽃",
-   "emoji": "🌀"
+   "art": {
+    "form": "funnel",
+    "color": "#5C6BC0",
+    "accent": "#FFFFFF"
+   }
   },
   {
    "id": "sunflower",
@@ -390,7 +583,13 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "해를 닮은 커다란 여름 꽃",
-   "emoji": "🌻"
+   "art": {
+    "form": "daisy",
+    "color": "#F9C80E",
+    "accent": "#6B3E1F",
+    "petals": 22,
+    "variant": "big"
+   }
   },
   {
    "id": "marigold",
@@ -401,7 +600,14 @@
    ],
    "acceptGenus": false,
    "hint": "가을 화단의 주황·노랑 꽃",
-   "emoji": "🏵️"
+   "art": {
+    "form": "flower",
+    "color": "#F59E0B",
+    "accent": "#D97706",
+    "petals": 10,
+    "petal": "wavy",
+    "layers": 3
+   }
   },
   {
    "id": "spirea",
@@ -413,7 +619,13 @@
    ],
    "acceptGenus": false,
    "hint": "봄에 하얀 꽃이 가지를 따라 줄줄이",
-   "emoji": "💮"
+   "art": {
+    "form": "cluster",
+    "color": "#FFFFFF",
+    "accent": "#F2E7A1",
+    "petals": 5,
+    "variant": "spray"
+   }
   },
   {
    "id": "maple",
@@ -425,7 +637,11 @@
    ],
    "acceptGenus": true,
    "hint": "손바닥 모양 잎, 가을이면 붉게",
-   "emoji": "🍁"
+   "art": {
+    "form": "leaf",
+    "color": "#E0452B",
+    "variant": "maple"
+   }
   },
   {
    "id": "euonymus",
@@ -434,7 +650,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "사계절 푸른 생울타리 나무",
-   "emoji": "🌳"
+   "art": {
+    "form": "tree",
+    "color": "#3E7D3A",
+    "variant": "shrub"
+   }
   },
   {
    "id": "jindallae",
@@ -445,7 +665,13 @@
    ],
    "acceptGenus": false,
    "hint": "이른 봄 잎보다 먼저 피는 분홍 꽃",
-   "emoji": "🌸"
+   "art": {
+    "form": "flower",
+    "color": "#E58AC0",
+    "accent": "#B03A7E",
+    "petals": 5,
+    "variant": "stamen"
+   }
   },
   {
    "id": "royal_azalea",
@@ -454,7 +680,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "진달래가 진 뒤 잎과 함께 피는 연분홍 꽃",
-   "emoji": "🌸"
+   "art": {
+    "form": "flower",
+    "color": "#F7C6DA",
+    "accent": "#C2185B",
+    "petals": 5,
+    "variant": "stamen",
+    "spots": true
+   }
   },
   {
    "id": "korean_azalea",
@@ -465,7 +698,14 @@
    ],
    "acceptGenus": false,
    "hint": "계곡과 능선에 무리 지어 피는 진분홍 꽃",
-   "emoji": "🌺"
+   "art": {
+    "form": "flower",
+    "color": "#D9478A",
+    "accent": "#8B1A4E",
+    "petals": 5,
+    "variant": "stamen",
+    "spots": true
+   }
   },
   {
    "id": "spicebush",
@@ -474,7 +714,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "이른 봄 산의 노란 꽃. 잎에서 생강 냄새",
-   "emoji": "🌼"
+   "art": {
+    "form": "cluster",
+    "color": "#F2D23C",
+    "accent": "#D4A90B",
+    "petals": 6,
+    "petal": "narrow",
+    "variant": "ball"
+   }
   },
   {
    "id": "hepatica",
@@ -486,7 +733,13 @@
    ],
    "acceptGenus": false,
    "hint": "이른 봄 낙엽 사이로 솜털 덮인 꽃대",
-   "emoji": "💜"
+   "art": {
+    "form": "flower",
+    "color": "#B48FE0",
+    "accent": "#FFFFFF",
+    "petals": 6,
+    "petal": "round"
+   }
   },
   {
    "id": "erythronium",
@@ -495,7 +748,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "꽃잎을 뒤로 젖힌 보라색 봄꽃",
-   "emoji": "💜"
+   "art": {
+    "form": "flower",
+    "color": "#B867C9",
+    "accent": "#7A2E8E",
+    "petals": 6,
+    "petal": "pointed",
+    "spots": true
+   }
   },
   {
    "id": "adonis",
@@ -507,7 +767,14 @@
    ],
    "acceptGenus": false,
    "hint": "눈 속에서 피어나는 노란 꽃",
-   "emoji": "🌼"
+   "art": {
+    "form": "flower",
+    "color": "#F5C400",
+    "accent": "#C99700",
+    "petals": 10,
+    "petal": "round",
+    "layers": 2
+   }
   },
   {
    "id": "iris_rossii",
@@ -516,7 +783,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "봄 산자락의 키 작은 보라색 붓꽃",
-   "emoji": "💜"
+   "art": {
+    "form": "iris",
+    "color": "#8E6CD9",
+    "accent": "#FFFFFF"
+   }
   },
   {
    "id": "lily_of_valley",
@@ -527,7 +798,10 @@
    ],
    "acceptGenus": false,
    "hint": "방울 모양의 향기로운 흰 꽃",
-   "emoji": "🔔"
+   "art": {
+    "form": "bell",
+    "color": "#FFFFFF"
+   }
   },
   {
    "id": "solomons_seal",
@@ -536,7 +810,12 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "활처럼 휜 줄기에 매달린 종 모양 꽃",
-   "emoji": "🔔"
+   "art": {
+    "form": "bell",
+    "color": "#F1F5E6",
+    "accent": "#9CCC65",
+    "variant": "tube"
+   }
   },
   {
    "id": "bleeding_heart",
@@ -547,7 +826,12 @@
    ],
    "acceptGenus": false,
    "hint": "하트 모양 분홍 꽃이 줄지어 달려요",
-   "emoji": "💗"
+   "art": {
+    "form": "bell",
+    "color": "#E85A8A",
+    "accent": "#FFFFFF",
+    "variant": "heart"
+   }
   },
   {
    "id": "kousa",
@@ -556,7 +840,13 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "초여름 층층이 피는 십자 모양 흰 꽃",
-   "emoji": "💮"
+   "art": {
+    "form": "flower",
+    "color": "#FBFBF3",
+    "accent": "#9CCC65",
+    "petals": 4,
+    "petal": "pointed"
+   }
   },
   {
    "id": "tiger_lily",
@@ -567,7 +857,15 @@
    ],
    "acceptGenus": false,
    "hint": "주황 꽃잎에 검은 점, 잎겨드랑이에 주아",
-   "emoji": "🐯"
+   "art": {
+    "form": "flower",
+    "color": "#F57C1F",
+    "accent": "#3B1F0E",
+    "petals": 6,
+    "petal": "pointed",
+    "variant": "stamen",
+    "spots": true
+   }
   },
   {
    "id": "daylily",
@@ -576,7 +874,14 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "하루만 피는 주황색 여름 꽃",
-   "emoji": "🌞"
+   "art": {
+    "form": "flower",
+    "color": "#F28C28",
+    "accent": "#F6D365",
+    "petals": 6,
+    "petal": "pointed",
+    "variant": "stamen"
+   }
   },
   {
    "id": "gujeolcho",
@@ -587,7 +892,12 @@
    ],
    "acceptGenus": false,
    "hint": "가을 산의 흰·연분홍 들국화",
-   "emoji": "🌼"
+   "art": {
+    "form": "daisy",
+    "color": "#FBEFF4",
+    "accent": "#F2C14E",
+    "petals": 16
+   }
   },
   {
    "id": "yomena",
@@ -602,7 +912,12 @@
    ],
    "acceptGenus": false,
    "hint": "가을 들과 산의 연보라 들국화",
-   "emoji": "💜"
+   "art": {
+    "form": "daisy",
+    "color": "#B9A2E8",
+    "accent": "#F2C14E",
+    "petals": 20
+   }
   },
   {
    "id": "sanguk",
@@ -614,7 +929,14 @@
    ],
    "acceptGenus": false,
    "hint": "가을 산의 작은 노란 들국화, 진한 향기",
-   "emoji": "🌼"
+   "art": {
+    "form": "cluster",
+    "color": "#F5C518",
+    "accent": "#D99A06",
+    "petals": 10,
+    "petal": "oblong",
+    "variant": "spray"
+   }
   },
   {
    "id": "aconite",
@@ -623,7 +945,11 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "투구를 닮은 보라색 가을 꽃 (독초)",
-   "emoji": "⚠️"
+   "art": {
+    "form": "spike",
+    "color": "#5B4BC4",
+    "variant": "hood"
+   }
   },
   {
    "id": "mongolian_oak",
@@ -632,7 +958,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "우리 산에 가장 흔한 참나무",
-   "emoji": "🌰"
+   "art": {
+    "form": "tree",
+    "color": "#4E8B3A",
+    "accent": "#9C6B30"
+   }
   },
   {
    "id": "red_pine",
@@ -641,7 +971,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "붉은 줄기의 늘 푸른 우리 나무",
-   "emoji": "🌲"
+   "art": {
+    "form": "conifer",
+    "color": "#2F6B3A",
+    "accent": "#B5532E",
+    "variant": "pine"
+   }
   },
   {
    "id": "oyama_magnolia",
@@ -652,7 +987,14 @@
    ],
    "acceptGenus": false,
    "hint": "초여름 깊은 산의 향기로운 흰 꽃",
-   "emoji": "💮"
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#8E1F4C",
+    "petals": 6,
+    "petal": "round",
+    "variant": "stamen"
+   }
   },
   {
    "id": "astilbe",
@@ -663,7 +1005,14 @@
    ],
    "acceptGenus": false,
    "hint": "여름 산 습지의 분홍 꽃이삭",
-   "emoji": "🌸"
+   "art": {
+    "form": "cluster",
+    "color": "#F28DB7",
+    "accent": "#FBD3E4",
+    "petals": 5,
+    "petal": "narrow",
+    "variant": "cone"
+   }
   },
   {
    "id": "loosestrife",
@@ -672,7 +1021,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "한쪽으로 휜 흰 꽃이삭",
-   "emoji": "🌾"
+   "art": {
+    "form": "spike",
+    "color": "#FFFFFF",
+    "variant": "curved"
+   }
   },
   {
    "id": "impatiens",
@@ -683,7 +1036,11 @@
    ],
    "acceptGenus": false,
    "hint": "가을 계곡가의 자주색 꽃",
-   "emoji": "🌸"
+   "art": {
+    "form": "funnel",
+    "color": "#C2479B",
+    "accent": "#F4D35E"
+   }
   },
   {
    "id": "balloon_flower",
@@ -692,7 +1049,13 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "여름의 보라·흰색 별 모양 꽃",
-   "emoji": "⭐"
+   "art": {
+    "form": "flower",
+    "color": "#7E6BD6",
+    "accent": "#EDE7FF",
+    "petals": 5,
+    "petal": "pointed"
+   }
   },
   {
    "id": "pasque",
@@ -703,7 +1066,12 @@
    ],
    "acceptGenus": false,
    "hint": "양지바른 무덤가의 고개 숙인 자주색 꽃",
-   "emoji": "👵"
+   "art": {
+    "form": "bell",
+    "color": "#7B1E4B",
+    "accent": "#F2C14E",
+    "variant": "single"
+   }
   },
   {
    "id": "silvergrass",
@@ -712,7 +1080,10 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "가을 산 능선을 은빛으로 물들여요",
-   "emoji": "🌾"
+   "art": {
+    "form": "plume",
+    "color": "#D9CBB0"
+   }
   },
   {
    "id": "iris_sanguinea",
@@ -723,7 +1094,11 @@
    ],
    "acceptGenus": false,
    "hint": "초여름 풀밭의 보라색 꽃",
-   "emoji": "💜"
+   "art": {
+    "form": "iris",
+    "color": "#5E4FC9",
+    "accent": "#F6E7A8"
+   }
   },
   {
    "id": "rugosa",
@@ -732,7 +1107,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "바닷가 모래땅의 진분홍 들장미",
-   "emoji": "🌹"
+   "art": {
+    "form": "flower",
+    "color": "#D81B60",
+    "accent": "#F2C14E",
+    "petals": 5,
+    "petal": "wavy",
+    "variant": "stamen"
+   }
   },
   {
    "id": "beach_bindweed",
@@ -741,7 +1123,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "모래 위를 기는 분홍 나팔꽃",
-   "emoji": "🌸"
+   "art": {
+    "form": "funnel",
+    "color": "#F4A6C8",
+    "accent": "#FFFFFF"
+   }
   },
   {
    "id": "beach_vitex",
@@ -752,7 +1138,13 @@
    ],
    "acceptGenus": false,
    "hint": "모래땅을 덮는 향기로운 보라 꽃",
-   "emoji": "💜"
+   "art": {
+    "form": "cluster",
+    "color": "#8A7FD8",
+    "accent": "#E8E4FF",
+    "petals": 5,
+    "variant": "cone"
+   }
   },
   {
    "id": "glehnia",
@@ -761,7 +1153,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "모래사장의 두툼한 잎과 흰 꽃",
-   "emoji": "🌿"
+   "art": {
+    "form": "rosette",
+    "color": "#4E8E3E",
+    "accent": "#FFFFFF",
+    "variant": "umbel"
+   }
   },
   {
    "id": "limonium",
@@ -770,7 +1167,13 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "갯벌 가장자리의 작은 노란 꽃",
-   "emoji": "🌼"
+   "art": {
+    "form": "cluster",
+    "color": "#F2D24A",
+    "accent": "#E0B000",
+    "petals": 5,
+    "variant": "spray"
+   }
   },
   {
    "id": "ixeris_repens",
@@ -779,7 +1182,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "모래 위로 뻗는 노란 꽃",
-   "emoji": "🌼"
+   "art": {
+    "form": "daisy",
+    "color": "#F5D02F",
+    "accent": "#E0A800",
+    "petals": 14
+   }
   },
   {
    "id": "seaside_aster",
@@ -788,7 +1196,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "바닷가 바위틈의 연보라 가을 꽃",
-   "emoji": "💜"
+   "art": {
+    "form": "daisy",
+    "color": "#A992E6",
+    "accent": "#F2C14E",
+    "petals": 22
+   }
   },
   {
    "id": "lysimachia_maur",
@@ -797,7 +1210,13 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "해안 바위의 두꺼운 잎과 흰 꽃",
-   "emoji": "🌿"
+   "art": {
+    "form": "cluster",
+    "color": "#FFFFFF",
+    "accent": "#F4E3A0",
+    "petals": 5,
+    "variant": "cone"
+   }
   },
   {
    "id": "kobomugi",
@@ -806,7 +1225,10 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "모래언덕을 붙잡는 사초",
-   "emoji": "🌾"
+   "art": {
+    "form": "plume",
+    "color": "#A3895B"
+   }
   },
   {
    "id": "beach_pea",
@@ -815,7 +1237,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "해변 모래의 자주색 콩꽃",
-   "emoji": "🌸"
+   "art": {
+    "form": "cluster",
+    "color": "#A55AC4",
+    "accent": "#F0E0FF",
+    "petals": 3,
+    "petal": "wavy",
+    "variant": "spray"
+   }
   },
   {
    "id": "black_pine",
@@ -824,7 +1253,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "바닷바람에 강한 검은 줄기 소나무",
-   "emoji": "🌲"
+   "art": {
+    "form": "conifer",
+    "color": "#234D2F",
+    "accent": "#4A3B32",
+    "variant": "pine"
+   }
   },
   {
    "id": "camellia",
@@ -833,7 +1267,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "겨울부터 봄까지 피는 붉은 꽃",
-   "emoji": "🌺"
+   "art": {
+    "form": "flower",
+    "color": "#D32F2F",
+    "accent": "#F7D046",
+    "petals": 5,
+    "variant": "stamen",
+    "layers": 2
+   }
   },
   {
    "id": "pittosporum",
@@ -842,7 +1283,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "남해안의 윤기 나는 잎과 향기로운 흰 꽃",
-   "emoji": "🌳"
+   "art": {
+    "form": "tree",
+    "color": "#3F7D3A",
+    "accent": "#FFFFFF",
+    "variant": "shrub"
+   }
   },
   {
    "id": "suaeda",
@@ -853,7 +1299,11 @@
    ],
    "acceptGenus": false,
    "hint": "갯벌을 붉게 물들이는 염생식물",
-   "emoji": "🍂"
+   "art": {
+    "form": "sprout",
+    "color": "#C2410C",
+    "variant": "jointed"
+   }
   },
   {
    "id": "salicornia",
@@ -862,7 +1312,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "갯벌의 마디진 줄기 (함초)",
-   "emoji": "🌱"
+   "art": {
+    "form": "sprout",
+    "color": "#5E9E3A",
+    "variant": "jointed"
+   }
   },
   {
    "id": "farfugium",
@@ -871,7 +1325,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "늦가을 남쪽 바닷가의 노란 꽃",
-   "emoji": "🌼"
+   "art": {
+    "form": "daisy",
+    "color": "#F5C400",
+    "accent": "#D69E00",
+    "petals": 12
+   }
   },
   {
    "id": "hispid_aster",
@@ -882,7 +1341,12 @@
    ],
    "acceptGenus": false,
    "hint": "바닷가 풀밭의 연보라 들국화",
-   "emoji": "💜"
+   "art": {
+    "form": "daisy",
+    "color": "#C1B2EE",
+    "accent": "#F2C14E",
+    "petals": 18
+   }
   },
   {
    "id": "lotus",
@@ -891,7 +1355,14 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "연못의 커다란 분홍 꽃과 둥근 잎",
-   "emoji": "💮"
+   "art": {
+    "form": "flower",
+    "color": "#F48FB1",
+    "accent": "#F7D046",
+    "petals": 8,
+    "petal": "pointed",
+    "layers": 2
+   }
   },
   {
    "id": "water_lily",
@@ -900,7 +1371,14 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "물 위에 뜬 잎과 꽃. 낮에 피고 밤에 오므려요",
-   "emoji": "🌸"
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#F5C518",
+    "petals": 12,
+    "petal": "pointed",
+    "layers": 2
+   }
   },
   {
    "id": "cattail",
@@ -909,7 +1387,11 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "핫도그 모양의 갈색 이삭",
-   "emoji": "🌭"
+   "art": {
+    "form": "spike",
+    "color": "#7B4A26",
+    "variant": "sausage"
+   }
   },
   {
    "id": "yellow_iris",
@@ -918,7 +1400,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "물가의 노란 붓꽃",
-   "emoji": "💛"
+   "art": {
+    "form": "iris",
+    "color": "#F5C400",
+    "accent": "#8D5A0B"
+   }
   },
   {
    "id": "reed",
@@ -929,7 +1415,10 @@
    ],
    "acceptGenus": false,
    "hint": "물가와 갯벌의 키 큰 풀",
-   "emoji": "🌾"
+   "art": {
+    "form": "plume",
+    "color": "#9C7B5B"
+   }
   },
   {
    "id": "amur_silvergrass",
@@ -938,7 +1427,10 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "강가를 하얗게 덮는 가을 억새",
-   "emoji": "🌾"
+   "art": {
+    "form": "plume",
+    "color": "#EDE6D6"
+   }
   },
   {
    "id": "tearthumb",
@@ -949,7 +1441,13 @@
    ],
    "acceptGenus": false,
    "hint": "개울가의 분홍·흰 작은 꽃 무리",
-   "emoji": "🌸"
+   "art": {
+    "form": "cluster",
+    "color": "#F48FB1",
+    "accent": "#FFFFFF",
+    "petals": 5,
+    "variant": "ball"
+   }
   },
   {
    "id": "pussy_willow",
@@ -958,7 +1456,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "이른 봄 개울가의 보송한 버들강아지",
-   "emoji": "🐶"
+   "art": {
+    "form": "spike",
+    "color": "#DCDCDC",
+    "accent": "#F2A7B8",
+    "variant": "catkin"
+   }
   },
   {
    "id": "water_hyacinth",
@@ -969,7 +1472,13 @@
    ],
    "acceptGenus": false,
    "hint": "부풀어 오른 잎자루로 물에 떠요",
-   "emoji": "💧"
+   "art": {
+    "form": "cluster",
+    "color": "#A78BDA",
+    "accent": "#F7D046",
+    "petals": 6,
+    "variant": "cone"
+   }
   },
   {
    "id": "sweet_flag",
@@ -978,7 +1487,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "단오에 머리를 감던 향기로운 잎",
-   "emoji": "🌿"
+   "art": {
+    "form": "spike",
+    "color": "#C9B458",
+    "variant": "spadix"
+   }
   },
   {
    "id": "holly",
@@ -989,7 +1502,12 @@
    ],
    "acceptGenus": false,
    "hint": "가시 돋친 잎과 빨간 겨울 열매",
-   "emoji": "🎄"
+   "art": {
+    "form": "leaf",
+    "color": "#2E7D32",
+    "accent": "#D32F2F",
+    "variant": "holly"
+   }
   },
   {
    "id": "nandina",
@@ -998,7 +1516,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "겨울에 붉게 물드는 잎과 빨간 열매",
-   "emoji": "🍒"
+   "art": {
+    "form": "berries",
+    "color": "#C62828",
+    "accent": "#B5452F"
+   }
   },
   {
    "id": "fatsia",
@@ -1007,7 +1529,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "손바닥 잎, 초겨울 흰 꽃",
-   "emoji": "🖐️"
+   "art": {
+    "form": "leaf",
+    "color": "#2E7D32",
+    "variant": "hand"
+   }
   },
   {
    "id": "narcissus",
@@ -1019,7 +1545,14 @@
    ],
    "acceptGenus": true,
    "hint": "제주에서 한겨울에 피는 향기로운 꽃",
-   "emoji": "🌼"
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#F5B700",
+    "petals": 6,
+    "petal": "round",
+    "variant": "corona"
+   }
   },
   {
    "id": "yew",
@@ -1028,7 +1561,12 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "늘 푸른 잎과 빨간 열매",
-   "emoji": "🌲"
+   "art": {
+    "form": "conifer",
+    "color": "#2E5E35",
+    "accent": "#C62828",
+    "variant": "berry"
+   }
   },
   {
    "id": "juniper",
@@ -1037,7 +1575,11 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "향기 나는 늘 푸른 나무",
-   "emoji": "🌲"
+   "art": {
+    "form": "conifer",
+    "color": "#3E6B4A",
+    "variant": "narrow"
+   }
   },
   {
    "id": "mistletoe",
@@ -1048,7 +1590,12 @@
    ],
    "acceptGenus": false,
    "hint": "겨울 참나무 가지 위의 둥근 덤불",
-   "emoji": "🌿"
+   "art": {
+    "form": "berries",
+    "color": "#F2A33A",
+    "accent": "#8DAA3A",
+    "variant": "ball"
+   }
   }
  ],
  "catalogs": [

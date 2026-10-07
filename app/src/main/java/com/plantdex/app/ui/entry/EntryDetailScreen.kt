@@ -59,8 +59,10 @@ import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
+import com.plantdex.app.ui.components.PlantBadge
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.localizedName
+import com.plantdex.app.ui.components.rememberPlantArt
 import com.plantdex.app.util.Formatters
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,16 +181,20 @@ private fun EntryDetailContent(
             modifier = Modifier.fillMaxWidth().aspectRatio(1f),
         )
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Column {
-                Text(name, style = MaterialTheme.typography.headlineSmall)
-                Text(entry.scientificName, style = MaterialTheme.typography.titleMedium, fontStyle = FontStyle.Italic)
-                val taxonomy = listOfNotNull(entry.family?.let { "과: $it" }, entry.genus?.let { "속: $it" })
-                if (taxonomy.isNotEmpty()) {
-                    Text(
-                        taxonomy.joinToString(" · "),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PlantBadge(rememberPlantArt(entry.scientificName, entry.family), size = 56.dp)
+                Spacer(Modifier.width(14.dp))
+                Column {
+                    Text(name, style = MaterialTheme.typography.headlineSmall)
+                    Text(entry.scientificName, style = MaterialTheme.typography.titleMedium, fontStyle = FontStyle.Italic)
+                    val taxonomy = listOfNotNull(entry.family?.let { "과: $it" }, entry.genus?.let { "속: $it" })
+                    if (taxonomy.isNotEmpty()) {
+                        Text(
+                            taxonomy.joinToString(" · "),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
             HorizontalDivider()

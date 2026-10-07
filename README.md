@@ -11,7 +11,7 @@
 | 3 | 도감 기록·수집 | 후보 선택 + 메모 + 공개 여부 → Firebase Storage(사진) / Firestore(기록) 저장, 수집한 종 수 집계 |
 | 4 | 다른 사용자와 열람·공유 | 공개 기록 피드, 다른 사용자의 도감 보기, 기록 상세에서 공유 시트로 내보내기 |
 | 6 | 주제별 도감 | 도시·바닷가·산·물가·봄·여름·가을·겨울 8개 도감(102종). 도감별 `발견 / 전체` 수와 전체 수집률, 미발견 종 힌트, 촬영 결과의 NEW 표시 |
-| 5 | 식물 지도 | 내 도감 / 모두의 공개 기록을 Google 지도에 종 아이콘 + 이름 마커로 표시. 화면에서 80dp 안의 마커는 종류와 상관없이 "능소화 등 4종" 처럼 묶고, 묶음을 누르면 종별 목록과 사진을 보여줌 |
+| 5 | 식물 지도 | 내 도감 / 모두의 공개 기록을 Google 지도에 식물 그림 + 이름 마커로 표시. 화면에서 80dp 안의 마커는 종류와 상관없이 "능소화 등 4종" 처럼 묶고, 묶음을 누르면 종별 목록과 사진을 보여줌 |
 
 그 밖에: 이메일 회원가입/로그인, 기록 삭제, 공개/비공개 전환, 지도 앱으로 위치 열기.
 
@@ -126,11 +126,26 @@ Android Studio 로 프로젝트를 열고 실행하거나:
 
 도감 목록은 `app/src/main/assets/catalogs.json` 에 들어 있습니다. 같은 식물이 여러 도감에 들어갈 수 있습니다 (예: 동백나무 → 바닷가·봄·겨울).
 
-- **species**: `id`, `name`(표시 이름), `emoji`(지도·도감 아이콘), `scientificName`, `synonyms`(AI 가 다른 학명으로 답해도 인정할 이름), `acceptGenus`(같은 속이면 모두 인정 — 원예종용), `hint`(미발견 힌트)
+- **species**: `id`, `name`(표시 이름), `art`(외형 그림 사양 — 아래 참고), `scientificName`, `synonyms`(AI 가 다른 학명으로 답해도 인정할 이름), `acceptGenus`(같은 속이면 모두 인정 — 원예종용), `hint`(미발견 힌트)
 - **catalogs**: `id`, `emoji`, `title`, `description`, `speciesIds`
 
 내 기록의 학명을 "속 + 종소명"으로 정규화해 매칭합니다 (저자명·변종·교잡 기호 무시). 정확히 일치하는 종이 먼저, 없으면 `acceptGenus` 종으로 인정합니다.
 도감을 고친 뒤에는 `./gradlew testDebugUnitTest` 로 검증하세요 — 없는 id 참조, 두 종이 같은 학명을 쓰는 경우 등을 잡아냅니다.
+
+## 식물 그림
+
+지도 마커, 도감, 식별 결과, 기록 상세에 쓰는 식물 그림은 이미지 파일이 아니라 **앱이 코드로 그립니다** (`data/art/`).
+도감 종은 `catalogs.json` 의 `art` 로 외형을 정하고, 도감 밖 식물은 과(family)에 맞는 형태와 학명으로 정한 색으로 자동 생성합니다.
+
+| 필드 | 값 |
+|------|----|
+| `form` | `flower` 꽃잎형, `daisy` 국화형, `cluster` 작은 꽃 무리, `funnel` 나팔꽃형, `cup` 튤립·목련형, `bell` 종 모양, `iris` 붓꽃형, `spike` 꽃대·이삭, `plume` 억새·갈대, `conifer` 침엽수, `tree` 활엽수, `leaf` 잎, `rosette` 땅에 퍼진 잎, `berries` 열매, `sprout` 새싹·마디 줄기 |
+| `color` / `accent` | 주색(꽃잎·잎·열매) / 보조색(꽃 중심·무늬) `#RRGGBB` |
+| `petals`, `petal` | 꽃잎 수, 꽃잎 모양 `round` `pointed` `notched` `wavy` `oblong` `narrow` |
+| `variant` | 형태별 세부 모양 (예: `stamen` 수술, `face` 팬지 무늬, `corona` 수선화 부화관, cluster 의 `ball`/`cone`/`spray`, conifer 의 `pine`/`narrow`, leaf 의 `clover`/`fan`/`maple`/`hand`/`holly` 등) |
+| `spots`, `layers` | 꽃잎 반점, 꽃잎 겹 수 |
+
+`./gradlew testDebugUnitTest` 를 실행하면 모든 그림을 모은 `app/build/plant-art-gallery.html` 이 만들어져 브라우저로 확인할 수 있습니다.
 
 ## 알아둘 점 / 다음 단계
 
