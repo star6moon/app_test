@@ -151,6 +151,12 @@ data class CollectionProgress(
     val outsideCatalogSpecies: Int,
 )
 
+/** 같은 종을 하나로 셀 때 쓰는 키. 이명으로 기록돼도 같은 종이 되도록 도감 id 를 우선 사용합니다. */
+object SpeciesKey {
+    fun of(scientificName: String, catalog: PlantCatalog?): String =
+        catalog?.match(scientificName)?.id ?: ScientificName.binomialKey(scientificName) ?: scientificName.lowercase()
+}
+
 object ScientificName {
     private val hybridMarks = setOf("×", "x", "X")
 

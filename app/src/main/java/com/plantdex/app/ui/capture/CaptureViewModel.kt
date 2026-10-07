@@ -5,14 +5,18 @@ import androidx.lifecycle.viewModelScope
 import com.plantdex.app.data.catalog.Catalog
 import com.plantdex.app.data.catalog.CatalogRepository
 import com.plantdex.app.data.catalog.PlantCatalog
+import com.plantdex.app.data.catalog.SpeciesKey
 import com.plantdex.app.data.location.LocationProvider
 import com.plantdex.app.data.model.CaptureLocation
 import com.plantdex.app.data.model.CapturedPhoto
+import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.model.PlantCandidate
 import com.plantdex.app.data.plantnet.PlantIdentificationException
 import com.plantdex.app.data.plantnet.PlantIdentifier
 import com.plantdex.app.data.repository.AuthRepository
 import com.plantdex.app.data.repository.CollectionRepository
+import com.plantdex.app.data.rules.NearbyRecord
+import com.plantdex.app.data.rules.NearbyRule
 import com.plantdex.app.util.ImageUtils
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
@@ -47,8 +51,17 @@ sealed interface CaptureUiState {
         val isPublic: Boolean = true,
         val isSaving: Boolean = false,
         val saveError: String? = null,
+        /** [candidates] 와 같은 순서: 같은 종을 이미 등록한 반경 안의 내 기록 (없으면 null) */
+        val nearby: List<NearbyRecord?> = emptyList(),
+        /** 위치를 다시 가져오는 중 */
+        val isLocating: Boolean = false,
     ) : CaptureUiState {
         val selected: PlantCandidate? get() = candidates.getOrNull(selectedIndex)
+        val selectedNearby: NearbyRecord? get() = nearby.getOrNull(selectedIndex)
+        val hasLocation: Boolean get() = photo.location != null
+
+        /** 위치가 있고, 고른 종을 반경 안에 이미 등록하지 않았을 때만 등록할 수 있습니다. */
+        val canSave: Boolean get() = !isSaving && selected != null && hasLocation && selectedNearby == null
     }
 
     /** 촬영 또는 식별 실패. [photo] 가 있으면 같은 사진으로 다시 식별할 수 있습니다. */
@@ -79,6 +92,10 @@ class CaptureViewModel(
 
     /** 식별 시점에 내가 이미 발견한 도감 종 id. 불러오지 못했으면 null (모름) */
     private var collectedSpeciesIds: Set<String>? = null
+
+    /** 식별 시점에 불러온 내 기록. 불러오지 못했으면 null (모름) */
+    private var myEntries: List<CollectionEntry>? = null
+    private var catalog: PlantCatalog? = null
 
     /** 셔터를 누른 순간: 촬영 시각을 기록하고 위치 조회를 바로 시작합니다. */
     fun onShutter() {
@@ -137,7 +154,10 @@ class CaptureViewModel(
     /** 도감 정보는 부가 기능이라 실패해도 식별 결과는 그대로 보여줍니다. */
     private suspend fun catalogBadges(candidates: List<PlantCandidate>): List<CandidateBadge> = try {
         val catalog = withContext(Dispatchers.Default) { catalogRepository.catalog }
-        val collected = loadCollectedSpeciesIds(catalog)
+        this.catalog = catalog
+        val entries = loadMyEntries()
+        myEntries = entries
+        val collected = entries?.mapNotNull { catalog.match(it.scientificName)?.id }?.toSet()
         collectedSpeciesIds = collected
         candidates.map { candidate ->
             val species = catalog.match(candidate.scientificName)
@@ -154,16 +174,30 @@ class CaptureViewModel(
         emptyList()
     }
 
-    private suspend fun loadCollectedSpeciesIds(catalog: PlantCatalog): Set<String>? {
+    private suspend fun loadMyEntries(): List<CollectionEntry>? {
         val uid = authRepository.currentUser.value?.uid ?: return null
-        val entries = try {
+        return try {
             withTimeoutOrNull(3_000) { collectionRepository.observeMyEntries(uid).first() }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             null
-        } ?: return null
-        return entries.mapNotNull { catalog.match(it.scientificName)?.id }.toSet()
+        }
+    }
+
+    /** 후보마다 같은 종을 반경 안에 이미 등록했는지 확인합니다. 위치나 내 기록을 모르면 null. */
+    private fun nearbyFor(candidates: List<PlantCandidate>, location: CaptureLocation?): List<NearbyRecord?> {
+        val entries = myEntries
+        if (location == null || entries == null) return candidates.map { null }
+        val catalog = this.catalog ?: runCatching { catalogRepository.catalog }.getOrNull()
+        return candidates.map { candidate ->
+            NearbyRule.findNearby(
+                speciesKey = SpeciesKey.of(candidate.scientificName, catalog),
+                location = location,
+                myEntries = entries,
+                speciesKeyOf = { SpeciesKey.of(it.scientificName, catalog) },
+            )
+        }
     }
 
     /** 처음 발견한 종이면 "🎉 새로 발견! 서양민들레 — 🏙️ 도시의 꽃 13/40 · 🌸 봄꽃 9/34" */
@@ -189,7 +223,7 @@ class CaptureViewModel(
                     "어떤 식물인지 찾지 못했어요.\n잎이나 꽃이 화면 가운데에 크게 나오도록 다시 찍어 주세요.",
                 )
             } else {
-                CaptureUiState.Results(photo, candidates, badges)
+                CaptureUiState.Results(photo, candidates, badges, nearby = nearbyFor(candidates, photo.location))
             }
     }
 
@@ -197,15 +231,58 @@ class CaptureViewModel(
     fun onMemoChange(memo: String) = updateResults { it.copy(memo = memo) }
     fun onPublicChange(isPublic: Boolean) = updateResults { it.copy(isPublic = isPublic) }
 
+    /** 촬영 때 위치를 얻지 못했으면 지금 위치로 다시 시도합니다. */
+    fun retryLocation() {
+        val state = _uiState.value as? CaptureUiState.Results ?: return
+        if (state.isLocating) return
+        updateResults { it.copy(isLocating = true, saveError = null) }
+        viewModelScope.launch {
+            val location = locationProvider.currentLocation()
+            updateResults {
+                if (location == null) {
+                    it.copy(
+                        isLocating = false,
+                        saveError = "위치를 가져오지 못했어요. 위치 권한과 GPS 를 확인해 주세요.",
+                    )
+                } else {
+                    it.copy(
+                        photo = it.photo.copy(location = location),
+                        nearby = nearbyFor(it.candidates, location),
+                        isLocating = false,
+                    )
+                }
+            }
+        }
+    }
+
     fun save() {
         val state = _uiState.value as? CaptureUiState.Results ?: return
         val plant = state.selected ?: return
         val owner = authRepository.currentUser.value ?: return
         if (state.isSaving) return
+        val location = state.photo.location
+        if (location == null) {
+            updateResults { it.copy(saveError = "위치 정보가 있어야 등록할 수 있어요.") }
+            return
+        }
 
         updateResults { it.copy(isSaving = true, saveError = null) }
         viewModelScope.launch {
             try {
+                // 식별 후에 다른 기기에서 등록했을 수도 있으니 저장 직전에 최신 기록으로 다시 확인합니다.
+                val latest = loadMyEntries()
+                if (latest == null) {
+                    updateResults {
+                        it.copy(isSaving = false, saveError = "기존 기록을 확인하지 못했어요. 네트워크 연결을 확인하고 다시 시도해 주세요.")
+                    }
+                    return@launch
+                }
+                myEntries = latest
+                val nearby = nearbyFor(state.candidates, location)
+                if (nearby.getOrNull(state.selectedIndex) != null) {
+                    updateResults { it.copy(isSaving = false, nearby = nearby) }
+                    return@launch
+                }
                 val id = collectionRepository.addEntry(owner, state.photo, plant, state.memo, state.isPublic)
                 state.photo.file.delete()
                 _uiState.value = CaptureUiState.Saved(id, discoveryMessage(plant))

@@ -58,7 +58,10 @@ import com.plantdex.app.ui.components.appContainer
 import java.io.File
 
 @Composable
-fun CaptureScreen(onSaved: (entryId: String, message: String?) -> Unit) {
+fun CaptureScreen(
+    onSaved: (entryId: String, message: String?) -> Unit,
+    onOpenEntry: (entryId: String) -> Unit,
+) {
     val context = LocalContext.current
     val container = appContainer()
     val viewModel: CaptureViewModel = viewModel(
@@ -99,6 +102,8 @@ fun CaptureScreen(onSaved: (entryId: String, message: String?) -> Unit) {
             onPublicChange = viewModel::onPublicChange,
             onSave = viewModel::save,
             onRetake = viewModel::reset,
+            onRetryLocation = viewModel::retryLocation,
+            onOpenEntry = onOpenEntry,
         )
         is CaptureUiState.Failed -> FailedContent(
             state = s,

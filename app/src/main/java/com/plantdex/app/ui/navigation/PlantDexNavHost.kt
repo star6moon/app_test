@@ -124,6 +124,7 @@ fun PlantDexNavHost(user: UserProfile) {
                             coroutineScope.launch { snackbarHostState.showSnackbar(message, withDismissAction = true) }
                         }
                     },
+                    onOpenEntry = ::openEntry,
                 )
             }
             composable<MyCollectionRoute> {

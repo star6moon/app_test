@@ -1,7 +1,7 @@
 package com.plantdex.app.data.art
 
 import com.plantdex.app.data.catalog.PlantCatalog
-import com.plantdex.app.data.catalog.ScientificName
+import com.plantdex.app.data.catalog.SpeciesKey
 import kotlinx.serialization.Serializable
 
 /**
@@ -70,15 +70,9 @@ object PlantArts {
     fun forPlant(scientificName: String, family: String?, catalog: PlantCatalog?): PlantArt {
         val species = catalog?.match(scientificName)
         species?.art?.let { return it }
-        val key = speciesKey(scientificName, catalog)
+        val key = SpeciesKey.of(scientificName, catalog)
         val color = flowerColors[Math.floorMod(key.hashCode(), flowerColors.size)]
         return family?.trim()?.lowercase()?.let { byFamily[it] }?.invoke(color)
             ?: PlantArt("flower", color, "#F2C14E", petals = if (Math.floorMod(key.hashCode() / 7, 2) == 0) 5 else 6)
     }
-
-    /**
-     * 같은 종을 하나로 셀 때 쓰는 키. 이명으로 기록돼도 같은 종이 되도록 도감 id 를 우선 사용합니다.
-     */
-    fun speciesKey(scientificName: String, catalog: PlantCatalog?): String =
-        catalog?.match(scientificName)?.id ?: ScientificName.binomialKey(scientificName) ?: scientificName.lowercase()
 }

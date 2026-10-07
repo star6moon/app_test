@@ -7,6 +7,7 @@ import com.google.maps.android.clustering.ClusterItem
 import com.plantdex.app.data.art.PlantArt
 import com.plantdex.app.data.art.PlantArts
 import com.plantdex.app.data.catalog.CatalogRepository
+import com.plantdex.app.data.catalog.SpeciesKey
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.names.PlantNameLocalizer
 import com.plantdex.app.data.repository.CollectionRepository
@@ -129,7 +130,7 @@ class PlantMapViewModel(
             name = name,
             latitude = location.latitude,
             longitude = location.longitude,
-            speciesKey = PlantArts.speciesKey(scientificName, catalog),
+            speciesKey = SpeciesKey.of(scientificName, catalog),
             art = PlantArts.forPlant(scientificName, family, catalog),
         )
     }
