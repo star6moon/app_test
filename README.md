@@ -6,7 +6,7 @@
 
 | # | 기능 | 구현 |
 |---|------|------|
-| 1 | 식물 촬영 + AI 식별 | CameraX 로 촬영 → [Pl@ntNet API](https://my.plantnet.org/) 로 후보 최대 5개와 신뢰도 표시 |
+| 1 | 식물 촬영 + AI 식별 | CameraX 로 촬영 → [Pl@ntNet API](https://my.plantnet.org/) 로 후보 최대 5개와 신뢰도 표시. 이름은 기기 언어로 표시 |
 | 2 | 촬영 날짜·시간·위치 수집 | 셔터를 누른 시각, Fused Location 좌표·정확도, 역지오코딩 지명 |
 | 3 | 도감 기록·수집 | 후보 선택 + 메모 + 공개 여부 → Firebase Storage(사진) / Firestore(기록) 저장, 수집한 종 수 집계 |
 | 4 | 다른 사용자와 열람·공유 | 공개 기록 피드, 다른 사용자의 도감 보기, 기록 상세에서 공유 시트로 내보내기 |
@@ -30,6 +30,7 @@ app/src/main/java/com/plantdex/app/
 ├── data/
 │   ├── model/        # PlantCandidate, CollectionEntry, CaptureLocation, ...
 │   ├── plantnet/     # PlantIdentifier 인터페이스 + Pl@ntNet 구현 (다른 AI 로 교체 가능)
+│   ├── names/        # 학명 → 사용자 언어 이름 (GBIF, Wikidata)
 │   ├── location/     # 현재 위치 + 지명 조회
 │   └── repository/   # AuthRepository, CollectionRepository (Firebase)
 ├── ui/
@@ -91,6 +92,8 @@ Android Studio 로 프로젝트를 열고 실행하거나:
 |------|------|------|
 | `ownerId`, `ownerName` | string | 기록한 사용자 |
 | `scientificName`, `commonName`, `family`, `genus` | string | AI 식별 결과 중 사용자가 고른 식물 |
+| `commonNameLanguage` | string? | `commonName` 의 언어 (예: `ko`) |
+| `gbifId` | string? | GBIF 분류군 ID (다른 언어 이름을 찾을 때 사용) |
 | `score` | number | 식별 신뢰도 (0~1) |
 | `photoUrl`, `photoPath` | string | Storage 사진 (`users/{uid}/entries/{entryId}.jpg`) |
 | `capturedAt` | timestamp | 촬영 시각 |
@@ -106,5 +109,10 @@ Android Studio 로 프로젝트를 열고 실행하거나:
 ## 알아둘 점 / 다음 단계
 
 - **API 키 보호**: 현재 Pl@ntNet 키가 앱(BuildConfig)에 포함됩니다. 출시 전에는 Cloud Functions 같은 서버를 거쳐 호출하도록 옮기는 것을 권장합니다. `PlantIdentifier` 인터페이스만 새로 구현하면 됩니다.
-- **일반명 언어**: Pl@ntNet 일반명은 기본으로 영어(`lang=en`)로 받습니다. `PlantNetIdentifier` 의 `language` 값으로 바꿀 수 있습니다.
+- **식물 이름 언어**: 기기 언어(예: 한국어)로 표시합니다.
+  1. Pl@ntNet 에 기기 언어로 요청 (지원하지 않는 언어면 영어로 다시 요청)
+  2. 그 언어 이름이 없으면 [GBIF](https://www.gbif.org/) 일반명 → [Wikidata](https://www.wikidata.org/) 라벨 순서로 찾기
+  3. 그래도 없으면 영어 이름, 그것도 없으면 학명
+
+  다른 언어 사용자가 등록한 기록도 보는 사람의 언어로 바꿔 보여줍니다. 결과는 앱 실행 중 메모리에 캐시합니다.
 - 다음 단계 후보: 좋아요·댓글·팔로우, 지도에서 기록 보기, 갤러리 사진 불러오기(EXIF 날짜·위치 사용), 종별 도감 페이지, Google 로그인, 오프라인 업로드 대기열, Hilt 도입.

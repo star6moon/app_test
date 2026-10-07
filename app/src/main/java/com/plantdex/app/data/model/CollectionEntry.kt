@@ -7,6 +7,9 @@ data class CollectionEntry(
     val ownerName: String,
     val scientificName: String,
     val commonName: String?,
+    /** [commonName] 의 언어 (ISO 639-1). 보는 사람의 언어와 다르면 화면에서 다시 번역합니다. */
+    val commonNameLanguage: String?,
+    val gbifId: String?,
     val family: String?,
     val genus: String?,
     /** AI 식별 신뢰도 0.0 ~ 1.0 */

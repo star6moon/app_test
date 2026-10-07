@@ -84,7 +84,7 @@ fun IdentifyResultContent(
             Column {
                 Text("AI 식별 결과", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "가장 비슷한 식물을 골라 주세요 · 식별: Pl@ntNet",
+                    "가장 비슷한 식물을 골라 주세요 · 식별: Pl@ntNet · 이름: GBIF, Wikidata",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

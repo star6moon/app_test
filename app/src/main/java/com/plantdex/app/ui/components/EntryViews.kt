@@ -52,10 +52,11 @@ fun EntryGrid(
 
 @Composable
 private fun EntryGridItem(entry: CollectionEntry, onClick: () -> Unit) {
+    val name = localizedName(entry)
     Card(modifier = Modifier.clickable(onClick = onClick)) {
         AsyncImage(
             model = entry.photoUrl,
-            contentDescription = entry.displayName,
+            contentDescription = name,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
@@ -64,7 +65,7 @@ private fun EntryGridItem(entry: CollectionEntry, onClick: () -> Unit) {
         )
         Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
-                entry.displayName,
+                name,
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

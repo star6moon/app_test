@@ -42,6 +42,7 @@ import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
 import com.plantdex.app.ui.components.appContainer
+import com.plantdex.app.ui.components.localizedName
 import com.plantdex.app.util.Formatters
 
 /** 모든 사용자의 최근 공개 도감 기록. */
@@ -88,6 +89,7 @@ fun FeedScreen(
 
 @Composable
 private fun FeedCard(entry: CollectionEntry, onClick: () -> Unit, onUserClick: () -> Unit) {
+    val name = localizedName(entry)
     Card(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
         Row(
             Modifier
@@ -111,12 +113,12 @@ private fun FeedCard(entry: CollectionEntry, onClick: () -> Unit, onUserClick: (
         }
         AsyncImage(
             model = entry.photoUrl,
-            contentDescription = entry.displayName,
+            contentDescription = name,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxWidth().aspectRatio(4f / 3f),
         )
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(entry.displayName, style = MaterialTheme.typography.titleMedium)
+            Text(name, style = MaterialTheme.typography.titleMedium)
             Text(entry.scientificName, style = MaterialTheme.typography.bodySmall, fontStyle = FontStyle.Italic)
             Text(
                 listOfNotNull(Formatters.dateTime(entry.capturedAt), entry.location?.placeName).joinToString(" · "),

@@ -60,6 +60,7 @@ import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
 import com.plantdex.app.ui.components.appContainer
+import com.plantdex.app.ui.components.localizedName
 import com.plantdex.app.util.Formatters
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,13 +94,14 @@ fun EntryDetailScreen(
     }
 
     val entry = (state as? LoadState.Success)?.data
+    val name = localizedName(entry)
     val isOwner = entry != null && viewModel.isOwner(entry)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(entry?.displayName.orEmpty()) },
+                title = { Text(name) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로")
@@ -107,7 +109,7 @@ fun EntryDetailScreen(
                 },
                 actions = {
                     if (entry != null) {
-                        IconButton(onClick = { shareEntry(context, entry) }) {
+                        IconButton(onClick = { shareEntry(context, entry, name) }) {
                             Icon(Icons.Outlined.Share, contentDescription = "공유")
                         }
                         if (isOwner) {
@@ -131,9 +133,10 @@ fun EntryDetailScreen(
                 } else {
                     EntryDetailContent(
                         entry = data,
+                        name = name,
                         isOwner = isOwner,
                         onPublicChange = { viewModel.setPublic(data, it) },
-                        onOpenMap = { openMap(context, data) },
+                        onOpenMap = { openMap(context, data, name) },
                         onUserClick = { onUserClick(data.ownerId, data.ownerName) },
                         modifier = modifier,
                     )
@@ -161,6 +164,7 @@ fun EntryDetailScreen(
 @Composable
 private fun EntryDetailContent(
     entry: CollectionEntry,
+    name: String,
     isOwner: Boolean,
     onPublicChange: (Boolean) -> Unit,
     onOpenMap: () -> Unit,
@@ -170,13 +174,13 @@ private fun EntryDetailContent(
     Column(modifier.verticalScroll(rememberScrollState())) {
         AsyncImage(
             model = entry.photoUrl,
-            contentDescription = entry.displayName,
+            contentDescription = name,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxWidth().aspectRatio(1f),
         )
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Column {
-                Text(entry.displayName, style = MaterialTheme.typography.headlineSmall)
+                Text(name, style = MaterialTheme.typography.headlineSmall)
                 Text(entry.scientificName, style = MaterialTheme.typography.titleMedium, fontStyle = FontStyle.Italic)
                 val taxonomy = listOfNotNull(entry.family?.let { "과: $it" }, entry.genus?.let { "속: $it" })
                 if (taxonomy.isNotEmpty()) {
@@ -241,9 +245,9 @@ private fun InfoRow(icon: ImageVector, label: String, value: String, onClick: ((
     }
 }
 
-private fun shareEntry(context: Context, entry: CollectionEntry) {
+private fun shareEntry(context: Context, entry: CollectionEntry, name: String) {
     val text = buildString {
-        appendLine("🌿 ${entry.displayName} (${entry.scientificName})")
+        appendLine("🌿 $name (${entry.scientificName})")
         append(Formatters.dateTime(entry.capturedAt))
         entry.location?.placeName?.let { append(" · $it") }
         appendLine()
@@ -258,10 +262,10 @@ private fun shareEntry(context: Context, entry: CollectionEntry) {
     context.startActivity(Intent.createChooser(intent, "도감 기록 공유"))
 }
 
-private fun openMap(context: Context, entry: CollectionEntry) {
+private fun openMap(context: Context, entry: CollectionEntry, name: String) {
     val location = entry.location ?: return
     val coords = "${location.latitude},${location.longitude}"
-    val uri = Uri.parse("geo:$coords?q=$coords(${Uri.encode(entry.displayName)})")
+    val uri = Uri.parse("geo:$coords?q=$coords(${Uri.encode(name)})")
     try {
         context.startActivity(Intent(Intent.ACTION_VIEW, uri))
     } catch (_: ActivityNotFoundException) {

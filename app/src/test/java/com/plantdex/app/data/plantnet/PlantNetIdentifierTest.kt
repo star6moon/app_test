@@ -30,8 +30,8 @@ class PlantNetIdentifierTest {
         image.delete()
     }
 
-    private fun identifier(apiKey: String = "test-key") =
-        PlantNetIdentifier(apiKey, OkHttpClient(), server.url("/"), language = "ko")
+    private fun identifier(apiKey: String = "test-key", language: String = "ko") =
+        PlantNetIdentifier(apiKey, OkHttpClient(), server.url("/"), language = { language })
 
     @Test
     fun `maps successful response to candidates sorted by score`() = runTest {
@@ -48,6 +48,7 @@ class PlantNetIdentifierTest {
         assertEquals("Asteraceae", best.family)
         assertEquals(0.91, best.score, 1e-9)
         assertEquals("5394", best.gbifId)
+        assertEquals("ko", best.namesLanguage)
 
         // 일반명이 없으면 학명을 대표 이름으로 사용
         assertEquals("Hypochaeris radicata", candidates[1].displayName)
@@ -79,6 +80,37 @@ class PlantNetIdentifierTest {
         )
 
         assertTrue(identifier().identify(image).isEmpty())
+    }
+
+    @Test
+    fun `unsupported language retries in english`() = runTest {
+        server.enqueue(
+            MockResponse().setResponseCode(400).setBody(
+                """{"statusCode":400,"error":"Bad Request","message":"\"lang\" must be one of [en, fr, es]"}""",
+            ),
+        )
+        server.enqueue(MockResponse().setResponseCode(200).setBody(SAMPLE_RESPONSE))
+
+        val candidates = identifier(language = "xx").identify(image)
+
+        assertEquals("xx", server.takeRequest().requestUrl!!.queryParameter("lang"))
+        assertEquals("en", server.takeRequest().requestUrl!!.queryParameter("lang"))
+        assertEquals("en", candidates[0].namesLanguage)
+    }
+
+    @Test
+    fun `other bad requests are not retried`() = runTest {
+        server.enqueue(
+            MockResponse().setResponseCode(400)
+                .setBody("""{"statusCode":400,"error":"Bad Request","message":"Unsupported file type"}"""),
+        )
+
+        try {
+            identifier().identify(image)
+            fail("예외가 발생해야 합니다")
+        } catch (e: PlantIdentificationException) {
+            assertEquals(1, server.requestCount)
+        }
     }
 
     @Test
