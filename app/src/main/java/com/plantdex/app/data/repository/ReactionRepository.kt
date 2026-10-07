@@ -36,8 +36,8 @@ class ReactionRepository(
     private fun likes(uid: String) = firestore.collection(AuthRepository.USERS).document(uid).collection(LIKES)
     private fun bookmarks(uid: String) = firestore.collection(AuthRepository.USERS).document(uid).collection(BOOKMARKS)
 
-    /** 내가 좋아요한 기록 id */
-    val myLikedIds: StateFlow<Set<String>> = authRepository.currentUser
+    /** 내가 좋아요한 기록 id. 불러오기 전에는 null */
+    val myLikedIds: StateFlow<Set<String>?> = authRepository.currentUser
         .flatMapLatest { user ->
             if (user == null) {
                 flowOf(emptySet())
@@ -45,7 +45,7 @@ class ReactionRepository(
                 likes(user.uid).observeIds().map { it.toSet() }.catch { emit(emptySet()) }
             }
         }
-        .stateIn(scope, SharingStarted.WhileSubscribed(5_000), emptySet())
+        .stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** 내가 책갈피한 기록 id (최근에 추가한 순). 불러오기 전에는 null */
     val myBookmarkIds: StateFlow<List<String>?> = authRepository.currentUser

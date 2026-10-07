@@ -73,12 +73,13 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isPublic', 'memo'])
         && request.resource.data.isPublic is bool
         && request.resource.data.memo is string && request.resource.data.memo.size() <= 1000;
-      // 좋아요 수: 볼 수 있는 기록이면 누구나, 내 좋아요 문서를 만들거나 지우는 요청에서만 ±1
+      // 좋아요 수: 내 좋아요 문서를 만들거나 지우는 요청에서만 ±1.
+      // 좋아요는 볼 수 있는 기록에만, 취소는 그 뒤 비공개로 바뀐 기록에도 할 수 있습니다.
       allow update: if signedIn()
-        && (resource.data.isPublic == true || resource.data.ownerId == request.auth.uid)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
         && (
           (request.resource.data.likeCount == resource.data.get('likeCount', 0) + 1
+            && (resource.data.isPublic == true || resource.data.ownerId == request.auth.uid)
             && !exists(myLike()) && existsAfter(myLike()))
           || (request.resource.data.likeCount == resource.data.get('likeCount', 0) - 1
             && exists(myLike()) && !existsAfter(myLike()))

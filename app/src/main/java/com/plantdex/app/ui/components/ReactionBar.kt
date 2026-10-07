@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plantdex.app.data.model.CollectionEntry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 private val LikeRed = Color(0xFFE53950)
 
@@ -36,7 +37,10 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
     val reactions = appContainer().reactionRepository
     val likedIds by reactions.myLikedIds.collectAsStateWithLifecycle()
     val bookmarkIds by reactions.myBookmarkIds.collectAsStateWithLifecycle()
-    val liked = entry.id in likedIds
+    // 내 좋아요·책갈피 목록을 불러오기 전에는 상태를 모르므로 버튼을 잠시 막아 둡니다.
+    val likesLoaded = likedIds != null
+    val bookmarksLoaded = bookmarkIds != null
+    val liked = likedIds?.contains(entry.id) == true
     val bookmarked = bookmarkIds?.contains(entry.id) == true
     val scope = rememberCoroutineScope()
     // 서버 응답을 기다리는 동안 같은 버튼을 다시 누르지 못하게 합니다.
@@ -46,7 +50,8 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
     fun run(onDone: () -> Unit, failure: String, action: suspend () -> Unit) {
         scope.launch {
             try {
-                action()
+                // 화면은 바로 바뀌므로 서버 응답을 오래 기다리지 않습니다 (오프라인이면 연결될 때 반영).
+                withTimeoutOrNull(3_000) { action() }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -59,7 +64,7 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
 
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         IconButton(
-            enabled = !likeBusy,
+            enabled = likesLoaded && !likeBusy,
             onClick = {
                 likeBusy = true
                 run({ likeBusy = false }, "좋아요를 반영하지 못했어요") { reactions.setLiked(entry.id, !liked) }
@@ -78,7 +83,7 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.weight(1f))
         IconButton(
-            enabled = !bookmarkBusy,
+            enabled = bookmarksLoaded && !bookmarkBusy,
             onClick = {
                 bookmarkBusy = true
                 run({ bookmarkBusy = false }, "책갈피를 반영하지 못했어요") { reactions.setBookmarked(entry.id, !bookmarked) }
