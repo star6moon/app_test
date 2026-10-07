@@ -89,6 +89,7 @@ class CaptureViewModel(
     private var shutterAt: Long = 0L
     private var pendingLocation: Deferred<CaptureLocation?>? = null
     private var identifyJob: Job? = null
+    private var locationJob: Job? = null
 
     /** 식별 시점에 내가 이미 발견한 도감 종 id. 불러오지 못했으면 null (모름) */
     private var collectedSpeciesIds: Set<String>? = null
@@ -153,6 +154,10 @@ class CaptureViewModel(
 
     /** 도감 정보는 부가 기능이라 실패해도 식별 결과는 그대로 보여줍니다. */
     private suspend fun catalogBadges(candidates: List<PlantCandidate>): List<CandidateBadge> = try {
+        // 이전 사진에서 불러온 값이 남아 잘못 판단하지 않도록 먼저 비웁니다.
+        myEntries = null
+        this.catalog = null
+        collectedSpeciesIds = null
         val catalog = withContext(Dispatchers.Default) { catalogRepository.catalog }
         this.catalog = catalog
         val entries = loadMyEntries()
@@ -236,10 +241,13 @@ class CaptureViewModel(
         val state = _uiState.value as? CaptureUiState.Results ?: return
         if (state.isLocating) return
         updateResults { it.copy(isLocating = true, saveError = null) }
-        viewModelScope.launch {
+        locationJob = viewModelScope.launch {
             val location = locationProvider.currentLocation()
             updateResults {
-                if (location == null) {
+                // 그사이 다시 찍었다면 다른 사진이므로 적용하지 않습니다.
+                if (it.photo.file != state.photo.file) {
+                    it
+                } else if (location == null) {
                     it.copy(
                         isLocating = false,
                         saveError = "위치를 가져오지 못했어요. 위치 권한과 GPS 를 확인해 주세요.",
@@ -269,8 +277,14 @@ class CaptureViewModel(
         updateResults { it.copy(isSaving = true, saveError = null) }
         viewModelScope.launch {
             try {
-                // 식별 후에 다른 기기에서 등록했을 수도 있으니 저장 직전에 최신 기록으로 다시 확인합니다.
-                val latest = loadMyEntries()
+                // 식별 후에 다른 기기에서 등록했을 수도 있으니 저장 직전에 서버의 최신 기록으로 다시 확인합니다.
+                val latest = try {
+                    withTimeoutOrNull(8_000) { collectionRepository.fetchMyEntriesFromServer(owner.uid) }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    null
+                }
                 if (latest == null) {
                     updateResults {
                         it.copy(isSaving = false, saveError = "기존 기록을 확인하지 못했어요. 네트워크 연결을 확인하고 다시 시도해 주세요.")
@@ -278,6 +292,9 @@ class CaptureViewModel(
                     return@launch
                 }
                 myEntries = latest
+                (this@CaptureViewModel.catalog ?: runCatching { catalogRepository.catalog }.getOrNull())?.let { catalog ->
+                    collectedSpeciesIds = latest.mapNotNull { catalog.match(it.scientificName)?.id }.toSet()
+                }
                 val nearby = nearbyFor(state.candidates, location)
                 if (nearby.getOrNull(state.selectedIndex) != null) {
                     updateResults { it.copy(isSaving = false, nearby = nearby) }
@@ -298,6 +315,8 @@ class CaptureViewModel(
     fun reset() {
         identifyJob?.cancel()
         identifyJob = null
+        locationJob?.cancel()
+        locationJob = null
         when (val state = _uiState.value) {
             is CaptureUiState.Results -> state.photo.file.delete()
             is CaptureUiState.Failed -> state.photo?.file?.delete()

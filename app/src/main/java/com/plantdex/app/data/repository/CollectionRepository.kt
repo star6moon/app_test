@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Source
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storageMetadata
 import com.plantdex.app.data.model.CaptureLocation
@@ -76,6 +77,17 @@ class CollectionRepository(
         entries.whereEqualTo("ownerId", uid)
             .orderBy("capturedAt", Query.Direction.DESCENDING)
             .observe()
+
+    /**
+     * 내 기록을 서버에서 직접 한 번 읽습니다 (오프라인 캐시 사용 안 함).
+     * 등록 규칙처럼 다른 기기에서 저장한 기록까지 확실히 봐야 할 때 씁니다.
+     */
+    suspend fun fetchMyEntriesFromServer(uid: String): List<CollectionEntry> =
+        entries.whereEqualTo("ownerId", uid)
+            .get(Source.SERVER)
+            .await()
+            .documents
+            .mapNotNull { it.toEntry() }
 
     /** 다른 사용자의 공개 도감. */
     fun observePublicEntriesOf(uid: String): Flow<List<CollectionEntry>> =
