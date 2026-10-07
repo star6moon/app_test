@@ -42,12 +42,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -234,6 +236,13 @@ private fun SpeciesCell(number: Int, item: SpeciesProgress, onClick: () -> Unit)
                         .size(22.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface),
+                )
+            } else if (item.species.emoji.isNotBlank()) {
+                // 미발견: 종 아이콘을 흐리게 보여줍니다.
+                Text(
+                    item.species.emoji,
+                    fontSize = 40.sp,
+                    modifier = Modifier.align(Alignment.Center).alpha(0.3f),
                 )
             } else {
                 Icon(

@@ -17,6 +17,8 @@ data class CatalogSpecies(
     val acceptGenus: Boolean = false,
     /** 아직 발견하지 못했을 때 보여줄 힌트 */
     val hint: String = "",
+    /** 지도 마커와 도감에 쓰는 이 종의 아이콘 */
+    val emoji: String = "",
 )
 
 /** 주제별 도감 (도시의 꽃, 바닷가 식물, 봄꽃 …). 같은 종이 여러 도감에 들어갈 수 있습니다. */

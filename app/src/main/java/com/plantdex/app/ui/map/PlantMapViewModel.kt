@@ -4,11 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
+import com.plantdex.app.data.catalog.CatalogRepository
+import com.plantdex.app.data.catalog.PlantIcon
+import com.plantdex.app.data.catalog.PlantIcons
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.names.PlantNameLocalizer
 import com.plantdex.app.data.repository.CollectionRepository
 import com.plantdex.app.ui.collection.toMessage
 import com.plantdex.app.ui.components.LoadState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -20,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import java.util.Locale
@@ -30,12 +35,17 @@ enum class MapScope(val label: String) {
     Everyone("모두의 기록"),
 }
 
-/** 지도 마커 하나. [name] 은 보는 사람의 언어로 바꾼 식물 이름입니다. */
+/**
+ * 지도 마커 하나. [name] 은 보는 사람의 언어로 바꾼 식물 이름,
+ * [speciesKey] 는 묶음 안에서 같은 종을 셀 때 쓰는 키입니다.
+ */
 data class PlantMapItem(
     val entry: CollectionEntry,
     val name: String,
     val latitude: Double,
     val longitude: Double,
+    val speciesKey: String,
+    val icon: PlantIcon,
 ) : ClusterItem {
     val latLng: LatLng get() = LatLng(latitude, longitude)
 
@@ -58,6 +68,7 @@ class PlantMapViewModel(
     private val uid: String,
     private val collectionRepository: CollectionRepository,
     private val localizer: PlantNameLocalizer,
+    private val catalogRepository: CatalogRepository,
 ) : ViewModel() {
 
     private val _scope = MutableStateFlow(MapScope.Mine)
@@ -73,6 +84,8 @@ class PlantMapViewModel(
                 .transformLatest<List<CollectionEntry>, LoadState<PlantMapData>> { emitMapData(scope, it) }
                 .catch { emit(LoadState.Error(it.toMessage())) }
         }
+        // 도감 파일 읽기와 아이콘 계산을 메인 스레드 밖에서 합니다.
+        .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LoadState.Loading)
 
     /** 저장된 이름으로 먼저 보여주고, 보는 사람 언어의 이름을 찾으면 다시 보여줍니다. */
@@ -109,6 +122,14 @@ class PlantMapViewModel(
 
     private fun CollectionEntry.toItem(name: String): PlantMapItem {
         val location = requireNotNull(location)
-        return PlantMapItem(this, name, location.latitude, location.longitude)
+        val catalog = runCatching { catalogRepository.catalog }.getOrNull()
+        return PlantMapItem(
+            entry = this,
+            name = name,
+            latitude = location.latitude,
+            longitude = location.longitude,
+            speciesKey = PlantIcons.speciesKey(scientificName, catalog),
+            icon = PlantIcons.forPlant(scientificName, family, catalog),
+        )
     }
 }
