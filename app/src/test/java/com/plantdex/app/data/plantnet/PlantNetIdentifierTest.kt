@@ -66,6 +66,7 @@ class PlantNetIdentifierTest {
         assertEquals("/v2/identify/all", request.requestUrl!!.encodedPath)
         assertEquals("test-key", request.requestUrl!!.queryParameter("api-key"))
         assertEquals("ko", request.requestUrl!!.queryParameter("lang"))
+        assertEquals("true", request.requestUrl!!.queryParameter("no-reject"))
         val body = request.body.readUtf8()
         assertTrue(body.contains("name=\"images\""))
         assertTrue(body.contains("name=\"organs\""))
@@ -96,6 +97,22 @@ class PlantNetIdentifierTest {
         assertEquals("xx", server.takeRequest().requestUrl!!.queryParameter("lang"))
         assertEquals("en", server.takeRequest().requestUrl!!.queryParameter("lang"))
         assertEquals("en", candidates[0].namesLanguage)
+    }
+
+    @Test
+    fun `retries without no-reject when the server does not accept it`() = runTest {
+        server.enqueue(
+            MockResponse().setResponseCode(400).setBody(
+                """{"statusCode":400,"error":"Bad Request","message":"\"no-reject\" is not allowed"}""",
+            ),
+        )
+        server.enqueue(MockResponse().setResponseCode(200).setBody(SAMPLE_RESPONSE))
+
+        val candidates = identifier().identify(image)
+
+        assertEquals("true", server.takeRequest().requestUrl!!.queryParameter("no-reject"))
+        assertNull(server.takeRequest().requestUrl!!.queryParameter("no-reject"))
+        assertEquals(2, candidates.size)
     }
 
     @Test

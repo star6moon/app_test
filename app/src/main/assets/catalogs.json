@@ -644,6 +644,25 @@
    }
   },
   {
+   "id": "abelia",
+   "name": "꽃댕강나무",
+   "scientificName": "Abelia × grandiflora",
+   "synonyms": [
+    "Linnaea × grandiflora",
+    "Abelia chinensis",
+    "Linnaea chinensis"
+   ],
+   "acceptGenus": false,
+   "hint": "늦가을까지 흰 나팔꽃이 피는 화단 생울타리. 꽃받침은 붉은 갈색",
+   "art": {
+    "form": "cluster",
+    "color": "#FFFFFF",
+    "accent": "#C9877A",
+    "petals": 5,
+    "variant": "spray"
+   }
+  },
+  {
    "id": "euonymus",
    "name": "사철나무",
    "scientificName": "Euonymus japonicus",
@@ -1644,7 +1663,8 @@
     "marigold",
     "spirea",
     "maple",
-    "euonymus"
+    "euonymus",
+    "abelia"
    ]
   },
   {
@@ -1806,7 +1826,8 @@
     "water_hyacinth",
     "petunia",
     "liriope",
-    "rose"
+    "rose",
+    "abelia"
    ]
   },
   {
@@ -1831,7 +1852,8 @@
     "ginkgo",
     "maple",
     "farfugium",
-    "suaeda"
+    "suaeda",
+    "abelia"
    ]
   },
   {

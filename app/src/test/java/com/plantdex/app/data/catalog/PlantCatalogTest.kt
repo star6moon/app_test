@@ -96,6 +96,8 @@ class PlantCatalogTest {
         assertEquals("cherry", catalog.match("Prunus × yedoensis")?.id)
         assertEquals("cherry", catalog.match("Prunus serrulata Lindl.")?.id)
         assertEquals("plum", catalog.match("Prunus mume")?.id)
+        assertEquals("abelia", catalog.match("Abelia × grandiflora (Rovelli ex André) Rehder")?.id)
+        assertEquals("abelia", catalog.match("Linnaea × grandiflora")?.id)
         assertEquals("korean_azalea", catalog.match("Rhododendron yedoense f. poukhanense")?.id)
         // 원예종: 같은 속이면 인정
         assertEquals("forsythia", catalog.match("Forsythia ovata")?.id)

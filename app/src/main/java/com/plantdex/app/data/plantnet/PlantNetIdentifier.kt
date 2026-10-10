@@ -37,15 +37,10 @@ class PlantNetIdentifier(
             )
         }
 
-        val lang = language().ifBlank { FALLBACK_LANGUAGE }
         try {
-            try {
-                request(image, lang)
-            } catch (e: UnsupportedLanguageException) {
-                // Pl@ntNet 이 지원하지 않는 언어입니다. 영어 이름으로 다시 요청하고,
-                // 사용자 언어 이름은 LocalizingPlantIdentifier 가 따로 찾아 채웁니다.
-                request(image, FALLBACK_LANGUAGE)
-            }
+            requestWithFallbacks(image, language().ifBlank { FALLBACK_LANGUAGE })
+        } catch (e: RejectedOptionException) {
+            throw PlantIdentificationException("식물 식별에 실패했습니다: ${e.message}")
         } catch (e: IOException) {
             throw PlantIdentificationException("네트워크 연결을 확인해 주세요.", e)
         } catch (e: SerializationException) {
@@ -53,7 +48,25 @@ class PlantNetIdentifier(
         }
     }
 
-    private fun request(image: File, lang: String): List<PlantCandidate> {
+    /** 서버가 받아들이지 않는 선택 옵션(언어, no-reject)은 빼고 다시 요청합니다. */
+    private fun requestWithFallbacks(image: File, initialLang: String): List<PlantCandidate> {
+        var lang = initialLang
+        var noReject = true
+        repeat(2) {
+            try {
+                return request(image, lang, noReject)
+            } catch (e: RejectedOptionException) {
+                when (e.option) {
+                    // 지원하지 않는 언어: 영어로 받고, 사용자 언어 이름은 LocalizingPlantIdentifier 가 채웁니다.
+                    OPTION_LANG -> lang = FALLBACK_LANGUAGE
+                    OPTION_NO_REJECT -> noReject = false
+                }
+            }
+        }
+        return request(image, lang, noReject)
+    }
+
+    private fun request(image: File, lang: String, noReject: Boolean): List<PlantCandidate> {
         val url = baseUrl.newBuilder()
             .addPathSegments("v2/identify")
             .addPathSegment(project)
@@ -61,6 +74,11 @@ class PlantNetIdentifier(
             .addQueryParameter("lang", lang)
             .addQueryParameter("nb-results", maxResults.toString())
             .addQueryParameter("include-related-images", "false")
+            .apply {
+                // 확신이 낮아도 "Species not found" 로 거절하지 않고 후보를 돌려받습니다.
+                // (멀리서 찍었거나 흔들린 사진도 후보와 낮은 신뢰도를 보여주고 다시 찍기를 안내)
+                if (noReject) addQueryParameter("no-reject", "true")
+            }
             .build()
 
         val body = MultipartBody.Builder()
@@ -81,10 +99,12 @@ class PlantNetIdentifier(
                     throw PlantIdentificationException("Pl@ntNet API 키가 올바르지 않습니다.")
                 response.code == 429 ->
                     throw PlantIdentificationException("오늘 사용할 수 있는 식별 횟수를 모두 사용했습니다.")
-                // 지원하지 않는 lang 값은 400 검증 오류로 돌아옵니다.
+                // 지원하지 않는 옵션 값은 400 검증 오류로 돌아옵니다.
+                response.code == 400 && noReject && errorMessage(text).contains("reject", ignoreCase = true) ->
+                    throw RejectedOptionException(OPTION_NO_REJECT, errorMessage(text))
                 response.code == 400 && lang != FALLBACK_LANGUAGE &&
                     errorMessage(text).contains("lang", ignoreCase = true) ->
-                    throw UnsupportedLanguageException()
+                    throw RejectedOptionException(OPTION_LANG, errorMessage(text))
                 else -> throw PlantIdentificationException(
                     "식물 식별에 실패했습니다 (${response.code}): ${errorMessage(text)}",
                 )
@@ -92,7 +112,7 @@ class PlantNetIdentifier(
         }
     }
 
-    private class UnsupportedLanguageException : Exception()
+    private class RejectedOptionException(val option: String, message: String) : Exception(message)
 
     private fun errorMessage(body: String): String =
         runCatching { json.decodeFromString<ErrorResponse>(body).message }.getOrNull()
@@ -101,6 +121,8 @@ class PlantNetIdentifier(
     companion object {
         const val DEFAULT_BASE_URL = "https://my-api.plantnet.org/"
         const val FALLBACK_LANGUAGE = "en"
+        private const val OPTION_LANG = "lang"
+        private const val OPTION_NO_REJECT = "no-reject"
         private val JPEG = "image/jpeg".toMediaType()
 
         private val json = Json { ignoreUnknownKeys = true }

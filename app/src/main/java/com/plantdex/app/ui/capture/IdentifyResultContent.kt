@@ -101,6 +101,19 @@ fun IdentifyResultContent(
                 )
             }
         }
+        val topScore = state.candidates.firstOrNull()?.score ?: 0.0
+        if (topScore < LOW_CONFIDENCE) {
+            item {
+                RuleNotice(
+                    message = "AI가 확신하지 못하고 있어요 (가장 높은 후보 ${Formatters.percent(topScore)}). " +
+                        "꽃 한 송이나 잎 몇 장이 화면을 가득 채우도록, 흔들리지 않게 가까이서 찍으면 훨씬 정확해져요.",
+                    action = "다시 찍기",
+                    actionEnabled = !state.isSaving,
+                    onAction = onRetake,
+                    isError = false,
+                )
+            }
+        }
         itemsIndexed(state.candidates) { index, candidate ->
             CandidateCard(
                 candidate = candidate,
@@ -274,14 +287,30 @@ private fun CandidateCard(
 
 private fun formatDistance(meters: Double): String = "${meters.toInt().coerceAtLeast(1)}m"
 
-/** 등록할 수 없는 이유와 해결 버튼 */
+/** 가장 높은 후보의 신뢰도가 이보다 낮으면 다시 찍기를 권합니다. */
+private const val LOW_CONFIDENCE = 0.2
+
+/** 안내(등록할 수 없는 이유, 낮은 신뢰도 등)와 해결 버튼 */
 @Composable
-private fun RuleNotice(message: String, action: String, actionEnabled: Boolean, onAction: () -> Unit) {
+private fun RuleNotice(
+    message: String,
+    action: String,
+    actionEnabled: Boolean,
+    onAction: () -> Unit,
+    isError: Boolean = true,
+) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        ),
+        colors = if (isError) {
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        } else {
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        },
     ) {
         Column(Modifier.fillMaxWidth().padding(start = 14.dp, top = 12.dp, end = 6.dp, bottom = 4.dp)) {
             Text(message, style = MaterialTheme.typography.bodyMedium)
