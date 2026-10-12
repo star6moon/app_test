@@ -1,5 +1,6 @@
 package com.plantdex.app.ui.social
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -30,9 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.plantdex.app.R
 import com.plantdex.app.data.repository.PublicProfile
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
@@ -41,10 +44,10 @@ import com.plantdex.app.ui.components.appContainer
 import kotlinx.coroutines.CancellationException
 
 /** 랭킹 기준 */
-private enum class RankBy(val label: String, val value: (PublicProfile) -> Int, val unit: String) {
-    Species("발견한 종", { it.species }, "종"),
-    Catalog("도감 종", { it.catalogSpecies }, "종"),
-    Records("기록 수", { it.records }, "개"),
+private enum class RankBy(@StringRes val labelRes: Int, val value: (PublicProfile) -> Int, @StringRes val unitRes: Int) {
+    Species(R.string.social_rank_by_species, { it.species }, R.string.social_unit_species),
+    Catalog(R.string.social_rank_by_catalog, { it.catalogSpecies }, R.string.social_unit_species),
+    Records(R.string.social_rank_by_records, { it.records }, R.string.social_unit_count),
 }
 
 /** 나와 내가 팔로우하는 사람들의 순위 */
@@ -72,16 +75,16 @@ fun RankingScreen(uid: String, onUserClick: (uid: String, name: String) -> Unit,
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("친구 랭킹") },
+                title = { Text(stringResource(R.string.social_ranking_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.social_back)) }
                 },
             )
         },
     ) { padding ->
         val list = profiles
         when {
-            error != null && list == null -> MessageBox("불러오지 못했어요", Modifier.padding(padding), body = error)
+            error != null && list == null -> MessageBox(stringResource(R.string.social_load_failed), Modifier.padding(padding), body = error)
             list == null -> LoadingBox(Modifier.padding(padding))
             else -> {
                 val sorted = list.sortedWith(compareByDescending<PublicProfile> { rankBy.value(it) }.thenByDescending { it.records })
@@ -94,14 +97,14 @@ fun RankingScreen(uid: String, onUserClick: (uid: String, name: String) -> Unit,
                                     onClick = { rankBy = option },
                                     shape = SegmentedButtonDefaults.itemShape(i, RankBy.entries.size),
                                     icon = {},
-                                ) { Text(option.label) }
+                                ) { Text(stringResource(option.labelRes)) }
                             }
                         }
                     }
                     if (list.size <= 1) {
                         item {
                             Text(
-                                "다른 사람을 팔로우하면 함께 순위를 볼 수 있어요. 피드나 기록에서 이름을 눌러 팔로우해 보세요.",
+                                stringResource(R.string.social_ranking_empty_hint),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -122,10 +125,10 @@ fun RankingScreen(uid: String, onUserClick: (uid: String, name: String) -> Unit,
                                     UserAvatar(p.displayName, p.photoUrl)
                                 }
                             },
-                            headlineContent = { Text(if (isMe) "${p.displayName} (나)" else p.displayName) },
-                            supportingContent = { Text("기록 ${p.records} · 발견 ${p.species}종 · 도감 ${p.catalogSpecies}종") },
+                            headlineContent = { Text(if (isMe) stringResource(R.string.social_ranking_me, p.displayName) else p.displayName) },
+                            supportingContent = { Text(stringResource(R.string.social_ranking_summary, p.records, p.species, p.catalogSpecies)) },
                             trailingContent = {
-                                Text("${rankBy.value(p)}${rankBy.unit}", style = MaterialTheme.typography.titleMedium)
+                                Text(stringResource(R.string.social_ranking_value, rankBy.value(p), stringResource(rankBy.unitRes)), style = MaterialTheme.typography.titleMedium)
                             },
                             colors = if (isMe) {
                                 ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)

@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.plantdex.app.R
 import com.plantdex.app.data.achievements.Badge
 import com.plantdex.app.data.achievements.Mission
 import com.plantdex.app.ui.components.LoadingBox
@@ -71,9 +73,9 @@ fun MissionsCard(missions: List<Mission>, modifier: Modifier = Modifier) {
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("이번 주 미션", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                Text(stringResource(R.string.badges_weekly_missions), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                 Text(
-                    "${missions.count { it.done }}/${missions.size} 완료 · 월요일에 바뀌어요",
+                    stringResource(R.string.badges_missions_progress, missions.count { it.done }, missions.size),
                     style = MaterialTheme.typography.labelSmall,
                 )
             }
@@ -103,12 +105,13 @@ fun MissionsCard(missions: List<Mission>, modifier: Modifier = Modifier) {
 /** 내 도감 화면의 '배지' 요약 카드 */
 @Composable
 fun BadgesSummaryCard(badges: List<Badge>, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val emptyHint = stringResource(R.string.badges_summary_empty)
     OutlinedCard(modifier.fillMaxWidth().clickable(onClick = onClick)) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("배지 ${badges.count { it.earned }} / ${badges.size}", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.badges_summary_count, badges.count { it.earned }, badges.size), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    badges.filter { it.earned }.joinToString(" ") { it.emoji }.ifEmpty { "첫 기록을 남기고 배지를 모아 보세요" },
+                    badges.filter { it.earned }.joinToString(" ") { it.emoji }.ifEmpty { emptyHint },
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
                 )
@@ -126,9 +129,9 @@ fun BadgesScreen(uid: String, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("배지") },
+                title = { Text(stringResource(R.string.badges_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.badges_back)) }
                 },
             )
         },

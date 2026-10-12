@@ -69,8 +69,12 @@ class PlantDexMessagingService : FirebaseMessagingService() {
         fun createChannels(context: Context) {
             val manager = context.getSystemService(NotificationManager::class.java) ?: return
             manager.createNotificationChannel(
-                NotificationChannel(CHANNEL_SOCIAL, "좋아요·댓글·팔로우", NotificationManager.IMPORTANCE_DEFAULT).apply {
-                    description = "내 기록에 대한 반응과 새 팔로워 알림"
+                NotificationChannel(
+                    CHANNEL_SOCIAL,
+                    context.getString(R.string.push_channel_social_name),
+                    NotificationManager.IMPORTANCE_DEFAULT,
+                ).apply {
+                    description = context.getString(R.string.push_channel_social_description)
                 },
             )
         }

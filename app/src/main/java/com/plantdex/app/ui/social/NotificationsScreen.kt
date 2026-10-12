@@ -22,7 +22,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.plantdex.app.R
 import com.plantdex.app.data.repository.AppNotification
 import com.plantdex.app.ui.components.MessageBox
 import com.plantdex.app.ui.components.UserAvatar
@@ -52,15 +54,19 @@ fun NotificationsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("알림") },
+                title = { Text(stringResource(R.string.social_notifications_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.social_back)) }
                 },
             )
         },
     ) { padding ->
         if (visible.isEmpty()) {
-            MessageBox("아직 알림이 없어요", Modifier.padding(padding), body = "누군가 내 기록에 좋아요나 댓글을 남기면 여기에 표시돼요.")
+            MessageBox(
+                stringResource(R.string.social_notifications_empty),
+                Modifier.padding(padding),
+                body = stringResource(R.string.social_notifications_empty_body),
+            )
         } else {
             LazyColumn(Modifier.fillMaxSize().padding(padding)) {
                 items(visible, key = { it.id }) { n ->
@@ -91,7 +97,7 @@ private fun NotificationRow(n: AppNotification, onClick: () -> Unit, onDelete: (
         headlineContent = { Text("$icon ${n.body}", maxLines = 2) },
         supportingContent = { if (n.createdAt > 0) Text(Formatters.dateTime(n.createdAt)) },
         trailingContent = {
-            IconButton(onClick = onDelete) { Icon(Icons.Outlined.Close, contentDescription = "지우기") }
+            IconButton(onClick = onDelete) { Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.social_notification_delete)) }
         },
         colors = if (n.read) ListItemDefaults.colors() else ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         modifier = Modifier.clickable(onClick = onClick),

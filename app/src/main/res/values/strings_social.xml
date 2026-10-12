@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ui/profile -->
+    <string name="profile_stat_records">기록</string>
+    <string name="profile_stat_species">발견한 종</string>
+    <string name="profile_stat_followers">팔로워</string>
+    <string name="profile_stat_following">팔로잉</string>
+    <string name="profile_edit">프로필 편집</string>
+    <string name="profile_following_checked">팔로잉 ✓</string>
+    <string name="profile_follow">팔로우</string>
+    <string name="profile_tap_photo_to_change">사진을 눌러 바꾸기</string>
+    <string name="profile_bio_label">소개</string>
+    <string name="profile_save_failed">저장하지 못했어요: %1$s</string>
+    <string name="profile_saving">저장 중…</string>
+    <string name="profile_save">저장</string>
+    <string name="profile_cancel">취소</string>
+    <string name="profile_photo_open_failed">사진을 열 수 없어요.</string>
+
+    <!-- ui/social -->
+    <string name="social_back">뒤로</string>
+    <string name="social_rank_by_species">발견한 종</string>
+    <string name="social_rank_by_catalog">도감 종</string>
+    <string name="social_rank_by_records">기록 수</string>
+    <string name="social_unit_species">종</string>
+    <string name="social_unit_count">개</string>
+    <string name="social_ranking_title">친구 랭킹</string>
+    <string name="social_load_failed">불러오지 못했어요</string>
+    <string name="social_ranking_empty_hint">다른 사람을 팔로우하면 함께 순위를 볼 수 있어요. 피드나 기록에서 이름을 눌러 팔로우해 보세요.</string>
+    <string name="social_ranking_me">%1$s (나)</string>
+    <string name="social_ranking_summary">기록 %1$d · 발견 %2$d종 · 도감 %3$d종</string>
+    <string name="social_ranking_value">%1$d%2$s</string>
+    <string name="social_notifications_title">알림</string>
+    <string name="social_notifications_empty">아직 알림이 없어요</string>
+    <string name="social_notifications_empty_body">누군가 내 기록에 좋아요나 댓글을 남기면 여기에 표시돼요.</string>
+    <string name="social_notification_delete">지우기</string>
+
+    <!-- ui/achievements -->
+    <string name="badges_weekly_missions">이번 주 미션</string>
+    <string name="badges_missions_progress">%1$d/%2$d 완료 · 월요일에 바뀌어요</string>
+    <string name="badges_summary_count">배지 %1$d / %2$d</string>
+    <string name="badges_summary_empty">첫 기록을 남기고 배지를 모아 보세요</string>
+    <string name="badges_title">배지</string>
+    <string name="badges_back">뒤로</string>
+
+    <!-- ui/navigation -->
+    <string name="nav_feed">둘러보기</string>
+    <string name="nav_map">지도</string>
+    <string name="nav_capture">촬영</string>
+    <string name="nav_my_collection">내 도감</string>
+
+    <!-- push -->
+    <string name="push_channel_social_name">좋아요·댓글·팔로우</string>
+    <string name="push_channel_social_description">내 기록에 대한 반응과 새 팔로워 알림</string>
+</resources>

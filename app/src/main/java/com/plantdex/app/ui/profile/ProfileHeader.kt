@@ -31,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.plantdex.app.R
 import com.plantdex.app.data.repository.PublicProfile
 import com.plantdex.app.data.repository.SocialRepository
 import com.plantdex.app.ui.components.UserAvatar
@@ -69,18 +71,18 @@ fun ProfileHeader(
                 }
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                Stat("기록", profile.records)
-                Stat("발견한 종", profile.species)
-                Stat("팔로워", profile.followerCount)
-                Stat("팔로잉", profile.followingCount)
+                Stat(stringResource(R.string.profile_stat_records), profile.records)
+                Stat(stringResource(R.string.profile_stat_species), profile.species)
+                Stat(stringResource(R.string.profile_stat_followers), profile.followerCount)
+                Stat(stringResource(R.string.profile_stat_following), profile.followingCount)
             }
             when {
-                isMe -> OutlinedButton(onClick = { editing = true }, modifier = Modifier.fillMaxWidth()) { Text("프로필 편집") }
+                isMe -> OutlinedButton(onClick = { editing = true }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.profile_edit)) }
                 isFollowing == true -> OutlinedButton(onClick = { onFollowChange(false) }, modifier = Modifier.fillMaxWidth()) {
-                    Text("팔로잉 ✓")
+                    Text(stringResource(R.string.profile_following_checked))
                 }
                 isFollowing == false -> Button(onClick = { onFollowChange(true) }, modifier = Modifier.fillMaxWidth()) {
-                    Text("팔로우")
+                    Text(stringResource(R.string.profile_follow))
                 }
                 else -> Unit
             }
@@ -112,7 +114,7 @@ private fun ProfileEditDialog(profile: PublicProfile, onDismiss: () -> Unit) {
 
     AlertDialog(
         onDismissRequest = { if (!saving) onDismiss() },
-        title = { Text("프로필 편집") },
+        title = { Text(stringResource(R.string.profile_edit)) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 UserAvatar(
@@ -124,7 +126,7 @@ private fun ProfileEditDialog(profile: PublicProfile, onDismiss: () -> Unit) {
                     size = 80.dp,
                 )
                 Text(
-                    "사진을 눌러 바꾸기",
+                    stringResource(R.string.profile_tap_photo_to_change),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -132,7 +134,7 @@ private fun ProfileEditDialog(profile: PublicProfile, onDismiss: () -> Unit) {
                 OutlinedTextField(
                     value = bio,
                     onValueChange = { bio = it.take(SocialRepository.MAX_BIO_LENGTH) },
-                    label = { Text("소개") },
+                    label = { Text(stringResource(R.string.profile_bio_label)) },
                     supportingText = { Text("${bio.length}/${SocialRepository.MAX_BIO_LENGTH}") },
                     maxLines = 4,
                     modifier = Modifier.fillMaxWidth(),
@@ -151,14 +153,14 @@ private fun ProfileEditDialog(profile: PublicProfile, onDismiss: () -> Unit) {
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Exception) {
-                        Toast.makeText(context, "저장하지 못했어요: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.profile_save_failed, e.message), Toast.LENGTH_SHORT).show()
                     } finally {
                         saving = false
                     }
                 }
-            }) { Text(if (saving) "저장 중…" else "저장") }
+            }) { Text(if (saving) stringResource(R.string.profile_saving) else stringResource(R.string.profile_save)) }
         },
-        dismissButton = { TextButton(enabled = !saving, onClick = onDismiss) { Text("취소") } },
+        dismissButton = { TextButton(enabled = !saving, onClick = onDismiss) { Text(stringResource(R.string.profile_cancel)) } },
     )
 }
 
@@ -166,7 +168,7 @@ private fun ProfileEditDialog(profile: PublicProfile, onDismiss: () -> Unit) {
 private suspend fun prepareAvatar(context: Context, uri: Uri): File = withContext(Dispatchers.IO) {
     val raw = File(context.cacheDir, "avatar_raw_${System.currentTimeMillis()}.jpg")
     context.contentResolver.openInputStream(uri)?.use { input -> raw.outputStream().use { input.copyTo(it) } }
-        ?: error("사진을 열 수 없어요.")
+        ?: error(context.getString(R.string.profile_photo_open_failed))
     try {
         ImageUtils.prepareForUpload(raw, File(context.cacheDir, "avatar_${System.currentTimeMillis()}.jpg"), maxSize = 512)
     } finally {

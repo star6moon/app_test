@@ -1,5 +1,6 @@
 package com.plantdex.app.ui.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -40,6 +42,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.plantdex.app.R
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.achievements.BadgesScreen
@@ -80,13 +83,13 @@ import kotlin.reflect.KClass
 private enum class TopLevelDestination(
     val route: Any,
     val routeClass: KClass<*>,
-    val label: String,
+    @StringRes val labelRes: Int,
     val icon: ImageVector,
 ) {
-    Feed(FeedRoute, FeedRoute::class, "둘러보기", Icons.Filled.Explore),
-    PlantMap(MapRoute, MapRoute::class, "지도", Icons.Filled.Map),
-    Capture(CaptureRoute, CaptureRoute::class, "촬영", Icons.Filled.CameraAlt),
-    MyCollection(MyCollectionRoute, MyCollectionRoute::class, "내 도감", Icons.AutoMirrored.Filled.MenuBook),
+    Feed(FeedRoute, FeedRoute::class, R.string.nav_feed, Icons.Filled.Explore),
+    PlantMap(MapRoute, MapRoute::class, R.string.nav_map, Icons.Filled.Map),
+    Capture(CaptureRoute, CaptureRoute::class, R.string.nav_capture, Icons.Filled.CameraAlt),
+    MyCollection(MyCollectionRoute, MyCollectionRoute::class, R.string.nav_my_collection, Icons.AutoMirrored.Filled.MenuBook),
 }
 
 /** 서버의 데이터 구조 버전. 올리면 모든 계정이 migrateMyData 를 다시 한 번 호출합니다. */
@@ -167,7 +170,7 @@ fun PlantDexNavHost(user: UserProfile) {
                         selected = selected,
                         onClick = { openTab(destination.route) },
                         icon = { Icon(destination.icon, contentDescription = null) },
-                        label = { Text(destination.label) },
+                        label = { Text(stringResource(destination.labelRes)) },
                     )
                 }
             }
