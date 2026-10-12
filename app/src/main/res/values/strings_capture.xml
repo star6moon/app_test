@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared -->
+    <string name="capture_retake">다시 찍기</string>
+    <string name="capture_cancel">취소</string>
+    <string name="capture_delete">삭제</string>
+
+    <!-- IdentifyResultContent -->
+    <string name="capture_extra_photos_note">함께 식별한 사진 (도감에는 첫 사진만 올라가요)</string>
+    <string name="capture_no_location">위치 정보 없음</string>
+    <string name="capture_results_title">AI 식별 결과</string>
+    <string name="capture_results_subtitle">가장 비슷한 식물을 골라 주세요 · 식별: Pl@ntNet · 이름: GBIF, Wikidata</string>
+    <string name="capture_low_confidence_message">AI가 확신하지 못하고 있어요 (가장 높은 후보 %1$s). 꽃 한 송이나 잎 몇 장이 화면을 가득 채우도록 가까이서 찍거나, 찍은 뒤 \'자르기\' 로 식물만 남기고, 꽃·잎 등 다른 부위를 함께 찍으면 훨씬 정확해져요.</string>
+    <string name="capture_memo_label">메모 (선택)</string>
+    <string name="capture_public_title">다른 사용자에게 공개</string>
+    <string name="capture_public_description">공개하면 피드와 내 프로필 도감에 표시돼요</string>
+    <string name="capture_no_location_message">위치 정보가 없어 등록할 수 없어요. 같은 식물은 이미 등록한 곳에서 %1$dm 이상 떨어진 곳에서만 등록할 수 있어서 위치가 필요해요.</string>
+    <string name="capture_locating">위치 찾는 중…</string>
+    <string name="capture_retry_location">위치 다시 가져오기</string>
+    <string name="capture_nearby_message">%1$s은(는) 여기서 %2$s 떨어진 곳에 이미 등록했어요 (%3$s). 같은 식물은 기존 기록에서 %4$dm 이상 떨어진 곳에서만 등록할 수 있어요.</string>
+    <string name="capture_open_existing_entry">기존 기록 보기</string>
+    <string name="capture_save_to_collection">도감에 등록</string>
+    <string name="capture_save_draft_register_later">임시저장하고 나중에 등록하기</string>
+    <string name="capture_family_label">과: %1$s</string>
+    <string name="capture_nearby_badge">📍 %1$s 거리에 이미 등록함</string>
+
+    <!-- CaptureScreen -->
+    <string name="capture_camera_permission_title">식물을 촬영하려면 카메라 권한이 필요해요</string>
+    <string name="capture_location_permission_description">위치 권한을 허용하면 어디서 발견했는지도 함께 기록돼요.</string>
+    <string name="capture_grant_permission">권한 허용하기</string>
+    <string name="capture_grant_in_settings">설정에서 허용하기</string>
+    <string name="capture_camera_hint_first">잎이나 꽃이 잘 보이도록 가까이에서 찍어 주세요</string>
+    <string name="capture_camera_hint_extra">추가 사진 %1$d/%2$d · 꽃·잎·줄기 등 다른 부위를 찍어 주세요</string>
+    <string name="capture_stop_adding">추가 촬영 그만두기</string>
+    <string name="capture_drafts_chip">임시저장 %1$d</string>
+    <string name="capture_identifying">AI 가 어떤 식물인지 살펴보는 중…</string>
+    <string name="capture_saving">도감에 등록하는 중…</string>
+    <string name="capture_retry_identify">이 사진으로 다시 식별</string>
+    <string name="capture_save_draft_identify_later">임시저장하고 나중에 식별하기</string>
+
+    <!-- DraftsSheet -->
+    <string name="capture_drafts_title">임시저장 %1$d개</string>
+    <string name="capture_drafts_description">이 기기에만 보관돼요. 네트워크가 연결된 곳에서 열어 등록해 주세요.</string>
+    <string name="capture_draft_not_identified">아직 식별하지 않음</string>
+    <string name="capture_draft_photo_count">사진 %1$d장</string>
+    <string name="capture_delete_draft_title">임시저장을 지울까요?</string>
+    <string name="capture_delete_draft_message">사진과 입력한 내용이 이 기기에서 삭제돼요.</string>
+
+    <!-- ReviewContent -->
+    <string name="capture_main_photo">대표 사진</string>
+    <string name="capture_photo_description">사진 %1$d</string>
+    <string name="capture_add_other_part">\u0020다른 부위</string>
+    <string name="capture_review_hint">꽃·잎·줄기처럼 다른 부위를 함께 찍으면 더 정확해요 (최대 %1$d장). 멀리서 찍었다면 \'자르기\' 로 식물만 남겨 주세요. 도감에는 첫 번째 사진이 올라가요.</string>
+    <string name="capture_crop_with_space">\u0020자르기</string>
+    <string name="capture_remove_photo">\u0020이 사진 빼기</string>
+    <string name="capture_start_over">처음부터</string>
+    <string name="capture_identify_photos">AI 식별하기 (%1$d장)</string>
+
+    <!-- CropScreen -->
+    <string name="capture_crop_title">식물만 남도록 상자를 맞춰 주세요</string>
+    <string name="capture_crop_load_failed">사진을 읽지 못했어요</string>
+    <string name="capture_crop_full">전체</string>
+    <string name="capture_crop">자르기</string>
+</resources>

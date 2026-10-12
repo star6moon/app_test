@@ -37,8 +37,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 
 /**
  * 찍은 사진 확인 화면.
@@ -92,7 +94,7 @@ fun ReviewContent(
             }
             if (index == 0 && state.photos.isNotEmpty()) {
                 Text(
-                    "대표 사진",
+                    stringResource(R.string.capture_main_photo),
                     color = Color.White,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
@@ -108,7 +110,7 @@ fun ReviewContent(
             state.photos.forEachIndexed { i, file ->
                 AsyncImage(
                     model = file,
-                    contentDescription = "사진 ${i + 1}",
+                    contentDescription = stringResource(R.string.capture_photo_description, i + 1),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(64.dp)
@@ -128,35 +130,34 @@ fun ReviewContent(
                     modifier = Modifier.height(64.dp),
                 ) {
                     Icon(Icons.Outlined.AddAPhoto, contentDescription = null)
-                    Text(" 다른 부위", style = MaterialTheme.typography.labelLarge)
+                    Text(stringResource(R.string.capture_add_other_part), style = MaterialTheme.typography.labelLarge)
                 }
             }
         }
         Text(
-            "꽃·잎·줄기처럼 다른 부위를 함께 찍으면 더 정확해요 (최대 ${MAX_PHOTOS}장). " +
-                "멀리서 찍었다면 '자르기' 로 식물만 남겨 주세요. 도감에는 첫 번째 사진이 올라가요.",
+            stringResource(R.string.capture_review_hint, MAX_PHOTOS),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(onClick = { cropping = index }, enabled = !state.isBusy && state.photos.isNotEmpty()) {
                 Icon(Icons.Outlined.Crop, contentDescription = null)
-                Text(" 자르기")
+                Text(stringResource(R.string.capture_crop_with_space))
             }
             TextButton(onClick = { onRemove(index) }, enabled = !state.isBusy && state.photos.isNotEmpty()) {
                 Icon(Icons.Outlined.Delete, contentDescription = null)
-                Text(" 이 사진 빼기")
+                Text(stringResource(R.string.capture_remove_photo))
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(onClick = onReset, enabled = !state.isBusy, modifier = Modifier.weight(1f).height(48.dp)) {
-                Text("처음부터")
+                Text(stringResource(R.string.capture_start_over))
             }
             Button(
                 onClick = onIdentify,
                 enabled = !state.isBusy && state.photos.isNotEmpty(),
                 modifier = Modifier.weight(1f).height(48.dp),
-            ) { Text("AI 식별하기 (${state.photos.size}장)") }
+            ) { Text(stringResource(R.string.capture_identify_photos, state.photos.size)) }
         }
     }
 }

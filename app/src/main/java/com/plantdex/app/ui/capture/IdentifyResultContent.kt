@@ -42,10 +42,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 import com.plantdex.app.data.model.PlantCandidate
 import com.plantdex.app.data.rules.NearbyRecord
 import com.plantdex.app.data.rules.NearbyRule
@@ -89,7 +91,7 @@ fun IdentifyResultContent(
                             )
                         }
                         Text(
-                            "함께 식별한 사진 (도감에는 첫 사진만 올라가요)",
+                            stringResource(R.string.capture_extra_photos_note),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.align(Alignment.CenterVertically),
@@ -105,7 +107,7 @@ fun IdentifyResultContent(
                 MetaRow(
                     Icons.Outlined.Place,
                     when {
-                        location == null -> "위치 정보 없음"
+                        location == null -> stringResource(R.string.capture_no_location)
                         location.placeName != null -> location.placeName
                         else -> Formatters.coordinates(location.latitude, location.longitude)
                     },
@@ -114,9 +116,9 @@ fun IdentifyResultContent(
         }
         item {
             Column {
-                Text("AI 식별 결과", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.capture_results_title), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "가장 비슷한 식물을 골라 주세요 · 식별: Pl@ntNet · 이름: GBIF, Wikidata",
+                    stringResource(R.string.capture_results_subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -126,10 +128,8 @@ fun IdentifyResultContent(
         if (topScore < LOW_CONFIDENCE) {
             item {
                 RuleNotice(
-                    message = "AI가 확신하지 못하고 있어요 (가장 높은 후보 ${Formatters.percent(topScore)}). " +
-                        "꽃 한 송이나 잎 몇 장이 화면을 가득 채우도록 가까이서 찍거나, 찍은 뒤 '자르기' 로 식물만 남기고, " +
-                        "꽃·잎 등 다른 부위를 함께 찍으면 훨씬 정확해져요.",
-                    action = "다시 찍기",
+                    message = stringResource(R.string.capture_low_confidence_message, Formatters.percent(topScore)),
+                    action = stringResource(R.string.capture_retake),
                     actionEnabled = !state.isSaving,
                     onAction = onRetake,
                     isError = false,
@@ -149,7 +149,7 @@ fun IdentifyResultContent(
             OutlinedTextField(
                 value = state.memo,
                 onValueChange = onMemoChange,
-                label = { Text("메모 (선택)") },
+                label = { Text(stringResource(R.string.capture_memo_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 4,
             )
@@ -157,9 +157,9 @@ fun IdentifyResultContent(
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("다른 사용자에게 공개", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.capture_public_title), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "공개하면 피드와 내 프로필 도감에 표시돼요",
+                        stringResource(R.string.capture_public_description),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -170,9 +170,12 @@ fun IdentifyResultContent(
         if (!state.hasLocation) {
             item {
                 RuleNotice(
-                    message = "위치 정보가 없어 등록할 수 없어요. 같은 식물은 이미 등록한 곳에서 " +
-                        "${NearbyRule.MIN_DISTANCE_METERS.toInt()}m 이상 떨어진 곳에서만 등록할 수 있어서 위치가 필요해요.",
-                    action = if (state.isLocating) "위치 찾는 중…" else "위치 다시 가져오기",
+                    message = stringResource(R.string.capture_no_location_message, NearbyRule.MIN_DISTANCE_METERS.toInt()),
+                    action = if (state.isLocating) {
+                        stringResource(R.string.capture_locating)
+                    } else {
+                        stringResource(R.string.capture_retry_location)
+                    },
                     actionEnabled = !state.isLocating,
                     onAction = onRetryLocation,
                 )
@@ -181,10 +184,14 @@ fun IdentifyResultContent(
         state.selectedNearby?.let { nearby ->
             item {
                 RuleNotice(
-                    message = "${state.selected?.displayName.orEmpty()}은(는) 여기서 ${formatDistance(nearby.distanceMeters)} 떨어진 곳에 " +
-                        "이미 등록했어요 (${Formatters.date(nearby.entry.capturedAt)}). 같은 식물은 기존 기록에서 " +
-                        "${NearbyRule.MIN_DISTANCE_METERS.toInt()}m 이상 떨어진 곳에서만 등록할 수 있어요.",
-                    action = "기존 기록 보기",
+                    message = stringResource(
+                        R.string.capture_nearby_message,
+                        state.selected?.displayName.orEmpty(),
+                        formatDistance(nearby.distanceMeters),
+                        Formatters.date(nearby.entry.capturedAt),
+                        NearbyRule.MIN_DISTANCE_METERS.toInt(),
+                    ),
+                    action = stringResource(R.string.capture_open_existing_entry),
                     actionEnabled = true,
                     onAction = { onOpenEntry(nearby.entry.id) },
                 )
@@ -199,7 +206,7 @@ fun IdentifyResultContent(
                     onClick = onRetake,
                     enabled = !state.isSaving,
                     modifier = Modifier.weight(1f).height(48.dp),
-                ) { Text("다시 찍기") }
+                ) { Text(stringResource(R.string.capture_retake)) }
                 Button(
                     onClick = onSave,
                     enabled = state.canSave,
@@ -208,7 +215,7 @@ fun IdentifyResultContent(
                     if (state.isSaving) {
                         CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                     } else {
-                        Text("도감에 등록")
+                        Text(stringResource(R.string.capture_save_to_collection))
                     }
                 }
             }
@@ -216,7 +223,7 @@ fun IdentifyResultContent(
                 onClick = onSaveDraft,
                 enabled = !state.isSaving,
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text("임시저장하고 나중에 등록하기") }
+            ) { Text(stringResource(R.string.capture_save_draft_register_later)) }
         }
     }
 }
@@ -280,7 +287,7 @@ private fun CandidateCard(
                 }
                 candidate.family?.let {
                     Text(
-                        "과: $it",
+                        stringResource(R.string.capture_family_label, it),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -294,7 +301,7 @@ private fun CandidateCard(
                 }
                 if (nearby != null) {
                     Text(
-                        "📍 ${formatDistance(nearby.distanceMeters)} 거리에 이미 등록함",
+                        stringResource(R.string.capture_nearby_badge, formatDistance(nearby.distanceMeters)),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.error,
                     )

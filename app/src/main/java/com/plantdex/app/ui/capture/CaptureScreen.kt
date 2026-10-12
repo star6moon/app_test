@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -59,6 +60,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 import com.plantdex.app.ui.components.appContainer
 import java.io.File
 
@@ -192,20 +194,20 @@ private fun CameraPermissionGate(content: @Composable () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
         ) {
-            Text("식물을 촬영하려면 카메라 권한이 필요해요", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.capture_camera_permission_title), style = MaterialTheme.typography.titleMedium)
             Text(
-                "위치 권한을 허용하면 어디서 발견했는지도 함께 기록돼요.",
+                stringResource(R.string.capture_location_permission_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
-            Button(onClick = { launcher.launch(permissions) }) { Text("권한 허용하기") }
+            Button(onClick = { launcher.launch(permissions) }) { Text(stringResource(R.string.capture_grant_permission)) }
             if (askedOnce) {
                 OutlinedButton(onClick = {
                     context.startActivity(
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
                     )
-                }) { Text("설정에서 허용하기") }
+                }) { Text(stringResource(R.string.capture_grant_in_settings)) }
             }
         }
     }
@@ -252,9 +254,9 @@ private fun CameraContent(
         ) {
             Text(
                 if (photoCount == 0) {
-                    "잎이나 꽃이 잘 보이도록 가까이에서 찍어 주세요"
+                    stringResource(R.string.capture_camera_hint_first)
                 } else {
-                    "추가 사진 ${photoCount + 1}/$MAX_PHOTOS · 꽃·잎·줄기 등 다른 부위를 찍어 주세요"
+                    stringResource(R.string.capture_camera_hint_extra, photoCount + 1, MAX_PHOTOS)
                 },
                 color = Color.White,
                 style = MaterialTheme.typography.bodyMedium,
@@ -267,13 +269,13 @@ private fun CameraContent(
             if (photoCount > 0) {
                 AssistChip(
                     onClick = onCancelAdd,
-                    label = { Text("추가 촬영 그만두기", color = Color.White) },
+                    label = { Text(stringResource(R.string.capture_stop_adding), color = Color.White) },
                     colors = AssistChipDefaults.assistChipColors(containerColor = Color.Black.copy(alpha = 0.45f)),
                 )
             } else if (draftCount > 0) {
                 AssistChip(
                     onClick = onOpenDrafts,
-                    label = { Text("임시저장 $draftCount", color = Color.White) },
+                    label = { Text(stringResource(R.string.capture_drafts_chip, draftCount), color = Color.White) },
                     colors = AssistChipDefaults.assistChipColors(containerColor = Color.Black.copy(alpha = 0.45f)),
                 )
             }
@@ -328,7 +330,7 @@ private fun IdentifyingContent(photoFile: File?) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
             CircularProgressIndicator(color = Color.White)
             Text(
-                if (photoFile != null) "AI 가 어떤 식물인지 살펴보는 중…" else "도감에 등록하는 중…",
+                if (photoFile != null) stringResource(R.string.capture_identifying) else stringResource(R.string.capture_saving),
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -357,10 +359,10 @@ private fun FailedContent(
             )
         }
         Text(state.message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
-        Button(onClick = onRetake) { Text("다시 찍기") }
+        Button(onClick = onRetake) { Text(stringResource(R.string.capture_retake)) }
         if (state.photo != null) {
-            OutlinedButton(onClick = onRetry) { Text("이 사진으로 다시 식별") }
-            TextButton(onClick = onSaveDraft) { Text("임시저장하고 나중에 식별하기") }
+            OutlinedButton(onClick = onRetry) { Text(stringResource(R.string.capture_retry_identify)) }
+            TextButton(onClick = onSaveDraft) { Text(stringResource(R.string.capture_save_draft_identify_later)) }
         }
     }
 }

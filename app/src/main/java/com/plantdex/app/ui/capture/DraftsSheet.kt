@@ -27,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 import com.plantdex.app.data.repository.Draft
 import com.plantdex.app.util.Formatters
 import java.io.File
@@ -47,12 +49,12 @@ fun DraftsSheet(
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.navigationBarsPadding()) {
             Text(
-                "임시저장 ${drafts.size}개",
+                stringResource(R.string.capture_drafts_title, drafts.size),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
             Text(
-                "이 기기에만 보관돼요. 네트워크가 연결된 곳에서 열어 등록해 주세요.",
+                stringResource(R.string.capture_drafts_description),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -68,19 +70,19 @@ fun DraftsSheet(
                                 modifier = Modifier.size(56.dp).clip(MaterialTheme.shapes.small),
                             )
                         },
-                        headlineContent = { Text(draft.selected?.displayName ?: "아직 식별하지 않음") },
+                        headlineContent = { Text(draft.selected?.displayName ?: stringResource(R.string.capture_draft_not_identified)) },
                         supportingContent = {
                             Text(
                                 listOfNotNull(
                                     Formatters.dateTime(draft.capturedAt),
                                     draft.location?.placeName,
-                                    "사진 ${draft.photoFiles.size}장",
+                                    stringResource(R.string.capture_draft_photo_count, draft.photoFiles.size),
                                 ).joinToString(" · "),
                             )
                         },
                         trailingContent = {
                             IconButton(onClick = { deleting = draft }) {
-                                Icon(Icons.Outlined.Delete, contentDescription = "삭제")
+                                Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.capture_delete))
                             }
                         },
                         modifier = Modifier.clickable { onOpen(draft) },
@@ -92,15 +94,15 @@ fun DraftsSheet(
     deleting?.let { draft ->
         AlertDialog(
             onDismissRequest = { deleting = null },
-            title = { Text("임시저장을 지울까요?") },
-            text = { Text("사진과 입력한 내용이 이 기기에서 삭제돼요.") },
+            title = { Text(stringResource(R.string.capture_delete_draft_title)) },
+            text = { Text(stringResource(R.string.capture_delete_draft_message)) },
             confirmButton = {
                 TextButton(onClick = {
                     deleting = null
                     onDelete(draft)
-                }) { Text("삭제") }
+                }) { Text(stringResource(R.string.capture_delete)) }
             },
-            dismissButton = { TextButton(onClick = { deleting = null }) { Text("취소") } },
+            dismissButton = { TextButton(onClick = { deleting = null }) { Text(stringResource(R.string.capture_cancel)) } },
         )
     }
 }

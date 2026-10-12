@@ -38,8 +38,10 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 import com.plantdex.app.util.ImageUtils
 import java.io.File
 
@@ -56,7 +58,7 @@ fun CropScreen(file: File, onCancel: () -> Unit, onConfirm: (CropRect) -> Unit) 
 
     Column(Modifier.fillMaxSize().background(Color.Black).statusBarsPadding().navigationBarsPadding()) {
         Text(
-            "식물만 남도록 상자를 맞춰 주세요",
+            stringResource(R.string.capture_crop_title),
             color = Color.White,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(16.dp),
@@ -67,7 +69,7 @@ fun CropScreen(file: File, onCancel: () -> Unit, onConfirm: (CropRect) -> Unit) 
             val boxH = with(density) { maxHeight.toPx() }
             val (imgW, imgH) = imageSize
             if (imgW <= 0 || imgH <= 0) {
-                Text("사진을 읽지 못했어요", color = Color.White)
+                Text(stringResource(R.string.capture_crop_load_failed), color = Color.White)
             } else {
             // ContentScale.Fit 으로 그렸을 때 사진이 차지하는 영역
             val scale = minOf(boxW / imgW, boxH / imgH)
@@ -142,9 +144,9 @@ fun CropScreen(file: File, onCancel: () -> Unit, onConfirm: (CropRect) -> Unit) 
             Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text("취소", color = Color.White) }
-            TextButton(onClick = { rect = CropRect.Full }, modifier = Modifier.weight(1f)) { Text("전체", color = Color.White) }
-            Button(onClick = { onConfirm(rect) }, modifier = Modifier.weight(1f)) { Text("자르기") }
+            OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.capture_cancel), color = Color.White) }
+            TextButton(onClick = { rect = CropRect.Full }, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.capture_crop_full), color = Color.White) }
+            Button(onClick = { onConfirm(rect) }, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.capture_crop)) }
         }
     }
 }
