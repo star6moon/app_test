@@ -55,7 +55,7 @@ private fun EntryGridItem(entry: CollectionEntry, onClick: () -> Unit) {
     val name = localizedName(entry)
     Card(modifier = Modifier.clickable(onClick = onClick)) {
         AsyncImage(
-            model = entry.photoUrl,
+            model = entry.listImageUrl,
             contentDescription = name,
             contentScale = ContentScale.Crop,
             modifier = Modifier

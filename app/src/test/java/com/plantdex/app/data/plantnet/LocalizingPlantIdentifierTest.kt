@@ -33,7 +33,7 @@ class LocalizingPlantIdentifierTest {
     private fun identify(result: PlantCandidate, localizer: FakeLocalizer, locale: Locale = Locale.KOREAN) =
         LocalizingPlantIdentifier(
             delegate = object : PlantIdentifier {
-                override suspend fun identify(image: File) = listOf(result)
+                override suspend fun identify(images: List<File>) = listOf(result)
             },
             localizer = localizer,
             locale = { locale },
@@ -42,7 +42,7 @@ class LocalizingPlantIdentifierTest {
     @Test
     fun `keeps plantnet name already in user language`() = runTest {
         val localizer = FakeLocalizer("다른이름")
-        val result = identify(candidate(listOf("Dandelion", "서양민들레"), "ko"), localizer).identify(File("x"))
+        val result = identify(candidate(listOf("Dandelion", "서양민들레"), "ko"), localizer).identify(listOf(File("x")))
 
         assertEquals("서양민들레", result[0].displayName)
         assertEquals("ko", result[0].namesLanguage)
@@ -51,7 +51,7 @@ class LocalizingPlantIdentifierTest {
 
     @Test
     fun `looks up name when plantnet returned another language`() = runTest {
-        val result = identify(candidate(listOf("Dandelion"), "en"), FakeLocalizer("서양민들레")).identify(File("x"))
+        val result = identify(candidate(listOf("Dandelion"), "en"), FakeLocalizer("서양민들레")).identify(listOf(File("x")))
 
         assertEquals(listOf("서양민들레", "Dandelion"), result[0].commonNames)
         assertEquals("ko", result[0].namesLanguage)
@@ -59,7 +59,7 @@ class LocalizingPlantIdentifierTest {
 
     @Test
     fun `keeps english name when nothing is found`() = runTest {
-        val result = identify(candidate(listOf("Dandelion"), "en"), FakeLocalizer(null)).identify(File("x"))
+        val result = identify(candidate(listOf("Dandelion"), "en"), FakeLocalizer(null)).identify(listOf(File("x")))
 
         assertEquals("Dandelion", result[0].displayName)
         assertEquals("en", result[0].namesLanguage)
@@ -67,7 +67,7 @@ class LocalizingPlantIdentifierTest {
 
     @Test
     fun `name language is unknown when plantnet silently answered in another script`() = runTest {
-        val result = identify(candidate(listOf("Dandelion"), "ko"), FakeLocalizer(null)).identify(File("x"))
+        val result = identify(candidate(listOf("Dandelion"), "ko"), FakeLocalizer(null)).identify(listOf(File("x")))
 
         assertEquals("Dandelion", result[0].displayName)
         assertNull(result[0].namesLanguage)

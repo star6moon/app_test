@@ -46,6 +46,28 @@ object ImageUtils {
         target
     }
 
+    /** 목록·지도용 작은 사진 (긴 변 [maxSize]px). [source] 는 이미 회전 보정된 업로드용 JPEG 입니다. */
+    suspend fun makeThumbnail(source: File, target: File, maxSize: Int = 400): File = withContext(Dispatchers.IO) {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(source.absolutePath, bounds)
+        var sampleSize = 1
+        while (bounds.outWidth / (sampleSize * 2) >= maxSize && bounds.outHeight / (sampleSize * 2) >= maxSize) {
+            sampleSize *= 2
+        }
+        val decoded = BitmapFactory.decodeFile(source.absolutePath, BitmapFactory.Options().apply { inSampleSize = sampleSize })
+            ?: error("이미지를 읽을 수 없습니다: ${source.name}")
+        val scale = (maxSize.toFloat() / maxOf(decoded.width, decoded.height)).coerceAtMost(1f)
+        val output = if (scale < 1f) {
+            Bitmap.createScaledBitmap(decoded, (decoded.width * scale).toInt(), (decoded.height * scale).toInt(), true)
+        } else {
+            decoded
+        }
+        target.outputStream().use { output.compress(Bitmap.CompressFormat.JPEG, 80, it) }
+        if (output !== decoded) output.recycle()
+        decoded.recycle()
+        target
+    }
+
     private fun rotationDegrees(file: File): Int =
         when (ExifInterface(file).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
             ExifInterface.ORIENTATION_ROTATE_90 -> 90

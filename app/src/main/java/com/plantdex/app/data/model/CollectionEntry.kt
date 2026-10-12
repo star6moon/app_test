@@ -22,7 +22,17 @@ data class CollectionEntry(
     val isPublic: Boolean,
     /** 좋아요 수 */
     val likeCount: Int = 0,
+    /** 목록용 작은 사진 (예전 기록에는 없음) */
+    val thumbUrl: String? = null,
+    val commentCount: Int = 0,
+    /** 신고가 쌓여 숨겨진 기록 */
+    val isHidden: Boolean = false,
+    /** 지도 영역 검색용 지오해시 (예전 기록에는 없음) */
+    val geohash: String? = null,
 ) {
+    /** 목록·격자에 쓸 사진: 썸네일이 있으면 썸네일 */
+    val listImageUrl: String get() = thumbUrl ?: photoUrl
+
     val displayName: String get() = commonName?.takeIf { it.isNotBlank() } ?: scientificName
 }
 

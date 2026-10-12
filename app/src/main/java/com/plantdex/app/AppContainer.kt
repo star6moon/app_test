@@ -3,6 +3,8 @@ package com.plantdex.app
 import android.content.Context
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.functions
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import com.plantdex.app.data.catalog.CatalogRepository
@@ -11,7 +13,7 @@ import com.plantdex.app.data.names.GbifWikidataNameLocalizer
 import com.plantdex.app.data.names.PlantNameLocalizer
 import com.plantdex.app.data.plantnet.LocalizingPlantIdentifier
 import com.plantdex.app.data.plantnet.PlantIdentifier
-import com.plantdex.app.data.plantnet.PlantNetIdentifier
+import com.plantdex.app.data.plantnet.CloudPlantIdentifier
 import com.plantdex.app.data.repository.AuthRepository
 import com.plantdex.app.data.repository.CollectionRepository
 import com.plantdex.app.data.repository.ReactionRepository
@@ -31,9 +33,12 @@ class AppContainer(context: Context) {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
+    /** 서버 함수 (Firestore 와 같은 서울 지역) */
+    val functions: FirebaseFunctions = Firebase.functions(FUNCTIONS_REGION)
+
     val authRepository = AuthRepository(Firebase.auth, Firebase.firestore)
 
-    val collectionRepository = CollectionRepository(Firebase.firestore, Firebase.storage)
+    val collectionRepository = CollectionRepository(Firebase.firestore, Firebase.storage, functions)
 
     /** 앱이 살아 있는 동안 유지되는 작업 범위 (공유 상태 구독용) */
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -44,11 +49,10 @@ class AppContainer(context: Context) {
     /** 학명 → 사용자 언어 이름 (GBIF, Wikidata). */
     val plantNameLocalizer: PlantNameLocalizer = GbifWikidataNameLocalizer(httpClient)
 
-    /** Pl@ntNet 으로 식별하고, 대표 이름을 기기 언어로 맞춥니다. */
+    /** 서버(Pl@ntNet)로 식별하고, 대표 이름을 기기 언어로 맞춥니다. */
     val plantIdentifier: PlantIdentifier = LocalizingPlantIdentifier(
-        delegate = PlantNetIdentifier(
-            apiKey = BuildConfig.PLANTNET_API_KEY,
-            client = httpClient,
+        delegate = CloudPlantIdentifier(
+            functions = functions,
             language = { Locale.getDefault().toLanguageTag().substringBefore('-') },
         ),
         localizer = plantNameLocalizer,
@@ -59,4 +63,8 @@ class AppContainer(context: Context) {
 
     /** 앱에 내장된 주제별 도감 목록 */
     val catalogRepository = CatalogRepository(context.applicationContext)
+
+    companion object {
+        const val FUNCTIONS_REGION = "asia-northeast3"
+    }
 }

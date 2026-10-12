@@ -37,6 +37,9 @@ jobs:
       - name: Build debug APK
         run: ./gradlew --no-daemon assembleDebug
 
+      - name: Build release APK (R8 check)
+        run: ./gradlew --no-daemon assembleRelease
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -52,3 +55,20 @@ jobs:
         with:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+
+  functions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+      - run: npm ci
+      - name: Build and test Cloud Functions
+        run: npm test

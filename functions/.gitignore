@@ -1,0 +1,4 @@
+node_modules/
+lib/
+# 빌드 때 app/src/main/assets/catalogs.json 에서 복사됩니다.
+src/catalog/catalogs.json

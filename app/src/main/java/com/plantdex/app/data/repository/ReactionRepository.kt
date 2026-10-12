@@ -66,7 +66,7 @@ class ReactionRepository(
         val entryDoc = firestore.collection(CollectionRepository.ENTRIES).document(entryId)
         firestore.batch().apply {
             if (liked) {
-                set(likeDoc, mapOf("createdAt" to FieldValue.serverTimestamp()))
+                set(likeDoc, mapOf("createdAt" to FieldValue.serverTimestamp(), "entryId" to entryId))
                 update(entryDoc, "likeCount", FieldValue.increment(1))
             } else {
                 delete(likeDoc)
@@ -79,7 +79,7 @@ class ReactionRepository(
         val uid = authRepository.currentUser.value?.uid ?: error("로그인이 필요합니다.")
         val doc = bookmarks(uid).document(entryId)
         if (bookmarked) {
-            doc.set(mapOf("createdAt" to FieldValue.serverTimestamp())).await()
+            doc.set(mapOf("createdAt" to FieldValue.serverTimestamp(), "entryId" to entryId)).await()
         } else {
             doc.delete().await()
         }

@@ -30,7 +30,8 @@ class PlantNetIdentifier(
     private val maxResults: Int = 5,
 ) : PlantIdentifier {
 
-    override suspend fun identify(image: File): List<PlantCandidate> = withContext(Dispatchers.IO) {
+    override suspend fun identify(images: List<File>): List<PlantCandidate> = withContext(Dispatchers.IO) {
+        require(images.isNotEmpty()) { "사진이 필요합니다" }
         if (apiKey.isBlank()) {
             throw PlantIdentificationException(
                 "Pl@ntNet API 키가 설정되지 않았습니다. local.properties 에 PLANTNET_API_KEY 를 추가하세요.",
@@ -38,7 +39,7 @@ class PlantNetIdentifier(
         }
 
         try {
-            requestWithFallbacks(image, language().ifBlank { FALLBACK_LANGUAGE })
+            requestWithFallbacks(images, language().ifBlank { FALLBACK_LANGUAGE })
         } catch (e: RejectedOptionException) {
             throw PlantIdentificationException("식물 식별에 실패했습니다: ${e.message}")
         } catch (e: IOException) {
@@ -49,12 +50,12 @@ class PlantNetIdentifier(
     }
 
     /** 서버가 받아들이지 않는 선택 옵션(언어, no-reject)은 빼고 다시 요청합니다. */
-    private fun requestWithFallbacks(image: File, initialLang: String): List<PlantCandidate> {
+    private fun requestWithFallbacks(images: List<File>, initialLang: String): List<PlantCandidate> {
         var lang = initialLang
         var noReject = true
         repeat(2) {
             try {
-                return request(image, lang, noReject)
+                return request(images, lang, noReject)
             } catch (e: RejectedOptionException) {
                 when (e.option) {
                     // 지원하지 않는 언어: 영어로 받고, 사용자 언어 이름은 LocalizingPlantIdentifier 가 채웁니다.
@@ -63,10 +64,10 @@ class PlantNetIdentifier(
                 }
             }
         }
-        return request(image, lang, noReject)
+        return request(images, lang, noReject)
     }
 
-    private fun request(image: File, lang: String, noReject: Boolean): List<PlantCandidate> {
+    private fun request(images: List<File>, lang: String, noReject: Boolean): List<PlantCandidate> {
         val url = baseUrl.newBuilder()
             .addPathSegments("v2/identify")
             .addPathSegment(project)
@@ -83,8 +84,12 @@ class PlantNetIdentifier(
 
         val body = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("images", image.name, image.asRequestBody(JPEG))
-            .addFormDataPart("organs", "auto")
+            .apply {
+                images.forEach { image ->
+                    addFormDataPart("images", image.name, image.asRequestBody(JPEG))
+                    addFormDataPart("organs", "auto")
+                }
+            }
             .build()
 
         val request = Request.Builder().url(url).post(body).build()
@@ -127,7 +132,7 @@ class PlantNetIdentifier(
 
         private val json = Json { ignoreUnknownKeys = true }
 
-        internal fun parseCandidates(body: String, lang: String): List<PlantCandidate> =
+        fun parseCandidates(body: String, lang: String): List<PlantCandidate> =
             json.decodeFromString<IdentifyResponse>(body).results
                 .map { it.toCandidate(lang) }
                 .sortedByDescending { it.score }

@@ -6,22 +6,24 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
-// Pl@ntNet API 키는 저장소에 커밋하지 않고 local.properties 에서 읽습니다.
-//   PLANTNET_API_KEY=xxxxxxxx
+// 저장소에 커밋하지 않는 값들은 local.properties 에서 읽습니다.
+// (Pl@ntNet API 키는 앱에 넣지 않고 서버 함수의 비밀값으로 둡니다. README 참고)
 val localProperties = Properties().apply {
     val file = rootProject.file("local.properties")
     if (file.exists()) file.inputStream().use { load(it) }
 }
-val plantNetApiKey: String = localProperties.getProperty("PLANTNET_API_KEY")
-    ?: System.getenv("PLANTNET_API_KEY")
-    ?: ""
+fun localOrEnv(name: String): String? = localProperties.getProperty(name) ?: System.getenv(name)
 // Google Maps SDK for Android 키도 local.properties 에서 읽습니다.
 //   MAPS_API_KEY=xxxxxxxx
-val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY")
-    ?: System.getenv("MAPS_API_KEY")
-    ?: ""
+val mapsApiKey: String = localOrEnv("MAPS_API_KEY") ?: ""
+
+// 배포용 서명 키 (없으면 서명되지 않은 release 빌드를 만듭니다)
+//   RELEASE_STORE_FILE=/home/me/plantdex-release.jks
+//   RELEASE_STORE_PASSWORD=...  RELEASE_KEY_ALIAS=plantdex  RELEASE_KEY_PASSWORD=...
+val releaseStoreFile: String? = localOrEnv("RELEASE_STORE_FILE")
 
 android {
     namespace = "com.plantdex.app"
@@ -34,14 +36,27 @@ android {
         versionCode = 1
         versionName = "0.1.0"
 
-        buildConfigField("String", "PLANTNET_API_KEY", "\"$plantNetApiKey\"")
         buildConfigField("Boolean", "HAS_MAPS_API_KEY", (mapsApiKey.isNotBlank()).toString())
         manifestPlaceholders["mapsApiKey"] = mapsApiKey
     }
 
+    signingConfigs {
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = localOrEnv("RELEASE_STORE_PASSWORD")
+                keyAlias = localOrEnv("RELEASE_KEY_ALIAS")
+                keyPassword = localOrEnv("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // 코드 축소·난독화(R8)와 안 쓰는 리소스 제거로 앱 크기를 줄입니다.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -91,6 +106,11 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.functions)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.appcheck.playintegrity)
+    debugImplementation(libs.firebase.appcheck.debug)
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)

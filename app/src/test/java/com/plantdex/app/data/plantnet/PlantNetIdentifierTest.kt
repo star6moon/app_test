@@ -37,7 +37,7 @@ class PlantNetIdentifierTest {
     fun `maps successful response to candidates sorted by score`() = runTest {
         server.enqueue(MockResponse().setResponseCode(200).setBody(SAMPLE_RESPONSE))
 
-        val candidates = identifier().identify(image)
+        val candidates = identifier().identify(listOf(image))
 
         assertEquals(2, candidates.size)
         val best = candidates[0]
@@ -59,7 +59,7 @@ class PlantNetIdentifierTest {
     fun `sends api key, language, image and organs`() = runTest {
         server.enqueue(MockResponse().setResponseCode(200).setBody(SAMPLE_RESPONSE))
 
-        identifier().identify(image)
+        identifier().identify(listOf(image))
 
         val request = server.takeRequest()
         assertEquals("POST", request.method)
@@ -80,7 +80,7 @@ class PlantNetIdentifierTest {
                 .setBody("""{"statusCode":404,"error":"Not Found","message":"Species not found"}"""),
         )
 
-        assertTrue(identifier().identify(image).isEmpty())
+        assertTrue(identifier().identify(listOf(image)).isEmpty())
     }
 
     @Test
@@ -92,7 +92,7 @@ class PlantNetIdentifierTest {
         )
         server.enqueue(MockResponse().setResponseCode(200).setBody(SAMPLE_RESPONSE))
 
-        val candidates = identifier(language = "xx").identify(image)
+        val candidates = identifier(language = "xx").identify(listOf(image))
 
         assertEquals("xx", server.takeRequest().requestUrl!!.queryParameter("lang"))
         assertEquals("en", server.takeRequest().requestUrl!!.queryParameter("lang"))
@@ -108,7 +108,7 @@ class PlantNetIdentifierTest {
         )
         server.enqueue(MockResponse().setResponseCode(200).setBody(SAMPLE_RESPONSE))
 
-        val candidates = identifier().identify(image)
+        val candidates = identifier().identify(listOf(image))
 
         assertEquals("true", server.takeRequest().requestUrl!!.queryParameter("no-reject"))
         assertNull(server.takeRequest().requestUrl!!.queryParameter("no-reject"))
@@ -123,7 +123,7 @@ class PlantNetIdentifierTest {
         )
 
         try {
-            identifier().identify(image)
+            identifier().identify(listOf(image))
             fail("예외가 발생해야 합니다")
         } catch (e: PlantIdentificationException) {
             assertEquals(1, server.requestCount)
@@ -133,7 +133,7 @@ class PlantNetIdentifierTest {
     @Test
     fun `missing api key fails without request`() = runTest {
         try {
-            identifier(apiKey = "").identify(image)
+            identifier(apiKey = "").identify(listOf(image))
             fail("예외가 발생해야 합니다")
         } catch (e: PlantIdentificationException) {
             assertEquals(0, server.requestCount)
@@ -148,7 +148,7 @@ class PlantNetIdentifierTest {
         )
 
         try {
-            identifier().identify(image)
+            identifier().identify(listOf(image))
             fail("예외가 발생해야 합니다")
         } catch (e: PlantIdentificationException) {
             assertTrue(e.message!!.contains("Unsupported file type"))
@@ -160,7 +160,7 @@ class PlantNetIdentifierTest {
         server.enqueue(MockResponse().setResponseCode(200).setBody("""{"results":[{"species":{}}]}"""))
 
         try {
-            identifier().identify(image)
+            identifier().identify(listOf(image))
             fail("예외가 발생해야 합니다")
         } catch (e: PlantIdentificationException) {
             assertTrue(e.message!!.contains("해석"))

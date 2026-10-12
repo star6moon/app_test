@@ -22,8 +22,8 @@ class LocalizingPlantIdentifier(
     private val locale: () -> Locale,
 ) : PlantIdentifier {
 
-    override suspend fun identify(image: File): List<PlantCandidate> {
-        val candidates = delegate.identify(image)
+    override suspend fun identify(images: List<File>): List<PlantCandidate> {
+        val candidates = delegate.identify(images)
         val target = locale()
         val language = target.toLanguageTag().substringBefore('-').lowercase()
         return coroutineScope {

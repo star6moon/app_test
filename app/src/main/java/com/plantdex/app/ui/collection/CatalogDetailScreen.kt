@@ -221,7 +221,7 @@ private fun SpeciesCell(number: Int, item: SpeciesProgress, onClick: () -> Unit)
         Box(Modifier.fillMaxWidth().aspectRatio(1f)) {
             if (latest != null) {
                 AsyncImage(
-                    model = latest.photoUrl,
+                    model = latest.listImageUrl,
                     contentDescription = item.species.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),

@@ -10,54 +10,103 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == uid;
     }
 
-    // 사용자 프로필: 로그인한 사용자는 누구나 읽을 수 있고, 본인만 작성
+    function entryPath(entryId) {
+      return /databases/$(database)/documents/entries/$(entryId);
+    }
+
+    // 로그인한 사용자가 볼 수 있는 기록인지 (공개 또는 내 기록)
+    function canSeeEntry(entryId) {
+      let e = get(entryPath(entryId)).data;
+      return signedIn() && (e.isPublic == true || e.ownerId == request.auth.uid);
+    }
+
+    function createdNow() {
+      return request.resource.data.createdAt == request.time;
+    }
+
+    // ── 사용자 ───────────────────────────────────────────────
+    // 통계(stats)·팔로워 수는 서버(Cloud Functions)만 바꿉니다.
     match /users/{uid} {
       allow read: if signedIn();
-      allow create, update: if isUser(uid)
-        && request.resource.data.displayName is string
-        && request.resource.data.displayName.size() > 0
-        && request.resource.data.displayName.size() <= 30;
+      allow create: if isUser(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'bio', 'photoUrl', 'createdAt'])
+        && validProfile(request.resource.data);
+      allow update: if isUser(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'bio', 'photoUrl'])
+        && validProfile(request.resource.data);
       allow delete: if false;
+
+      function validProfile(data) {
+        return data.displayName is string
+          && data.displayName.size() > 0 && data.displayName.size() <= 30
+          && (!('bio' in data) || (data.bio is string && data.bio.size() <= 150))
+          && (!('photoUrl' in data) || data.photoUrl == null || data.photoUrl is string);
+      }
 
       // 좋아요: 본인 것만. 기록의 likeCount 가 같은 요청에서 정확히 +1 / -1 될 때만 허용
       match /likes/{entryId} {
-        function entry() {
-          return /databases/$(database)/documents/entries/$(entryId);
-        }
         allow read: if isUser(uid);
         allow create: if isUser(uid)
-          && request.resource.data.keys().hasOnly(['createdAt'])
-          && request.resource.data.createdAt == request.time
-          && getAfter(entry()).data.get('likeCount', 0) == get(entry()).data.get('likeCount', 0) + 1;
+          && request.resource.data.keys().hasOnly(['createdAt', 'entryId'])
+          && request.resource.data.entryId == entryId
+          && createdNow()
+          && getAfter(entryPath(entryId)).data.get('likeCount', 0) == get(entryPath(entryId)).data.get('likeCount', 0) + 1;
         allow delete: if isUser(uid)
-          && (!exists(entry())
-              || getAfter(entry()).data.get('likeCount', 0) == get(entry()).data.get('likeCount', 0) - 1);
+          && (!exists(entryPath(entryId))
+              || getAfter(entryPath(entryId)).data.get('likeCount', 0) == get(entryPath(entryId)).data.get('likeCount', 0) - 1);
       }
 
-      // 책갈피: 본인만 읽고 쓸 수 있음
+      // 책갈피: 본인만
       match /bookmarks/{entryId} {
         allow read, delete: if isUser(uid);
         allow create: if isUser(uid)
+          && request.resource.data.keys().hasOnly(['createdAt', 'entryId'])
+          && request.resource.data.entryId == entryId
+          && createdNow();
+      }
+
+      // 팔로우: 내가 팔로우하는 목록만 직접 씁니다. 상대의 followers 는 서버가 만듭니다.
+      match /following/{target} {
+        allow read: if signedIn();
+        allow create: if isUser(uid) && target != uid
           && request.resource.data.keys().hasOnly(['createdAt'])
-          && request.resource.data.createdAt == request.time;
+          && createdNow();
+        allow delete: if isUser(uid);
+      }
+      match /followers/{follower} {
+        allow read: if signedIn();
+        allow write: if false;
+      }
+
+      // 차단: 본인만
+      match /blocked/{target} {
+        allow read, delete: if isUser(uid);
+        allow create: if isUser(uid) && target != uid
+          && request.resource.data.keys().hasOnly(['createdAt', 'displayName'])
+          && createdNow();
+      }
+
+      // 알림: 서버가 만들고, 본인은 읽음 표시와 삭제만
+      match /notifications/{notificationId} {
+        allow read, delete: if isUser(uid);
+        allow update: if isUser(uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+        allow create: if false;
+      }
+
+      // 비공개 설정: 푸시 토큰(fcm)은 본인이, 사용량(quota)은 서버만
+      match /private/{doc} {
+        allow read: if isUser(uid);
+        allow write: if isUser(uid) && doc == 'fcm'
+          && request.resource.data.keys().hasOnly(['tokens'])
+          && request.resource.data.tokens is list
+          && request.resource.data.tokens.size() <= 10;
       }
     }
 
-    // 도감 기록: 공개 기록은 로그인한 모든 사용자가, 비공개 기록은 본인만 읽을 수 있음
+    // ── 도감 기록 ─────────────────────────────────────────────
+    // 등록은 서버 함수(createEntry)만 합니다 (위치·중복 규칙을 서버에서 확인).
     match /entries/{entryId} {
-      function validNewEntry(data) {
-        return data.keys().hasAll(['ownerId', 'ownerName', 'scientificName', 'score',
-                                   'photoUrl', 'capturedAt', 'isPublic', 'createdAt'])
-          && data.scientificName is string && data.scientificName.size() > 0
-          && data.score is number
-          && data.photoUrl is string
-          && data.capturedAt is timestamp
-          && data.isPublic is bool
-          && data.memo is string && data.memo.size() <= 1000
-          && data.get('likeCount', 0) == 0
-          && data.createdAt == request.time;
-      }
-
       function myLike() {
         return /databases/$(database)/documents/users/$(request.auth.uid)/likes/$(entryId);
       }
@@ -67,12 +116,13 @@ service cloud.firestore {
         || resource.data.isPublic == true
         || resource.data.ownerId == request.auth.uid
       );
-      allow create: if isUser(request.resource.data.ownerId) && validNewEntry(request.resource.data);
-      // 식별 결과·촬영 정보는 수정할 수 없고, 공개 여부와 메모만 변경 가능
+      allow create: if false;
+      // 주인: 공개 여부와 메모만 변경. 신고로 숨겨진 기록은 다시 공개할 수 없음
       allow update: if isUser(resource.data.ownerId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isPublic', 'memo'])
         && request.resource.data.isPublic is bool
-        && request.resource.data.memo is string && request.resource.data.memo.size() <= 1000;
+        && request.resource.data.memo is string && request.resource.data.memo.size() <= 1000
+        && !(resource.data.get('moderation', '') == 'hidden' && request.resource.data.isPublic == true);
       // 좋아요 수: 내 좋아요 문서를 만들거나 지우는 요청에서만 ±1.
       // 좋아요는 볼 수 있는 기록에만, 취소는 그 뒤 비공개로 바뀐 기록에도 할 수 있습니다.
       allow update: if signedIn()
@@ -85,6 +135,35 @@ service cloud.firestore {
             && exists(myLike()) && !existsAfter(myLike()))
         );
       allow delete: if isUser(resource.data.ownerId);
+
+      // 댓글: 볼 수 있는 기록에만. 작성자 이름과 댓글 수는 서버가 채웁니다.
+      match /comments/{commentId} {
+        allow read: if canSeeEntry(entryId);
+        allow create: if canSeeEntry(entryId)
+          && request.resource.data.keys().hasOnly(['authorId', 'authorName', 'text', 'createdAt'])
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 500
+          && createdNow();
+        // 댓글 작성자 또는 기록 주인이 지울 수 있음
+        allow delete: if signedIn() && (
+          resource.data.authorId == request.auth.uid
+          || get(entryPath(entryId)).data.ownerId == request.auth.uid
+        );
+      }
+    }
+
+    // ── 신고 ─────────────────────────────────────────────────
+    // 누구나 신고할 수 있고, 내용은 관리자(Firebase 콘솔)만 봅니다.
+    match /reports/{reportId} {
+      allow read, update, delete: if false;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['reporterId', 'targetType', 'targetId', 'entryId', 'targetOwnerId', 'reason', 'createdAt'])
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.targetType in ['entry', 'comment', 'user']
+        && request.resource.data.targetId is string
+        && request.resource.data.reason is string && request.resource.data.reason.size() <= 300
+        && createdNow();
     }
   }
 }

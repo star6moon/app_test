@@ -405,7 +405,7 @@ private fun SelectedEntryCard(item: PlantMapItem, onClick: () -> Unit) {
     ) {
         Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                model = entry.photoUrl,
+                model = entry.listImageUrl,
                 contentDescription = item.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(88.dp).clip(MaterialTheme.shapes.medium),
@@ -518,7 +518,7 @@ private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (en
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     AsyncImage(
-                        model = item.entry.photoUrl,
+                        model = item.entry.listImageUrl,
                         contentDescription = item.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.size(76.dp).clip(MaterialTheme.shapes.small),

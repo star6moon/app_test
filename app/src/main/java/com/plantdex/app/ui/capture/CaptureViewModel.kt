@@ -15,6 +15,8 @@ import com.plantdex.app.data.plantnet.PlantIdentificationException
 import com.plantdex.app.data.plantnet.PlantIdentifier
 import com.plantdex.app.data.repository.AuthRepository
 import com.plantdex.app.data.repository.CollectionRepository
+import com.plantdex.app.data.repository.EntrySaveException
+import com.plantdex.app.data.repository.NearbyDuplicateException
 import com.plantdex.app.data.rules.NearbyRecord
 import com.plantdex.app.data.rules.NearbyRule
 import com.plantdex.app.util.ImageUtils
@@ -146,7 +148,7 @@ class CaptureViewModel(
     }
 
     private suspend fun identify(file: File): Identification = try {
-        val candidates = plantIdentifier.identify(file)
+        val candidates = plantIdentifier.identify(listOf(file))
         Identification.Success(candidates, catalogBadges(candidates))
     } catch (e: PlantIdentificationException) {
         Identification.Error(e.message ?: "식물 식별에 실패했습니다.")
@@ -305,6 +307,10 @@ class CaptureViewModel(
                 _uiState.value = CaptureUiState.Saved(id, discoveryMessage(plant))
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: NearbyDuplicateException) {
+                updateResults { it.copy(isSaving = false, saveError = e.message) }
+            } catch (e: EntrySaveException) {
+                updateResults { it.copy(isSaving = false, saveError = e.message) }
             } catch (e: Exception) {
                 updateResults { it.copy(isSaving = false, saveError = "저장하지 못했습니다: ${e.message}") }
             }
