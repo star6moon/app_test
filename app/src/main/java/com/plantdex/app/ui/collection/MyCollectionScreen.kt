@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +51,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.plantdex.app.data.catalog.CatalogProgress
 import com.plantdex.app.data.catalog.CollectionProgress
 import com.plantdex.app.data.model.UserProfile
+import com.plantdex.app.ui.achievements.BadgesSummaryCard
+import com.plantdex.app.ui.achievements.MissionsCard
+import com.plantdex.app.ui.achievements.rememberAchievements
+import com.plantdex.app.ui.profile.ProfileHeader
+import kotlinx.coroutines.flow.catch
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
@@ -64,6 +70,8 @@ fun MyCollectionScreen(
     onAllRecordsClick: () -> Unit,
     onBookmarksClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onBadgesClick: () -> Unit,
+    onRankingClick: () -> Unit,
 ) {
     val container = appContainer()
     val viewModel: CatalogProgressViewModel = viewModel(
@@ -75,6 +83,9 @@ fun MyCollectionScreen(
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
     val bookmarkIds by container.reactionRepository.myBookmarkIds.collectAsStateWithLifecycle()
+    val profileFlow = remember(user.uid) { container.socialRepository.observeProfile(user.uid).catch { emit(null) } }
+    val profile by profileFlow.collectAsStateWithLifecycle(initialValue = null)
+    val achievements = rememberAchievements(user.uid)
 
     Scaffold(
         topBar = {
@@ -97,13 +108,42 @@ fun MyCollectionScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                profile?.let { p ->
+                    item { ProfileHeader(profile = p, isMe = true, isFollowing = null, onFollowChange = {}) }
+                }
+                achievements?.missions?.takeIf { it.isNotEmpty() }?.let { missions ->
+                    item { MissionsCard(missions) }
+                }
                 item { OverallCard(s.data) }
+                achievements?.let { a ->
+                    item { BadgesSummaryCard(a.badges, onClick = onBadgesClick) }
+                }
+                item { RankingCard(onClick = onRankingClick) }
                 items(s.data.catalogs, key = { it.catalog.id }) { progress ->
                     CatalogCard(progress, onClick = { onCatalogClick(progress.catalog.id) })
                 }
                 item { AllRecordsCard(s.data, onClick = onAllRecordsClick) }
                 item { BookmarksCard(bookmarkIds?.size, onClick = onBookmarksClick) }
             }
+        }
+    }
+}
+
+@Composable
+private fun RankingCard(onClick: () -> Unit) {
+    OutlinedCard(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("🏆", style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text("친구 랭킹", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "나와 팔로우한 사람들 중 몇 등일까요?",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
         }
     }
 }

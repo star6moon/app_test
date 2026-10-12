@@ -192,6 +192,7 @@ fun EntryDetailScreen(
                         onOpenMap = { openMap(context, data, name) },
                         onUserClick = { onUserClick(data.ownerId, data.ownerName) },
                         onSpeciesClick = { onSpeciesClick(data.scientificName, name, data.family) },
+                        onAuthorClick = onUserClick,
                         modifier = modifier,
                     )
                 }
@@ -253,6 +254,7 @@ private fun EntryDetailContent(
     onOpenMap: () -> Unit,
     onUserClick: () -> Unit,
     onSpeciesClick: () -> Unit,
+    onAuthorClick: (uid: String, name: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier.verticalScroll(rememberScrollState())) {
@@ -319,6 +321,8 @@ private fun EntryDetailContent(
                     )
                 }
             }
+            HorizontalDivider()
+            CommentsSection(entryId = entry.id, entryOwnerId = entry.ownerId, onAuthorClick = onAuthorClick)
         }
     }
 }

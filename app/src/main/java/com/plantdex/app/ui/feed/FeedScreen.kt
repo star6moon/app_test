@@ -17,7 +17,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,6 +34,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,24 +57,69 @@ import com.plantdex.app.ui.components.ReactionBar
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.localizedName
 import com.plantdex.app.util.Formatters
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 
 /** 모든 사용자의 최근 공개 도감 기록. */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun FeedScreen(
     onEntryClick: (entryId: String) -> Unit,
     onUserClick: (userId: String, userName: String) -> Unit,
+    onNotificationsClick: () -> Unit,
 ) {
     val container = appContainer()
-    val viewModel: EntryListViewModel = viewModel(
+    var followingOnly by rememberSaveable { mutableStateOf(false) }
+    val allViewModel: EntryListViewModel = viewModel(
+        key = "feed_all",
         factory = viewModelFactory {
             initializer { EntryListViewModel(container.collectionRepository.observeFeed()) }
         },
     )
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val followingViewModel: EntryListViewModel = viewModel(
+        key = "feed_following",
+        factory = viewModelFactory {
+            initializer {
+                EntryListViewModel(
+                    container.socialRepository.followingIds
+                        .filterNotNull()
+                        .distinctUntilChanged()
+                        .flatMapLatest { container.collectionRepository.observeFeedOf(it) },
+                )
+            }
+        },
+    )
+    val state by (if (followingOnly) followingViewModel else allViewModel).state.collectAsStateWithLifecycle()
     val blockedIds by container.moderationRepository.blockedIds.collectAsStateWithLifecycle()
+    val notifications by container.socialRepository.notifications.collectAsStateWithLifecycle()
+    val unread = notifications.count { !it.read && it.actorUid !in blockedIds }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("둘러보기") }) }) { padding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("둘러보기") },
+                actions = {
+                    SingleChoiceSegmentedButtonRow(Modifier.padding(end = 4.dp)) {
+                        listOf(false to "전체", true to "팔로잉").forEachIndexed { i, (value, label) ->
+                            SegmentedButton(
+                                selected = followingOnly == value,
+                                onClick = { followingOnly = value },
+                                shape = SegmentedButtonDefaults.itemShape(i, 2),
+                                icon = {},
+                            ) { Text(label, style = MaterialTheme.typography.labelMedium) }
+                        }
+                    }
+                    IconButton(onClick = onNotificationsClick) {
+                        BadgedBox(badge = { if (unread > 0) Badge { Text(if (unread > 99) "99+" else "$unread") } }) {
+                            Icon(Icons.Outlined.Notifications, contentDescription = "알림")
+                        }
+                    }
+                },
+            )
+        },
+    ) { padding ->
         val modifier = Modifier.padding(padding)
         when (val s = state) {
             LoadState.Loading -> LoadingBox(modifier)
@@ -71,7 +128,11 @@ fun FeedScreen(
                 // 차단한 사용자의 기록은 보이지 않게 합니다.
                 val visible = s.data.filter { it.ownerId !in blockedIds }
                 if (visible.isEmpty()) {
-                    MessageBox("아직 공유된 기록이 없어요", modifier, body = "첫 번째로 식물을 기록해 공유해 보세요!")
+                    if (followingOnly) {
+                        MessageBox("팔로우한 사람의 기록이 없어요", modifier, body = "전체 피드에서 마음에 드는 사람의 이름을 눌러 팔로우해 보세요.")
+                    } else {
+                        MessageBox("아직 공유된 기록이 없어요", modifier, body = "첫 번째로 식물을 기록해 공유해 보세요!")
+                    }
                 } else {
                     LazyColumn(
                         modifier = modifier.fillMaxSize(),

@@ -20,7 +20,10 @@ import com.plantdex.app.data.repository.CollectionRepository
 import com.plantdex.app.data.repository.DraftRepository
 import com.plantdex.app.data.repository.ModerationRepository
 import com.plantdex.app.data.repository.ReactionRepository
+import com.plantdex.app.data.repository.SocialRepository
+import com.plantdex.app.push.DeepLink
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
@@ -49,6 +52,9 @@ class AppContainer(context: Context) {
     /** 좋아요·책갈피 */
     val reactionRepository = ReactionRepository(Firebase.firestore, authRepository, appScope)
 
+    /** 댓글·팔로우·프로필·알림 */
+    val socialRepository = SocialRepository(Firebase.firestore, Firebase.storage, authRepository, appScope)
+
     /** 신고·차단 */
     val moderationRepository = ModerationRepository(Firebase.firestore, authRepository, appScope)
 
@@ -69,6 +75,9 @@ class AppContainer(context: Context) {
 
     /** 앱에 내장된 주제별 도감 목록 */
     val catalogRepository = CatalogRepository(context.applicationContext)
+
+    /** 알림을 눌러 열었을 때 이동할 곳 (화면이 처리하면 null 로 비움) */
+    val pendingDeepLink = MutableStateFlow<DeepLink?>(null)
 
     /** 식물 정보 페이지의 위키백과 설명 */
     val wikipediaClient = WikipediaClient(httpClient)

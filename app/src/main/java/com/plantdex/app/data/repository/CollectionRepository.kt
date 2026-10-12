@@ -22,6 +22,8 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -174,6 +176,23 @@ class CollectionRepository(
             val truncated = snapshots.any { it.size() >= perQuery }
             snapshots.flatMap { snap -> snap.documents.mapNotNull { it.toEntry() } }.distinctBy { it.id } to truncated
         }
+
+    /**
+     * 내가 팔로우하는 사람들의 최근 공개 기록 (팔로잉 피드).
+     * Firestore 의 in 조건은 30개까지라 30명씩 나눠 듣고 합칩니다.
+     */
+    fun observeFeedOf(ownerIds: Collection<String>, limit: Long = 100): Flow<List<CollectionEntry>> {
+        val chunks = ownerIds.distinct().chunked(30)
+        if (chunks.isEmpty()) return flowOf(emptyList())
+        val flows = chunks.map { chunk ->
+            entries.whereIn("ownerId", chunk)
+                .whereEqualTo("isPublic", true)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(limit)
+                .observe()
+        }
+        return combine(flows) { lists -> lists.flatMap { it }.sortedByDescending { it.capturedAt }.take(limit.toInt()) }
+    }
 
     fun observeEntry(id: String): Flow<CollectionEntry?> = callbackFlow {
         val registration = entries.document(id).addSnapshotListener { snapshot, error ->

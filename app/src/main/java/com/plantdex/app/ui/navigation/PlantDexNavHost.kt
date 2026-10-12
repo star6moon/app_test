@@ -14,7 +14,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.tasks.await
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.appContainer
+import com.plantdex.app.ui.achievements.BadgesScreen
 import com.plantdex.app.ui.capture.CaptureScreen
 import com.plantdex.app.ui.collection.BookmarksScreen
 import com.plantdex.app.ui.collection.CatalogDetailScreen
@@ -44,6 +54,8 @@ import com.plantdex.app.ui.feed.FeedScreen
 import com.plantdex.app.ui.map.PlantMapScreen
 import com.plantdex.app.ui.settings.BlockedUsersScreen
 import com.plantdex.app.ui.settings.SettingsScreen
+import com.plantdex.app.ui.social.NotificationsScreen
+import com.plantdex.app.ui.social.RankingScreen
 import com.plantdex.app.ui.species.SpeciesScreen
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -59,6 +71,9 @@ import kotlin.reflect.KClass
 @Serializable data class EntryDetailRoute(val entryId: String)
 @Serializable data class UserCollectionRoute(val userId: String, val userName: String)
 @Serializable data class SpeciesRoute(val scientificName: String, val name: String, val family: String? = null)
+@Serializable data object NotificationsRoute
+@Serializable data object BadgesRoute
+@Serializable data object RankingRoute
 @Serializable data object SettingsRoute
 @Serializable data object BlockedUsersRoute
 
@@ -113,6 +128,35 @@ fun PlantDexNavHost(user: UserProfile) {
         }
     }
 
+    // 푸시 알림: 권한 요청(Android 13+) 후 이 기기의 토큰을 등록합니다.
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    LaunchedEffect(user.uid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            val prefs = context.getSharedPreferences("migrations", Context.MODE_PRIVATE)
+            if (!prefs.getBoolean("asked_notifications", false)) {
+                prefs.edit().putBoolean("asked_notifications", true).apply()
+                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+        runCatching {
+            val token = FirebaseMessaging.getInstance().token.await()
+            container.socialRepository.registerPushToken(token)
+        }
+    }
+
+    // 알림을 눌러 앱을 열었으면 해당 기록이나 사람으로 이동합니다.
+    val deepLink by container.pendingDeepLink.collectAsStateWithLifecycle()
+    LaunchedEffect(deepLink) {
+        val link = deepLink ?: return@LaunchedEffect
+        container.pendingDeepLink.value = null
+        when {
+            link.entryId != null -> openEntry(link.entryId)
+            link.actorUid != null -> openUser(link.actorUid, "")
+        }
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
@@ -135,7 +179,11 @@ fun PlantDexNavHost(user: UserProfile) {
             modifier = Modifier.padding(padding).consumeWindowInsets(padding),
         ) {
             composable<FeedRoute> {
-                FeedScreen(onEntryClick = ::openEntry, onUserClick = ::openUser)
+                FeedScreen(
+                    onEntryClick = ::openEntry,
+                    onUserClick = ::openUser,
+                    onNotificationsClick = { navController.navigate(NotificationsRoute) },
+                )
             }
             composable<MapRoute> {
                 PlantMapScreen(user = user, onEntryClick = ::openEntry)
@@ -162,7 +210,22 @@ fun PlantDexNavHost(user: UserProfile) {
                     onAllRecordsClick = { navController.navigate(MyRecordsRoute) },
                     onBookmarksClick = { navController.navigate(BookmarksRoute) },
                     onSettingsClick = { navController.navigate(SettingsRoute) },
+                    onBadgesClick = { navController.navigate(BadgesRoute) },
+                    onRankingClick = { navController.navigate(RankingRoute) },
                 )
+            }
+            composable<NotificationsRoute> {
+                NotificationsScreen(
+                    onEntryClick = ::openEntry,
+                    onUserClick = ::openUser,
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable<BadgesRoute> {
+                BadgesScreen(uid = user.uid, onBack = { navController.popBackStack() })
+            }
+            composable<RankingRoute> {
+                RankingScreen(uid = user.uid, onUserClick = ::openUser, onBack = { navController.popBackStack() })
             }
             composable<SettingsRoute> {
                 SettingsScreen(
