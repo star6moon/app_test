@@ -19,10 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.util.Formatters
 
@@ -93,11 +95,11 @@ fun CollectionSummary(entries: List<CollectionEntry>, modifier: Modifier = Modif
     val speciesCount = entries.map { it.scientificName }.distinct().size
     Column(modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
         Text(
-            "수집한 식물 ${speciesCount}종",
+            stringResource(R.string.common_collection_species_count, speciesCount),
             style = MaterialTheme.typography.titleLarge,
         )
         Text(
-            "총 ${entries.size}개의 기록",
+            stringResource(R.string.common_collection_entry_count, entries.size),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

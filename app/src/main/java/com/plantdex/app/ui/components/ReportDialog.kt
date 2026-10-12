@@ -17,8 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.plantdex.app.R
 import com.plantdex.app.data.repository.ModerationRepository
 
 /** 신고 사유를 고르는 창. 확인하면 "사유 (추가 설명)" 문자열을 돌려줍니다. */
@@ -45,19 +47,19 @@ fun ReportDialog(title: String, onDismiss: () -> Unit, onReport: (reason: String
                 OutlinedTextField(
                     value = detail,
                     onValueChange = { detail = it.take(200) },
-                    label = { Text("추가 설명 (선택)") },
+                    label = { Text(stringResource(R.string.common_report_detail_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
                 )
-                Text("신고가 여러 건 쌓이면 자동으로 숨겨져요.")
+                Text(stringResource(R.string.common_report_auto_hide_notice))
             }
         },
         confirmButton = {
             TextButton(enabled = selected != null, onClick = {
                 val reason = selected ?: return@TextButton
                 onReport(if (detail.isBlank()) reason else "$reason (${detail.trim()})")
-            }) { Text("신고") }
+            }) { Text(stringResource(R.string.common_report_confirm)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("취소") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_report_cancel)) } },
     )
 }

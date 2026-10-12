@@ -59,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -66,6 +67,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
@@ -115,7 +117,7 @@ fun EntryDetailScreen(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Toast.makeText(context, "처리하지 못했어요: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.entry_detail_action_failed, e.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -139,31 +141,31 @@ fun EntryDetailScreen(
                 title = { Text(name) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.entry_detail_back))
                     }
                 },
                 actions = {
                     if (entry != null) {
                         IconButton(onClick = { shareEntry(context, entry, name) }) {
-                            Icon(Icons.Outlined.Share, contentDescription = "공유")
+                            Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.entry_detail_share))
                         }
                         if (isOwner) {
                             IconButton(onClick = { confirmDelete = true }) {
-                                Icon(Icons.Outlined.Delete, contentDescription = "삭제")
+                                Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.entry_detail_delete))
                             }
                         } else {
                             Box {
                                 IconButton(onClick = { menuOpen = true }) {
-                                    Icon(Icons.Filled.MoreVert, contentDescription = "더 보기")
+                                    Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.entry_detail_more))
                                 }
                                 DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                                     DropdownMenuItem(
-                                        text = { Text("신고하기") },
+                                        text = { Text(stringResource(R.string.entry_detail_report_menu)) },
                                         leadingIcon = { Icon(Icons.Outlined.Flag, contentDescription = null) },
                                         onClick = { menuOpen = false; reporting = true },
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("${entry.ownerName}님 차단") },
+                                        text = { Text(stringResource(R.string.entry_detail_block_menu, entry.ownerName)) },
                                         leadingIcon = { Icon(Icons.Outlined.Block, contentDescription = null) },
                                         onClick = { menuOpen = false; confirmBlock = true },
                                     )
@@ -178,11 +180,11 @@ fun EntryDetailScreen(
         val modifier = Modifier.padding(padding)
         when (val s = state) {
             LoadState.Loading -> LoadingBox(modifier)
-            is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = s.message)
+            is LoadState.Error -> MessageBox(stringResource(R.string.entry_detail_load_failed), modifier, body = s.message)
             is LoadState.Success -> {
                 val data = s.data
                 if (data == null) {
-                    MessageBox("삭제되었거나 존재하지 않는 기록이에요", modifier)
+                    MessageBox(stringResource(R.string.entry_detail_not_found), modifier)
                 } else {
                     EntryDetailContent(
                         entry = data,
@@ -201,12 +203,13 @@ fun EntryDetailScreen(
     }
 
     if (reporting && entry != null) {
+        val reportDoneMessage = stringResource(R.string.entry_detail_report_done)
         ReportDialog(
-            title = "이 기록 신고",
+            title = stringResource(R.string.entry_detail_report_title),
             onDismiss = { reporting = false },
             onReport = { reason ->
                 reporting = false
-                moderate("신고가 접수됐어요. 확인 후 조치할게요.") {
+                moderate(reportDoneMessage) {
                     moderation.report(ReportTarget.Entry, entry.id, reason, entryId = entry.id, targetOwnerId = entry.ownerId)
                 }
             },
@@ -214,33 +217,34 @@ fun EntryDetailScreen(
     }
 
     if (confirmBlock && entry != null) {
+        val blockedMessage = stringResource(R.string.entry_detail_blocked_toast)
         AlertDialog(
             onDismissRequest = { confirmBlock = false },
-            title = { Text("${entry.ownerName}님을 차단할까요?") },
-            text = { Text("이 사용자의 기록과 댓글이 보이지 않고, 이 사용자의 활동 알림도 오지 않아요. 설정에서 언제든 해제할 수 있어요.") },
+            title = { Text(stringResource(R.string.entry_detail_block_title, entry.ownerName)) },
+            text = { Text(stringResource(R.string.entry_detail_block_message)) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmBlock = false
-                    moderate("차단했어요.") { moderation.block(entry.ownerId, entry.ownerName) }
+                    moderate(blockedMessage) { moderation.block(entry.ownerId, entry.ownerName) }
                     onBack()
-                }) { Text("차단") }
+                }) { Text(stringResource(R.string.entry_detail_block_confirm)) }
             },
-            dismissButton = { TextButton(onClick = { confirmBlock = false }) { Text("취소") } },
+            dismissButton = { TextButton(onClick = { confirmBlock = false }) { Text(stringResource(R.string.entry_detail_cancel)) } },
         )
     }
 
     if (confirmDelete && entry != null) {
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
-            title = { Text("기록을 삭제할까요?") },
-            text = { Text("사진과 기록이 모두 삭제되며 되돌릴 수 없어요.") },
+            title = { Text(stringResource(R.string.entry_detail_delete_title)) },
+            text = { Text(stringResource(R.string.entry_detail_delete_message)) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmDelete = false
                     viewModel.delete(entry)
-                }) { Text("삭제") }
+                }) { Text(stringResource(R.string.entry_detail_delete)) }
             },
-            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("취소") } },
+            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.entry_detail_cancel)) } },
         )
     }
 }
@@ -272,7 +276,11 @@ private fun EntryDetailContent(
                 Column {
                     Text(name, style = MaterialTheme.typography.headlineSmall)
                     Text(entry.scientificName, style = MaterialTheme.typography.titleMedium, fontStyle = FontStyle.Italic)
-                    val taxonomy = listOfNotNull(entry.family?.let { "과: $it" }, entry.genus?.let { "속: $it" })
+                    val family = entry.family
+                    val genus = entry.genus
+                    val familyText = if (family != null) stringResource(R.string.entry_detail_family, family) else null
+                    val genusText = if (genus != null) stringResource(R.string.entry_detail_genus, genus) else null
+                    val taxonomy = listOfNotNull(familyText, genusText)
                     if (taxonomy.isNotEmpty()) {
                         Text(
                             taxonomy.joinToString(" · "),
@@ -283,15 +291,15 @@ private fun EntryDetailContent(
                 }
             }
             OutlinedButton(onClick = onSpeciesClick, modifier = Modifier.fillMaxWidth()) {
-                Text("이 식물 정보 보기 (설명·관찰 시기·내 기록)")
+                Text(stringResource(R.string.entry_detail_view_species))
             }
             HorizontalDivider()
-            InfoRow(Icons.Outlined.Schedule, "촬영 일시", Formatters.dateTime(entry.capturedAt))
+            InfoRow(Icons.Outlined.Schedule, stringResource(R.string.entry_detail_captured_at), Formatters.dateTime(entry.capturedAt))
             val location = entry.location
             if (location != null) {
                 InfoRow(
                     Icons.Outlined.Place,
-                    "촬영 위치",
+                    stringResource(R.string.entry_detail_location),
                     listOfNotNull(
                         location.placeName,
                         Formatters.coordinates(location.latitude, location.longitude),
@@ -299,10 +307,10 @@ private fun EntryDetailContent(
                     onClick = onOpenMap,
                 )
             } else {
-                InfoRow(Icons.Outlined.Place, "촬영 위치", "위치 정보 없음")
+                InfoRow(Icons.Outlined.Place, stringResource(R.string.entry_detail_location), stringResource(R.string.entry_detail_no_location))
             }
-            InfoRow(Icons.Outlined.Verified, "AI 식별 신뢰도", "${Formatters.percent(entry.score)} (Pl@ntNet)")
-            InfoRow(Icons.Outlined.Person, "기록한 사람", entry.ownerName, onClick = onUserClick)
+            InfoRow(Icons.Outlined.Verified, stringResource(R.string.entry_detail_ai_confidence), "${Formatters.percent(entry.score)} (Pl@ntNet)")
+            InfoRow(Icons.Outlined.Person, stringResource(R.string.entry_detail_recorded_by), entry.ownerName, onClick = onUserClick)
             if (entry.memo.isNotBlank()) {
                 HorizontalDivider()
                 Text(entry.memo, style = MaterialTheme.typography.bodyLarge)
@@ -310,12 +318,12 @@ private fun EntryDetailContent(
             if (isOwner) {
                 HorizontalDivider()
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("다른 사용자에게 공개", Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.entry_detail_public_toggle), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                     Switch(checked = entry.isPublic, onCheckedChange = onPublicChange, enabled = !entry.isHidden)
                 }
                 if (entry.isHidden) {
                     Text(
-                        "여러 사용자의 신고로 숨겨진 기록이에요. 다시 공개할 수 없어요.",
+                        stringResource(R.string.entry_detail_hidden_notice),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -362,7 +370,7 @@ private fun shareEntry(context: Context, entry: CollectionEntry, name: String) {
         type = "text/plain"
         putExtra(Intent.EXTRA_TEXT, text)
     }
-    context.startActivity(Intent.createChooser(intent, "도감 기록 공유"))
+    context.startActivity(Intent.createChooser(intent, context.getString(R.string.entry_detail_share_chooser_title)))
 }
 
 private fun openMap(context: Context, entry: CollectionEntry, name: String) {

@@ -38,8 +38,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.plantdex.app.R
 import com.plantdex.app.data.repository.AuthRepository
 import com.plantdex.app.ui.components.appContainer
 import kotlinx.coroutines.CancellationException
@@ -68,7 +70,7 @@ fun SettingsScreen(onBlockedUsersClick: () -> Unit, onBack: () -> Unit) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Toast.makeText(context, e.message ?: "처리하지 못했어요.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, e.message ?: context.getString(R.string.settings_action_failed), Toast.LENGTH_LONG).show()
             } finally {
                 busy = false
             }
@@ -78,34 +80,34 @@ fun SettingsScreen(onBlockedUsersClick: () -> Unit, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("설정") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.settings_back)) }
                 },
             )
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
-            SectionTitle("계정")
-            SettingRow(Icons.Outlined.Edit, "닉네임 변경", user?.displayName) { editingName = true }
+            SectionTitle(stringResource(R.string.settings_section_account))
+            SettingRow(Icons.Outlined.Edit, stringResource(R.string.settings_change_nickname), user?.displayName) { editingName = true }
             if (auth.hasPasswordLogin) {
-                SettingRow(Icons.Outlined.Key, "비밀번호 재설정 메일 받기", auth.email) {
+                SettingRow(Icons.Outlined.Key, stringResource(R.string.settings_password_reset), auth.email) {
                     val email = auth.email ?: return@SettingRow
-                    run("$email 로 재설정 메일을 보냈어요.") { auth.sendPasswordReset(email) }
+                    run(context.getString(R.string.settings_password_reset_sent, email)) { auth.sendPasswordReset(email) }
                 }
             }
-            SettingRow(Icons.AutoMirrored.Outlined.Logout, "로그아웃", null) { auth.signOut() }
+            SettingRow(Icons.AutoMirrored.Outlined.Logout, stringResource(R.string.settings_sign_out), null) { auth.signOut() }
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-            SectionTitle("커뮤니티")
-            SettingRow(Icons.Outlined.Block, "차단한 사용자", "${blocked.size}명") { onBlockedUsersClick() }
+            SectionTitle(stringResource(R.string.settings_section_community))
+            SettingRow(Icons.Outlined.Block, stringResource(R.string.settings_blocked_users), stringResource(R.string.settings_blocked_count, blocked.size)) { onBlockedUsersClick() }
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-            SectionTitle("위험 구역")
+            SectionTitle(stringResource(R.string.settings_section_danger))
             SettingRow(
                 Icons.Outlined.DeleteForever,
-                "회원 탈퇴",
-                "내 기록·사진·댓글·좋아요가 모두 삭제돼요",
+                stringResource(R.string.settings_delete_account),
+                stringResource(R.string.settings_delete_account_summary),
                 danger = true,
             ) { confirmDelete = true }
         }
@@ -113,50 +115,53 @@ fun SettingsScreen(onBlockedUsersClick: () -> Unit, onBack: () -> Unit) {
 
     if (editingName) {
         var name by remember { mutableStateOf(user?.displayName.orEmpty()) }
+        val nameChangedMessage = stringResource(R.string.settings_nickname_changed)
         AlertDialog(
             onDismissRequest = { editingName = false },
-            title = { Text("닉네임 변경") },
+            title = { Text(stringResource(R.string.settings_change_nickname)) },
             text = {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it.take(AuthRepository.MAX_NAME_LENGTH) },
                     singleLine = true,
-                    supportingText = { Text("${name.length}/${AuthRepository.MAX_NAME_LENGTH} · 내 기록과 댓글의 이름도 바뀌어요") },
+                    supportingText = { Text(stringResource(R.string.settings_nickname_supporting, name.length, AuthRepository.MAX_NAME_LENGTH)) },
                 )
             },
             confirmButton = {
                 TextButton(enabled = !busy && name.isNotBlank(), onClick = {
                     editingName = false
-                    run("닉네임을 바꿨어요.") { auth.updateDisplayName(name) }
-                }) { Text("저장") }
+                    run(nameChangedMessage) { auth.updateDisplayName(name) }
+                }) { Text(stringResource(R.string.settings_save)) }
             },
-            dismissButton = { TextButton(onClick = { editingName = false }) { Text("취소") } },
+            dismissButton = { TextButton(onClick = { editingName = false }) { Text(stringResource(R.string.settings_cancel)) } },
         )
     }
 
     if (confirmDelete) {
         var typed by remember { mutableStateOf("") }
+        val confirmWord = stringResource(R.string.settings_delete_confirm_word)
+        val deleteDoneMessage = stringResource(R.string.settings_delete_done)
         AlertDialog(
             onDismissRequest = { if (!busy) confirmDelete = false },
-            title = { Text("정말 탈퇴할까요?") },
+            title = { Text(stringResource(R.string.settings_delete_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("내 기록, 사진, 댓글, 좋아요, 팔로우가 모두 삭제되고 되돌릴 수 없어요.")
+                    Text(stringResource(R.string.settings_delete_message))
                     OutlinedTextField(
                         value = typed,
                         onValueChange = { typed = it },
                         singleLine = true,
-                        label = { Text("계속하려면 '탈퇴'를 입력하세요") },
+                        label = { Text(stringResource(R.string.settings_delete_confirm_label)) },
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
             },
             confirmButton = {
-                TextButton(enabled = !busy && typed.trim() == "탈퇴", onClick = {
-                    run("탈퇴가 완료됐어요. 그동안 고마웠어요.") { auth.deleteAccount() }
-                }) { Text(if (busy) "삭제 중…" else "탈퇴", color = MaterialTheme.colorScheme.error) }
+                TextButton(enabled = !busy && typed.trim() == confirmWord, onClick = {
+                    run(deleteDoneMessage) { auth.deleteAccount() }
+                }) { Text(stringResource(if (busy) R.string.settings_deleting else R.string.settings_delete_button), color = MaterialTheme.colorScheme.error) }
             },
-            dismissButton = { TextButton(enabled = !busy, onClick = { confirmDelete = false }) { Text("취소") } },
+            dismissButton = { TextButton(enabled = !busy, onClick = { confirmDelete = false }) { Text(stringResource(R.string.settings_cancel)) } },
         )
     }
 }

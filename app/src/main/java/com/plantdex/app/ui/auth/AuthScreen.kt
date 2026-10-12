@@ -30,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -39,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.credentials.exceptions.GetCredentialCancellationException
+import com.plantdex.app.R
 import com.plantdex.app.ui.components.appContainer
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -52,6 +54,7 @@ fun AuthScreen() {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val googleFailedMessage = stringResource(R.string.auth_screen_google_failed)
 
     Surface(Modifier.fillMaxSize()) {
         Column(
@@ -72,7 +75,7 @@ fun AuthScreen() {
             )
             Text("PlantDex", style = MaterialTheme.typography.headlineLarge)
             Text(
-                "주변의 식물을 찍고, 나만의 도감을 채워보세요",
+                stringResource(R.string.auth_screen_tagline),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -82,7 +85,7 @@ fun AuthScreen() {
                 OutlinedTextField(
                     value = state.displayName,
                     onValueChange = viewModel::onDisplayNameChange,
-                    label = { Text("닉네임") },
+                    label = { Text(stringResource(R.string.auth_screen_nickname)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier.fillMaxWidth(),
@@ -91,7 +94,7 @@ fun AuthScreen() {
             OutlinedTextField(
                 value = state.email,
                 onValueChange = viewModel::onEmailChange,
-                label = { Text("이메일") },
+                label = { Text(stringResource(R.string.auth_screen_email)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth(),
@@ -99,7 +102,7 @@ fun AuthScreen() {
             OutlinedTextField(
                 value = state.password,
                 onValueChange = viewModel::onPasswordChange,
-                label = { Text("비밀번호 (6자 이상)") },
+                label = { Text(stringResource(R.string.auth_screen_password)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
@@ -118,7 +121,7 @@ fun AuthScreen() {
                 if (state.isLoading) {
                     CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                 } else {
-                    Text(if (state.isSignUp) "회원가입" else "로그인")
+                    Text(stringResource(if (state.isSignUp) R.string.auth_screen_sign_up else R.string.auth_screen_sign_in))
                 }
             }
             state.infoMessage?.let {
@@ -134,19 +137,19 @@ fun AuthScreen() {
                         } catch (e: CancellationException) {
                             throw e
                         } catch (e: Exception) {
-                            viewModel.showError(e.message ?: "구글 로그인에 실패했어요.")
+                            viewModel.showError(e.message ?: googleFailedMessage)
                         }
                     }
                 },
                 enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth().height(48.dp),
-            ) { Text("Google 계정으로 계속하기") }
+            ) { Text(stringResource(R.string.auth_screen_continue_with_google)) }
             TextButton(onClick = viewModel::toggleMode, enabled = !state.isLoading) {
-                Text(if (state.isSignUp) "이미 계정이 있어요 · 로그인" else "처음이신가요? · 회원가입")
+                Text(stringResource(if (state.isSignUp) R.string.auth_screen_switch_to_sign_in else R.string.auth_screen_switch_to_sign_up))
             }
             if (!state.isSignUp) {
                 TextButton(onClick = viewModel::sendPasswordReset, enabled = !state.isLoading) {
-                    Text("비밀번호를 잊으셨나요?")
+                    Text(stringResource(R.string.auth_screen_forgot_password))
                 }
             }
         }

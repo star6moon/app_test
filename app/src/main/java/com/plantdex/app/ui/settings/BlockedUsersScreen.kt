@@ -20,7 +20,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.plantdex.app.R
 import com.plantdex.app.ui.components.MessageBox
 import com.plantdex.app.ui.components.appContainer
 import kotlinx.coroutines.launch
@@ -32,31 +34,33 @@ fun BlockedUsersScreen(onBack: () -> Unit) {
     val moderation = appContainer().moderationRepository
     val blocked by moderation.blockedUsers.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val noNameLabel = stringResource(R.string.settings_blocked_no_name)
+    val unblockFailedMessage = stringResource(R.string.settings_blocked_unblock_failed)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("차단한 사용자") },
+                title = { Text(stringResource(R.string.settings_blocked_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.settings_blocked_back)) }
                 },
             )
         },
     ) { padding ->
         if (blocked.isEmpty()) {
-            MessageBox("차단한 사용자가 없어요", Modifier.padding(padding), body = "차단하면 그 사용자의 기록·댓글이 보이지 않고 알림도 오지 않아요.")
+            MessageBox(stringResource(R.string.settings_blocked_empty_title), Modifier.padding(padding), body = stringResource(R.string.settings_blocked_empty_body))
         } else {
             LazyColumn(Modifier.fillMaxSize().padding(padding)) {
                 items(blocked, key = { it.uid }) { user ->
                     ListItem(
-                        headlineContent = { Text(user.displayName.ifBlank { "(이름 없음)" }) },
+                        headlineContent = { Text(user.displayName.ifBlank { noNameLabel }) },
                         trailingContent = {
                             TextButton(onClick = {
                                 scope.launch {
                                     runCatching { moderation.unblock(user.uid) }
-                                        .onFailure { Toast.makeText(context, "차단을 해제하지 못했어요.", Toast.LENGTH_SHORT).show() }
+                                        .onFailure { Toast.makeText(context, unblockFailedMessage, Toast.LENGTH_SHORT).show() }
                                 }
-                            }) { Text("차단 해제") }
+                            }) { Text(stringResource(R.string.settings_blocked_unblock)) }
                         },
                     )
                 }

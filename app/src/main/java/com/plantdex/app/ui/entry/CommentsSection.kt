@@ -30,8 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.plantdex.app.R
 import com.plantdex.app.data.repository.Comment
 import com.plantdex.app.data.repository.ReportTarget
 import com.plantdex.app.data.repository.SocialRepository
@@ -63,6 +65,8 @@ fun CommentsSection(
     var sending by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf<Comment?>(null) }
     var reporting by remember { mutableStateOf<Comment?>(null) }
+    val deletedMessage = stringResource(R.string.entry_comments_deleted)
+    val reportedMessage = stringResource(R.string.entry_comments_reported)
 
     fun run(success: String?, action: suspend () -> Unit) {
         scope.launch {
@@ -72,13 +76,13 @@ fun CommentsSection(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Toast.makeText(context, e.message ?: "처리하지 못했어요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, e.message ?: context.getString(R.string.entry_comments_action_failed), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("댓글 ${visible.size}", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.entry_comments_title, visible.size), style = MaterialTheme.typography.titleMedium)
         visible.forEach { comment ->
             val myUid = me?.uid
             CommentRow(
@@ -94,7 +98,7 @@ fun CommentsSection(
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it.take(SocialRepository.MAX_COMMENT_LENGTH) },
-                placeholder = { Text("댓글 달기") },
+                placeholder = { Text(stringResource(R.string.entry_comments_placeholder)) },
                 modifier = Modifier.weight(1f),
                 maxLines = 4,
             )
@@ -110,36 +114,36 @@ fun CommentsSection(
                         } catch (e: CancellationException) {
                             throw e
                         } catch (e: Exception) {
-                            Toast.makeText(context, "댓글을 남기지 못했어요: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.entry_comments_send_failed, e.message), Toast.LENGTH_SHORT).show()
                         } finally {
                             sending = false
                         }
                     }
                 },
-            ) { Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "보내기") }
+            ) { Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.entry_comments_send)) }
         }
     }
 
     deleting?.let { comment ->
         AlertDialog(
             onDismissRequest = { deleting = null },
-            title = { Text("댓글을 지울까요?") },
+            title = { Text(stringResource(R.string.entry_comments_delete_title)) },
             confirmButton = {
                 TextButton(onClick = {
                     deleting = null
-                    run("댓글을 지웠어요.") { social.deleteComment(comment) }
-                }) { Text("삭제") }
+                    run(deletedMessage) { social.deleteComment(comment) }
+                }) { Text(stringResource(R.string.entry_comments_delete)) }
             },
-            dismissButton = { TextButton(onClick = { deleting = null }) { Text("취소") } },
+            dismissButton = { TextButton(onClick = { deleting = null }) { Text(stringResource(R.string.entry_comments_cancel)) } },
         )
     }
     reporting?.let { comment ->
         ReportDialog(
-            title = "댓글 신고",
+            title = stringResource(R.string.entry_comments_report_title),
             onDismiss = { reporting = null },
             onReport = { reason ->
                 reporting = null
-                run("신고했어요. 검토 후 조치할게요.") {
+                run(reportedMessage) {
                     container.moderationRepository.report(
                         ReportTarget.Comment,
                         targetId = comment.id,
@@ -184,13 +188,13 @@ private fun CommentRow(
         }
         if (canDelete || canReport) {
             Box {
-                IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = "더 보기") }
+                IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.entry_comments_more)) }
                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                     if (canDelete) {
-                        DropdownMenuItem(text = { Text("삭제") }, onClick = { menu = false; onDelete() })
+                        DropdownMenuItem(text = { Text(stringResource(R.string.entry_comments_delete)) }, onClick = { menu = false; onDelete() })
                     }
                     if (canReport) {
-                        DropdownMenuItem(text = { Text("신고") }, onClick = { menu = false; onReport() })
+                        DropdownMenuItem(text = { Text(stringResource(R.string.entry_comments_report)) }, onClick = { menu = false; onReport() })
                     }
                 }
             }

@@ -22,7 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.plantdex.app.R
 import com.plantdex.app.data.model.CollectionEntry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -46,6 +48,8 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
     // 서버 응답을 기다리는 동안 같은 버튼을 다시 누르지 못하게 합니다.
     var likeBusy by remember { mutableStateOf(false) }
     var bookmarkBusy by remember { mutableStateOf(false) }
+    val likeFailedMessage = stringResource(R.string.common_reaction_like_failed)
+    val bookmarkFailedMessage = stringResource(R.string.common_reaction_bookmark_failed)
 
     fun run(onDone: () -> Unit, failure: String, action: suspend () -> Unit) {
         scope.launch {
@@ -67,12 +71,12 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
             enabled = likesLoaded && !likeBusy,
             onClick = {
                 likeBusy = true
-                run({ likeBusy = false }, "좋아요를 반영하지 못했어요") { reactions.setLiked(entry.id, !liked) }
+                run({ likeBusy = false }, likeFailedMessage) { reactions.setLiked(entry.id, !liked) }
             },
         ) {
             Icon(
                 if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (liked) "좋아요 취소" else "좋아요",
+                contentDescription = stringResource(if (liked) R.string.common_reaction_unlike else R.string.common_reaction_like),
                 tint = if (liked) LikeRed else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -86,12 +90,12 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
             enabled = bookmarksLoaded && !bookmarkBusy,
             onClick = {
                 bookmarkBusy = true
-                run({ bookmarkBusy = false }, "책갈피를 반영하지 못했어요") { reactions.setBookmarked(entry.id, !bookmarked) }
+                run({ bookmarkBusy = false }, bookmarkFailedMessage) { reactions.setBookmarked(entry.id, !bookmarked) }
             },
         ) {
             Icon(
                 if (bookmarked) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                contentDescription = if (bookmarked) "책갈피 해제" else "책갈피",
+                contentDescription = stringResource(if (bookmarked) R.string.common_reaction_remove_bookmark else R.string.common_reaction_bookmark),
                 tint = if (bookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

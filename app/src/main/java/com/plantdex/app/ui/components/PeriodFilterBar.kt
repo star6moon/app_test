@@ -23,7 +23,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.plantdex.app.R
 import com.plantdex.app.data.filter.PeriodFilter
 
 /** 촬영 시기 필터 칩: 전체 / 이번 주 / 이번 달 / 올해 / 직접 선택 */
@@ -53,7 +55,7 @@ fun PeriodFilterBar(
         FilterChip(
             selected = selected is PeriodFilter.Custom,
             onClick = { picking = true },
-            label = { Text(if (selected is PeriodFilter.Custom) selected.label else "직접 선택") },
+            label = { Text(if (selected is PeriodFilter.Custom) selected.label else stringResource(R.string.common_period_custom)) },
             leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
         )
     }
@@ -73,13 +75,13 @@ fun PeriodFilterBar(
                         }
                         picking = false
                     },
-                ) { Text("적용") }
+                ) { Text(stringResource(R.string.common_period_apply)) }
             },
-            dismissButton = { TextButton(onClick = { picking = false }) { Text("취소") } },
+            dismissButton = { TextButton(onClick = { picking = false }) { Text(stringResource(R.string.common_period_cancel)) } },
         ) {
             DateRangePicker(
                 state = pickerState,
-                title = { Text("기간 선택", Modifier.padding(start = 24.dp, top = 16.dp)) },
+                title = { Text(stringResource(R.string.common_period_picker_title), Modifier.padding(start = 24.dp, top = 16.dp)) },
                 modifier = Modifier.weight(1f),
             )
         }
