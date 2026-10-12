@@ -40,6 +40,7 @@ import com.plantdex.app.ui.feed.FeedScreen
 import com.plantdex.app.ui.map.PlantMapScreen
 import com.plantdex.app.ui.settings.BlockedUsersScreen
 import com.plantdex.app.ui.settings.SettingsScreen
+import com.plantdex.app.ui.species.SpeciesScreen
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -53,6 +54,7 @@ import kotlin.reflect.KClass
 @Serializable data class CatalogRoute(val catalogId: String)
 @Serializable data class EntryDetailRoute(val entryId: String)
 @Serializable data class UserCollectionRoute(val userId: String, val userName: String)
+@Serializable data class SpeciesRoute(val scientificName: String, val name: String, val family: String? = null)
 @Serializable data object SettingsRoute
 @Serializable data object BlockedUsersRoute
 
@@ -83,6 +85,8 @@ fun PlantDexNavHost(user: UserProfile) {
         restoreState = true
     }
     fun openEntry(entryId: String) = navController.navigate(EntryDetailRoute(entryId))
+    fun openSpecies(scientificName: String, name: String, family: String?) =
+        navController.navigate(SpeciesRoute(scientificName, name, family))
     fun openUser(userId: String, userName: String) {
         if (userId == user.uid) {
             openTab(MyCollectionRoute)
@@ -158,6 +162,17 @@ fun PlantDexNavHost(user: UserProfile) {
                 CatalogDetailScreen(
                     user = user,
                     catalogId = entry.toRoute<CatalogRoute>().catalogId,
+                    onSpeciesClick = { scientificName, name -> openSpecies(scientificName, name, null) },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable<SpeciesRoute> { entry ->
+                val route = entry.toRoute<SpeciesRoute>()
+                SpeciesScreen(
+                    uid = user.uid,
+                    scientificName = route.scientificName,
+                    name = route.name,
+                    family = route.family,
                     onEntryClick = ::openEntry,
                     onCaptureClick = { openTab(CaptureRoute) },
                     onBack = { navController.popBackStack() },
@@ -172,6 +187,7 @@ fun PlantDexNavHost(user: UserProfile) {
                     entryId = route.entryId,
                     onBack = { navController.popBackStack() },
                     onUserClick = ::openUser,
+                    onSpeciesClick = ::openSpecies,
                 )
             }
             composable<UserCollectionRoute> { entry ->

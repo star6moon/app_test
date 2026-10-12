@@ -1,6 +1,9 @@
 package com.plantdex.app.data.model
 
+import kotlinx.serialization.Serializable
+
 /** AI 가 제안한 식물 후보 한 건. */
+@Serializable
 data class PlantCandidate(
     val scientificName: String,
     val scientificNameWithAuthor: String,

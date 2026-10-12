@@ -1,5 +1,7 @@
 package com.plantdex.app.data.model
 
+import kotlinx.serialization.Serializable
+
 /** 도감에 기록된 식물 한 건 (Firestore `entries/{id}` 문서). */
 data class CollectionEntry(
     val id: String,
@@ -37,6 +39,7 @@ data class CollectionEntry(
 }
 
 /** 촬영 위치. */
+@Serializable
 data class CaptureLocation(
     val latitude: Double,
     val longitude: Double,

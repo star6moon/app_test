@@ -15,7 +15,9 @@ import com.plantdex.app.data.plantnet.LocalizingPlantIdentifier
 import com.plantdex.app.data.plantnet.PlantIdentifier
 import com.plantdex.app.data.plantnet.CloudPlantIdentifier
 import com.plantdex.app.data.repository.AuthRepository
+import com.plantdex.app.data.info.WikipediaClient
 import com.plantdex.app.data.repository.CollectionRepository
+import com.plantdex.app.data.repository.DraftRepository
 import com.plantdex.app.data.repository.ModerationRepository
 import com.plantdex.app.data.repository.ReactionRepository
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +69,12 @@ class AppContainer(context: Context) {
 
     /** 앱에 내장된 주제별 도감 목록 */
     val catalogRepository = CatalogRepository(context.applicationContext)
+
+    /** 식물 정보 페이지의 위키백과 설명 */
+    val wikipediaClient = WikipediaClient(httpClient)
+
+    /** 직접 누른 임시저장 (기기에만 보관) */
+    val draftRepository = DraftRepository(context.applicationContext.filesDir)
 
     companion object {
         const val FUNCTIONS_REGION = "asia-northeast3"

@@ -71,8 +71,7 @@ private enum class SpeciesFilter(val label: String) { All("전체"), Collected("
 fun CatalogDetailScreen(
     user: UserProfile,
     catalogId: String,
-    onEntryClick: (entryId: String) -> Unit,
-    onCaptureClick: () -> Unit,
+    onSpeciesClick: (scientificName: String, name: String) -> Unit,
     onBack: () -> Unit,
 ) {
     val container = appContainer()
@@ -85,7 +84,6 @@ fun CatalogDetailScreen(
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
     val progress = (state as? LoadState.Success)?.data?.catalogs?.firstOrNull { it.catalog.id == catalogId }
-    var hintFor by remember { mutableStateOf<SpeciesProgress?>(null) }
 
     Scaffold(
         topBar = {
@@ -109,40 +107,11 @@ fun CatalogDetailScreen(
                 } else {
                     CatalogGrid(
                         progress = progress,
-                        onSpeciesClick = { item ->
-                            val latest = item.latest
-                            if (latest != null) onEntryClick(latest.id) else hintFor = item
-                        },
+                        onSpeciesClick = { item -> onSpeciesClick(item.species.scientificName, item.species.name) },
                         modifier = modifier,
                     )
                 }
         }
-    }
-
-    hintFor?.let { item ->
-        AlertDialog(
-            onDismissRequest = { hintFor = null },
-            icon = { Icon(Icons.Filled.LocalFlorist, contentDescription = null) },
-            title = { Text(item.species.name) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(item.species.scientificName, fontStyle = FontStyle.Italic)
-                    Text(item.species.hint)
-                    Text(
-                        "아직 발견하지 못했어요. 찾아서 촬영하면 도감에 등록돼요!",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    hintFor = null
-                    onCaptureClick()
-                }) { Text("촬영하러 가기") }
-            },
-            dismissButton = { TextButton(onClick = { hintFor = null }) { Text("닫기") } },
-        )
     }
 }
 

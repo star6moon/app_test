@@ -63,6 +63,7 @@ fun IdentifyResultContent(
     onRetake: () -> Unit,
     onRetryLocation: () -> Unit,
     onOpenEntry: (entryId: String) -> Unit,
+    onSaveDraft: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().statusBarsPadding().imePadding(),
@@ -70,12 +71,32 @@ fun IdentifyResultContent(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
-            AsyncImage(
-                model = state.photo.file,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().height(260.dp).clip(MaterialTheme.shapes.large),
-            )
+            Column {
+                AsyncImage(
+                    model = state.photo.file,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().height(260.dp).clip(MaterialTheme.shapes.large),
+                )
+                if (state.photo.extraFiles.isNotEmpty()) {
+                    Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        state.photo.extraFiles.forEach { file ->
+                            AsyncImage(
+                                model = file,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.size(56.dp).clip(MaterialTheme.shapes.small),
+                            )
+                        }
+                        Text(
+                            "함께 식별한 사진 (도감에는 첫 사진만 올라가요)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                        )
+                    }
+                }
+            }
         }
         item {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -106,7 +127,8 @@ fun IdentifyResultContent(
             item {
                 RuleNotice(
                     message = "AI가 확신하지 못하고 있어요 (가장 높은 후보 ${Formatters.percent(topScore)}). " +
-                        "꽃 한 송이나 잎 몇 장이 화면을 가득 채우도록, 흔들리지 않게 가까이서 찍으면 훨씬 정확해져요.",
+                        "꽃 한 송이나 잎 몇 장이 화면을 가득 채우도록 가까이서 찍거나, 찍은 뒤 '자르기' 로 식물만 남기고, " +
+                        "꽃·잎 등 다른 부위를 함께 찍으면 훨씬 정확해져요.",
                     action = "다시 찍기",
                     actionEnabled = !state.isSaving,
                     onAction = onRetake,
@@ -190,6 +212,11 @@ fun IdentifyResultContent(
                     }
                 }
             }
+            TextButton(
+                onClick = onSaveDraft,
+                enabled = !state.isSaving,
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("임시저장하고 나중에 등록하기") }
         }
     }
 }

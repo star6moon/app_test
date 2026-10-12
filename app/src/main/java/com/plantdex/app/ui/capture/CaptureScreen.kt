@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.ImageCapture
@@ -22,6 +24,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
@@ -29,6 +33,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -73,12 +78,19 @@ fun CaptureScreen(
                     collectionRepository = container.collectionRepository,
                     authRepository = container.authRepository,
                     catalogRepository = container.catalogRepository,
+                    draftRepository = container.draftRepository,
                     workDir = context.cacheDir,
                 )
             }
         },
     )
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val drafts by viewModel.drafts.collectAsStateWithLifecycle()
+    var showDrafts by remember { mutableStateOf(false) }
+
+    LaunchedEffect(viewModel) {
+        viewModel.notices.collect { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
+    }
 
     LaunchedEffect(state) {
         val saved = state as? CaptureUiState.Saved ?: return@LaunchedEffect
@@ -87,13 +99,26 @@ fun CaptureScreen(
     }
 
     when (val s = state) {
-        CaptureUiState.Camera -> CameraPermissionGate {
+        is CaptureUiState.Camera -> CameraPermissionGate {
+            BackHandler(enabled = s.photoCount > 0, onBack = viewModel::backToReview)
             CameraContent(
+                photoCount = s.photoCount,
+                draftCount = drafts.size,
+                onOpenDrafts = { showDrafts = true },
+                onCancelAdd = viewModel::backToReview,
                 onShutter = viewModel::onShutter,
                 onPhotoSaved = viewModel::onPhotoSaved,
                 onError = viewModel::onCaptureError,
             )
         }
+        is CaptureUiState.Review -> ReviewContent(
+            state = s,
+            onAddMore = viewModel::addMorePhoto,
+            onRemove = viewModel::removePhoto,
+            onCrop = viewModel::cropPhoto,
+            onIdentify = viewModel::identifyPhotos,
+            onReset = viewModel::reset,
+        )
         is CaptureUiState.Identifying -> IdentifyingContent(s.photoFile)
         is CaptureUiState.Results -> IdentifyResultContent(
             state = s,
@@ -104,13 +129,28 @@ fun CaptureScreen(
             onRetake = viewModel::reset,
             onRetryLocation = viewModel::retryLocation,
             onOpenEntry = onOpenEntry,
+            onSaveDraft = viewModel::saveDraft,
         )
         is CaptureUiState.Failed -> FailedContent(
             state = s,
             onRetry = viewModel::retryIdentify,
             onRetake = viewModel::reset,
+            onSaveDraft = viewModel::saveDraft,
         )
         is CaptureUiState.Saved -> IdentifyingContent(photoFile = null)
+    }
+
+    if (showDrafts) {
+        DraftsSheet(
+            drafts = drafts,
+            photoOf = { container.draftRepository.photoFiles(it).firstOrNull() },
+            onOpen = {
+                showDrafts = false
+                viewModel.openDraft(it)
+            },
+            onDelete = viewModel::deleteDraft,
+            onDismiss = { showDrafts = false },
+        )
     }
 }
 
@@ -173,6 +213,10 @@ private fun CameraPermissionGate(content: @Composable () -> Unit) {
 
 @Composable
 private fun CameraContent(
+    photoCount: Int,
+    draftCount: Int,
+    onOpenDrafts: () -> Unit,
+    onCancelAdd: () -> Unit,
     onShutter: () -> Unit,
     onPhotoSaved: (File) -> Unit,
     onError: (String?) -> Unit,
@@ -201,18 +245,39 @@ private fun CameraContent(
             },
             modifier = Modifier.fillMaxSize(),
         )
-        Text(
-            "잎이나 꽃이 잘 보이도록 가까이에서 찍어 주세요",
-            color = Color.White,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .statusBarsPadding()
-                .padding(16.dp)
-                .clip(MaterialTheme.shapes.small)
-                .background(Color.Black.copy(alpha = 0.45f))
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-        )
+        Column(
+            Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                if (photoCount == 0) {
+                    "잎이나 꽃이 잘 보이도록 가까이에서 찍어 주세요"
+                } else {
+                    "추가 사진 ${photoCount + 1}/$MAX_PHOTOS · 꽃·잎·줄기 등 다른 부위를 찍어 주세요"
+                },
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .background(Color.Black.copy(alpha = 0.45f))
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+            )
+            if (photoCount > 0) {
+                AssistChip(
+                    onClick = onCancelAdd,
+                    label = { Text("추가 촬영 그만두기", color = Color.White) },
+                    colors = AssistChipDefaults.assistChipColors(containerColor = Color.Black.copy(alpha = 0.45f)),
+                )
+            } else if (draftCount > 0) {
+                AssistChip(
+                    onClick = onOpenDrafts,
+                    label = { Text("임시저장 $draftCount", color = Color.White) },
+                    colors = AssistChipDefaults.assistChipColors(containerColor = Color.Black.copy(alpha = 0.45f)),
+                )
+            }
+        }
         FilledIconButton(
             onClick = {
                 if (isTaking) return@FilledIconButton
@@ -272,7 +337,12 @@ private fun IdentifyingContent(photoFile: File?) {
 }
 
 @Composable
-private fun FailedContent(state: CaptureUiState.Failed, onRetry: () -> Unit, onRetake: () -> Unit) {
+private fun FailedContent(
+    state: CaptureUiState.Failed,
+    onRetry: () -> Unit,
+    onRetake: () -> Unit,
+    onSaveDraft: () -> Unit,
+) {
     Column(
         Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -290,6 +360,7 @@ private fun FailedContent(state: CaptureUiState.Failed, onRetry: () -> Unit, onR
         Button(onClick = onRetake) { Text("다시 찍기") }
         if (state.photo != null) {
             OutlinedButton(onClick = onRetry) { Text("이 사진으로 다시 식별") }
+            TextButton(onClick = onSaveDraft) { Text("임시저장하고 나중에 식별하기") }
         }
     }
 }

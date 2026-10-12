@@ -39,6 +39,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -84,6 +85,7 @@ fun EntryDetailScreen(
     entryId: String,
     onBack: () -> Unit,
     onUserClick: (userId: String, userName: String) -> Unit,
+    onSpeciesClick: (scientificName: String, name: String, family: String?) -> Unit,
 ) {
     val context = LocalContext.current
     val container = appContainer()
@@ -189,6 +191,7 @@ fun EntryDetailScreen(
                         onPublicChange = { viewModel.setPublic(data, it) },
                         onOpenMap = { openMap(context, data, name) },
                         onUserClick = { onUserClick(data.ownerId, data.ownerName) },
+                        onSpeciesClick = { onSpeciesClick(data.scientificName, name, data.family) },
                         modifier = modifier,
                     )
                 }
@@ -249,6 +252,7 @@ private fun EntryDetailContent(
     onPublicChange: (Boolean) -> Unit,
     onOpenMap: () -> Unit,
     onUserClick: () -> Unit,
+    onSpeciesClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier.verticalScroll(rememberScrollState())) {
@@ -275,6 +279,9 @@ private fun EntryDetailContent(
                         )
                     }
                 }
+            }
+            OutlinedButton(onClick = onSpeciesClick, modifier = Modifier.fillMaxWidth()) {
+                Text("이 식물 정보 보기 (설명·관찰 시기·내 기록)")
             }
             HorizontalDivider()
             InfoRow(Icons.Outlined.Schedule, "촬영 일시", Formatters.dateTime(entry.capturedAt))
