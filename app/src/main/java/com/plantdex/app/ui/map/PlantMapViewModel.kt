@@ -1,9 +1,11 @@
 package com.plantdex.app.ui.map
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
+import com.plantdex.app.R
 import com.plantdex.app.data.art.PlantArt
 import com.plantdex.app.data.art.PlantArts
 import com.plantdex.app.data.catalog.CatalogRepository
@@ -48,9 +50,9 @@ import java.util.Locale
 private const val VIEWPORT_DEBOUNCE_MS = 500L
 
 /** 지도에 표시할 범위. */
-enum class MapScope(val label: String) {
-    Mine("내 도감"),
-    Everyone("모두의 기록"),
+enum class MapScope(@StringRes val labelRes: Int) {
+    Mine(R.string.map_scope_mine),
+    Everyone(R.string.map_scope_everyone),
 }
 
 /**

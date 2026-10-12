@@ -16,11 +16,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.plantdex.app.R
 import com.plantdex.app.data.filter.PeriodFilter
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.LoadState
@@ -53,10 +55,10 @@ fun MyRecordsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("모든 기록") },
+                title = { Text(stringResource(R.string.collection_all_records)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.collection_back))
                     }
                 },
             )
@@ -66,8 +68,8 @@ fun MyRecordsScreen(
             PeriodFilterBar(selected = period, onSelect = { period = it }, modifier = Modifier.padding(vertical = 4.dp))
             EntryCollectionContent(
                 state = filtered,
-                emptyTitle = if (period == PeriodFilter.All) "아직 수집한 식물이 없어요" else "이 기간에 찍은 기록이 없어요",
-                emptyBody = if (period == PeriodFilter.All) "촬영 탭에서 주변 식물을 찍어 첫 기록을 남겨보세요." else "다른 기간을 골라 보세요.",
+                emptyTitle = if (period == PeriodFilter.All) stringResource(R.string.collection_records_empty_title) else stringResource(R.string.collection_records_period_empty_title),
+                emptyBody = if (period == PeriodFilter.All) stringResource(R.string.collection_records_empty_body) else stringResource(R.string.collection_records_period_empty_body),
                 onEntryClick = { onEntryClick(it.id) },
             )
         }

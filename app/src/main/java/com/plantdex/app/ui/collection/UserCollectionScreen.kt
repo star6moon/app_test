@@ -16,7 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.plantdex.app.R
 import com.plantdex.app.data.repository.ReportTarget
 import com.plantdex.app.ui.components.ReportDialog
 import com.plantdex.app.ui.profile.ProfileHeader
@@ -72,6 +74,8 @@ fun UserCollectionScreen(
     var menuOpen by remember { mutableStateOf(false) }
     var reporting by remember { mutableStateOf(false) }
     var confirmBlock by remember { mutableStateOf(false) }
+    val reportSuccessMessage = stringResource(R.string.collection_report_success)
+    val blockSuccessMessage = stringResource(R.string.collection_block_success)
 
     fun run(success: String?, action: suspend () -> Unit) {
         scope.launch {
@@ -81,7 +85,7 @@ fun UserCollectionScreen(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Toast.makeText(context, "처리하지 못했어요: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.collection_action_failed, e.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -89,19 +93,19 @@ fun UserCollectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("${profile?.displayName ?: userName}님의 도감") },
+                title = { Text(stringResource(R.string.collection_owner_title, profile?.displayName ?: userName)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.collection_back))
                     }
                 },
                 actions = {
                     if (!isMe) {
                         Box {
-                            IconButton(onClick = { menuOpen = true }) { Icon(Icons.Filled.MoreVert, contentDescription = "더 보기") }
+                            IconButton(onClick = { menuOpen = true }) { Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.collection_more)) }
                             DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                                DropdownMenuItem(text = { Text("신고하기") }, onClick = { menuOpen = false; reporting = true })
-                                DropdownMenuItem(text = { Text("차단") }, onClick = { menuOpen = false; confirmBlock = true })
+                                DropdownMenuItem(text = { Text(stringResource(R.string.collection_report)) }, onClick = { menuOpen = false; reporting = true })
+                                DropdownMenuItem(text = { Text(stringResource(R.string.collection_block)) }, onClick = { menuOpen = false; confirmBlock = true })
                             }
                         }
                     }
@@ -117,7 +121,7 @@ fun UserCollectionScreen(
                         isMe = isMe,
                         isFollowing = followingIds?.let { userId in it },
                         onFollowChange = { follow ->
-                            run(if (follow) "${p.displayName}님을 팔로우해요" else null) {
+                            run(if (follow) context.getString(R.string.collection_follow_success, p.displayName) else null) {
                                 container.socialRepository.setFollowing(userId, follow)
                             }
                         },
@@ -127,7 +131,7 @@ fun UserCollectionScreen(
                 if (entries != null && entries.isNotEmpty()) CollectionSummary(entries)
                 if (entries != null && entries.isEmpty()) {
                     Text(
-                        "공개된 기록이 없어요",
+                        stringResource(R.string.collection_no_public_entries),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -136,7 +140,7 @@ fun UserCollectionScreen(
         }
         when (val s = state) {
             LoadState.Loading -> LoadingBox(Modifier.padding(padding))
-            is LoadState.Error -> MessageBox("불러오지 못했어요", Modifier.padding(padding), body = s.message)
+            is LoadState.Error -> MessageBox(stringResource(R.string.collection_load_failed), Modifier.padding(padding), body = s.message)
             is LoadState.Success -> EntryGrid(
                 entries = s.data,
                 onEntryClick = { onEntryClick(it.id) },
@@ -148,11 +152,11 @@ fun UserCollectionScreen(
 
     if (reporting) {
         ReportDialog(
-            title = "사용자 신고",
+            title = stringResource(R.string.collection_report_user_title),
             onDismiss = { reporting = false },
             onReport = { reason ->
                 reporting = false
-                run("신고했어요. 검토 후 조치할게요.") {
+                run(reportSuccessMessage) {
                     container.moderationRepository.report(ReportTarget.User, targetId = userId, reason = reason, targetOwnerId = userId)
                 }
             },
@@ -162,19 +166,19 @@ fun UserCollectionScreen(
         val name = profile?.displayName ?: userName
         AlertDialog(
             onDismissRequest = { confirmBlock = false },
-            title = { Text("${name}님을 차단할까요?") },
-            text = { Text("차단하면 서로의 기록·댓글이 보이지 않고 알림도 오지 않아요. 설정에서 언제든 풀 수 있어요.") },
+            title = { Text(stringResource(R.string.collection_block_confirm_title, name)) },
+            text = { Text(stringResource(R.string.collection_block_confirm_body)) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmBlock = false
-                    run("차단했어요.") {
+                    run(blockSuccessMessage) {
                         container.moderationRepository.block(userId, name)
                         runCatching { container.socialRepository.setFollowing(userId, false) }
                     }
                     onBack()
-                }) { Text("차단") }
+                }) { Text(stringResource(R.string.collection_block)) }
             },
-            dismissButton = { TextButton(onClick = { confirmBlock = false }) { Text("취소") } },
+            dismissButton = { TextButton(onClick = { confirmBlock = false }) { Text(stringResource(R.string.collection_cancel)) } },
         )
     }
 }
@@ -190,7 +194,7 @@ internal fun EntryCollectionContent(
 ) {
     when (state) {
         LoadState.Loading -> LoadingBox(modifier)
-        is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = state.message)
+        is LoadState.Error -> MessageBox(stringResource(R.string.collection_load_failed), modifier, body = state.message)
         is LoadState.Success ->
             if (state.data.isEmpty()) {
                 MessageBox(emptyTitle, modifier, body = emptyBody)

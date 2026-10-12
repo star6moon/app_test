@@ -37,9 +37,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.plantdex.app.R
 import com.plantdex.app.data.catalog.SpeciesKey
 import com.plantdex.app.data.info.WikiSummary
 import com.plantdex.app.ui.components.EntryGrid
@@ -50,7 +52,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 /** 계절 도감 id → 관찰 시기 이름 */
-private val SEASONS = linkedMapOf("spring" to "봄", "summer" to "여름", "autumn" to "가을", "winter" to "겨울")
+private val SEASONS = linkedMapOf(
+    "spring" to R.string.species_season_spring,
+    "summer" to R.string.species_season_summer,
+    "autumn" to R.string.species_season_autumn,
+    "winter" to R.string.species_season_winter,
+)
 
 /**
  * 식물 정보: 그림, 이름·학명, 들어 있는 도감과 관찰 시기, 위키백과 설명, 내 기록.
@@ -70,7 +77,8 @@ fun SpeciesScreen(
     val catalog = remember { runCatching { container.catalogRepository.catalog }.getOrNull() }
     val species = remember(scientificName) { catalog?.match(scientificName) }
     val catalogs = remember(species) { species?.let { catalog?.catalogsOf(it.id) }.orEmpty() }
-    val seasons = catalogs.mapNotNull { SEASONS[it.id] }
+    val seasonResIds = catalogs.mapNotNull { SEASONS[it.id] }
+    val seasons = seasonResIds.map { stringResource(it) }
     val title = species?.name ?: name
     val key = remember(scientificName) { SpeciesKey.of(scientificName, catalog) }
     val art = rememberPlantArt(scientificName, family)
@@ -97,7 +105,7 @@ fun SpeciesScreen(
             TopAppBar(
                 title = { Text(title) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.species_back)) }
                 },
             )
         },
@@ -115,15 +123,15 @@ fun SpeciesScreen(
                             Text(title, style = MaterialTheme.typography.headlineSmall)
                             Text(scientificName, style = MaterialTheme.typography.bodyMedium, fontStyle = FontStyle.Italic)
                             family?.takeIf { it.isNotBlank() }?.let {
-                                Text("$it (과)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.species_family, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }
                     if (seasons.isNotEmpty()) {
-                        Text("관찰하기 좋은 때: ${seasons.joinToString("·")}", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.species_seasons, seasons.joinToString("·")), style = MaterialTheme.typography.bodyMedium)
                     }
                     species?.hint?.takeIf { it.isNotBlank() }?.let {
-                        Text("찾는 법: $it", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.species_hint, it), style = MaterialTheme.typography.bodyMedium)
                     }
                     if (catalogs.isNotEmpty()) {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -132,12 +140,12 @@ fun SpeciesScreen(
                     }
                     Card(Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("소개", style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.species_intro), style = MaterialTheme.typography.titleMedium)
                             val summary = wiki
                             when {
                                 wikiLoading -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
                                 summary == null -> Text(
-                                    "설명을 찾지 못했어요.",
+                                    stringResource(R.string.species_wiki_not_found),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -146,11 +154,17 @@ fun SpeciesScreen(
                                     summary.pageUrl?.let { url ->
                                         TextButton(onClick = { uriHandler.openUri(url) }) {
                                             Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
-                                            Text(" 위키백과에서 더 보기" + if (summary.language != language) " (${summary.language})" else "")
+                                            Text(
+                                                if (summary.language != language) {
+                                                    stringResource(R.string.species_wiki_more_with_language, summary.language)
+                                                } else {
+                                                    stringResource(R.string.species_wiki_more)
+                                                },
+                                            )
                                         }
                                     }
                                     Text(
-                                        "출처: 위키백과 (CC BY-SA)",
+                                        stringResource(R.string.species_wiki_source),
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
@@ -162,13 +176,13 @@ fun SpeciesScreen(
                     when {
                         mine == null -> Unit
                         mine.isEmpty() -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("아직 기록하지 않은 식물이에요", style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.species_not_recorded), style = MaterialTheme.typography.titleMedium)
                             Button(onClick = onCaptureClick) {
                                 Icon(Icons.Outlined.CameraAlt, contentDescription = null)
-                                Text("  찾아서 촬영하기")
+                                Text(stringResource(R.string.species_capture))
                             }
                         }
-                        else -> Text("내 기록 ${mine.size}건", style = MaterialTheme.typography.titleMedium)
+                        else -> Text(stringResource(R.string.species_my_records_count, mine.size), style = MaterialTheme.typography.titleMedium)
                     }
                 }
             },

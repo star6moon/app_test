@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.ui.collection.EntryListViewModel
 import com.plantdex.app.ui.components.LoadState
@@ -99,21 +101,21 @@ fun FeedScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("둘러보기") },
+                title = { Text(stringResource(R.string.feed_title)) },
                 actions = {
                     SingleChoiceSegmentedButtonRow(Modifier.padding(end = 4.dp)) {
-                        listOf(false to "전체", true to "팔로잉").forEachIndexed { i, (value, label) ->
+                        listOf(false to R.string.feed_filter_all, true to R.string.feed_filter_following).forEachIndexed { i, (value, labelRes) ->
                             SegmentedButton(
                                 selected = followingOnly == value,
                                 onClick = { followingOnly = value },
                                 shape = SegmentedButtonDefaults.itemShape(i, 2),
                                 icon = {},
-                            ) { Text(label, style = MaterialTheme.typography.labelMedium) }
+                            ) { Text(stringResource(labelRes), style = MaterialTheme.typography.labelMedium) }
                         }
                     }
                     IconButton(onClick = onNotificationsClick) {
                         BadgedBox(badge = { if (unread > 0) Badge { Text(if (unread > 99) "99+" else "$unread") } }) {
-                            Icon(Icons.Outlined.Notifications, contentDescription = "알림")
+                            Icon(Icons.Outlined.Notifications, contentDescription = stringResource(R.string.feed_notifications))
                         }
                     }
                 },
@@ -123,15 +125,19 @@ fun FeedScreen(
         val modifier = Modifier.padding(padding)
         when (val s = state) {
             LoadState.Loading -> LoadingBox(modifier)
-            is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = s.message)
+            is LoadState.Error -> MessageBox(stringResource(R.string.feed_load_failed), modifier, body = s.message)
             is LoadState.Success -> {
                 // 차단한 사용자의 기록은 보이지 않게 합니다.
                 val visible = s.data.filter { it.ownerId !in blockedIds }
                 if (visible.isEmpty()) {
                     if (followingOnly) {
-                        MessageBox("팔로우한 사람의 기록이 없어요", modifier, body = "전체 피드에서 마음에 드는 사람의 이름을 눌러 팔로우해 보세요.")
+                        MessageBox(
+                            stringResource(R.string.feed_following_empty_title),
+                            modifier,
+                            body = stringResource(R.string.feed_following_empty_body),
+                        )
                     } else {
-                        MessageBox("아직 공유된 기록이 없어요", modifier, body = "첫 번째로 식물을 기록해 공유해 보세요!")
+                        MessageBox(stringResource(R.string.feed_empty_title), modifier, body = stringResource(R.string.feed_empty_body))
                     }
                 } else {
                     LazyColumn(

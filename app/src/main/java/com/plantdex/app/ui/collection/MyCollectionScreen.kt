@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -48,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.plantdex.app.R
 import com.plantdex.app.data.catalog.CatalogProgress
 import com.plantdex.app.data.catalog.CollectionProgress
 import com.plantdex.app.data.model.UserProfile
@@ -90,10 +92,10 @@ fun MyCollectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("${user.displayName}님의 도감") },
+                title = { Text(stringResource(R.string.collection_owner_title, user.displayName)) },
                 actions = {
                     IconButton(onClick = onSettingsClick) {
-                        Icon(Icons.Outlined.Settings, contentDescription = "설정")
+                        Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.collection_settings))
                     }
                 },
             )
@@ -102,7 +104,7 @@ fun MyCollectionScreen(
         val modifier = Modifier.padding(padding)
         when (val s = state) {
             LoadState.Loading -> LoadingBox(modifier)
-            is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = s.message)
+            is LoadState.Error -> MessageBox(stringResource(R.string.collection_load_failed), modifier, body = s.message)
             is LoadState.Success -> LazyColumn(
                 modifier = modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
@@ -136,9 +138,9 @@ private fun RankingCard(onClick: () -> Unit) {
             Text("🏆", style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Text("친구 랭킹", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.collection_ranking_title), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "나와 팔로우한 사람들 중 몇 등일까요?",
+                    stringResource(R.string.collection_ranking_subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -157,7 +159,7 @@ private fun OverallCard(progress: CollectionProgress) {
         ),
     ) {
         Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("전체 도감", style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.collection_overall_title), style = MaterialTheme.typography.labelLarge)
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     "${progress.collectedSpecies}",
@@ -165,15 +167,23 @@ private fun OverallCard(progress: CollectionProgress) {
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    " / ${progress.totalSpecies}종",
+                    stringResource(R.string.collection_overall_total_species, progress.totalSpecies),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 6.dp),
                 )
             }
             ProgressBar(progress.collectedSpecies, progress.totalSpecies)
             Text(
-                "기록 ${progress.recordCount}개 · 발견한 식물 ${progress.discoveredSpecies}종" +
-                    if (progress.outsideCatalogSpecies > 0) " (도감 밖 ${progress.outsideCatalogSpecies}종)" else "",
+                if (progress.outsideCatalogSpecies > 0) {
+                    stringResource(
+                        R.string.collection_overall_summary_with_outside,
+                        progress.recordCount,
+                        progress.discoveredSpecies,
+                        progress.outsideCatalogSpecies,
+                    )
+                } else {
+                    stringResource(R.string.collection_overall_summary, progress.recordCount, progress.discoveredSpecies)
+                },
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -233,9 +243,9 @@ private fun AllRecordsCard(progress: CollectionProgress, onClick: () -> Unit) {
             Icon(Icons.Outlined.PhotoLibrary, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Text("모든 기록 보기", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.collection_all_records_title), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "도감에 없는 식물까지 ${progress.recordCount}개",
+                    stringResource(R.string.collection_all_records_subtitle, progress.recordCount),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -252,9 +262,9 @@ private fun BookmarksCard(count: Int?, onClick: () -> Unit) {
             Icon(Icons.Outlined.BookmarkBorder, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Text("책갈피", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.collection_bookmarks_title), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    if (count == null) "불러오는 중…" else "저장한 기록 ${count}개",
+                    if (count == null) stringResource(R.string.collection_loading) else stringResource(R.string.collection_bookmarks_count, count),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -280,6 +290,6 @@ internal fun CompleteBadge() {
         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
         modifier = Modifier.padding(end = 8.dp),
     ) {
-        Text("완성 🎉", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
+        Text(stringResource(R.string.collection_complete_badge), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
     }
 }

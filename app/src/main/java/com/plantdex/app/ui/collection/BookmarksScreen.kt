@@ -12,12 +12,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.plantdex.app.R
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.repository.CollectionRepository
 import com.plantdex.app.data.repository.ReactionRepository
@@ -71,10 +73,10 @@ fun BookmarksScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("책갈피") },
+                title = { Text(stringResource(R.string.collection_bookmarks_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.collection_back))
                     }
                 },
             )
@@ -82,8 +84,8 @@ fun BookmarksScreen(
     ) { padding ->
         EntryCollectionContent(
             state = state,
-            emptyTitle = "책갈피한 기록이 없어요",
-            emptyBody = "피드나 기록 상세에서 🔖 버튼을 눌러 마음에 드는 기록을 모아 보세요.",
+            emptyTitle = stringResource(R.string.collection_bookmarks_empty_title),
+            emptyBody = stringResource(R.string.collection_bookmarks_empty_body),
             onEntryClick = { onEntryClick(it.id) },
             modifier = Modifier.padding(padding),
             showSummary = false,

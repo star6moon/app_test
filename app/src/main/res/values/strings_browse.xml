@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- map: PlantMapScreen / PlantMapViewModel -->
+    <string name="map_title">식물 지도</string>
+    <string name="map_scope_mine">내 도감</string>
+    <string name="map_scope_everyone">모두의 기록</string>
+    <string name="map_api_key_missing_title">지도 API 키가 설정되지 않았어요</string>
+    <string name="map_api_key_missing_body">local.properties 에 MAPS_API_KEY 를 추가한 뒤 다시 빌드해 주세요. (README 참고)</string>
+    <string name="map_load_failed">불러오지 못했어요</string>
+    <string name="map_load_failed_reason">불러오지 못했어요: %1$s</string>
+    <string name="map_banner_loading">이 지역의 기록을 불러오는 중…</string>
+    <string name="map_banner_truncated">기록이 많아 일부만 보여요. 확대하면 더 보여요</string>
+    <string name="map_banner_area_empty">이 지역에는 공개된 기록이 없어요. 지도를 옮겨 보세요</string>
+    <string name="map_banner_empty">지도에 표시할 기록이 아직 없어요</string>
+    <string name="map_banner_without_location">위치 정보가 없는 기록 %1$d개는 표시되지 않아요</string>
+    <string name="map_entry_owner_details">%1$s · 자세히 보기 ›</string>
+    <string name="map_cluster_summary">기록 %1$d개 · %2$d종</string>
+    <string name="map_close">닫기</string>
+    <string name="map_zoom_into_area">이 지역 확대해서 보기</string>
+    <string name="map_group_likes_count">♥ %1$d · %2$d건</string>
+    <string name="map_group_count">%1$d건</string>
+
+    <!-- collection: UserCollectionScreen / MyCollectionScreen / CatalogDetailScreen / MyRecordsScreen / BookmarksScreen -->
+    <string name="collection_owner_title">%1$s님의 도감</string>
+    <string name="collection_back">뒤로</string>
+    <string name="collection_more">더 보기</string>
+    <string name="collection_settings">설정</string>
+    <string name="collection_report">신고하기</string>
+    <string name="collection_block">차단</string>
+    <string name="collection_cancel">취소</string>
+    <string name="collection_action_failed">처리하지 못했어요: %1$s</string>
+    <string name="collection_follow_success">%1$s님을 팔로우해요</string>
+    <string name="collection_no_public_entries">공개된 기록이 없어요</string>
+    <string name="collection_load_failed">불러오지 못했어요</string>
+    <string name="collection_report_user_title">사용자 신고</string>
+    <string name="collection_report_success">신고했어요. 검토 후 조치할게요.</string>
+    <string name="collection_block_confirm_title">%1$s님을 차단할까요?</string>
+    <string name="collection_block_confirm_body">차단하면 서로의 기록·댓글이 보이지 않고 알림도 오지 않아요. 설정에서 언제든 풀 수 있어요.</string>
+    <string name="collection_block_success">차단했어요.</string>
+    <string name="collection_ranking_title">친구 랭킹</string>
+    <string name="collection_ranking_subtitle">나와 팔로우한 사람들 중 몇 등일까요?</string>
+    <string name="collection_overall_title">전체 도감</string>
+    <string name="collection_overall_total_species">" / %1$d종"</string>
+    <string name="collection_overall_summary">기록 %1$d개 · 발견한 식물 %2$d종</string>
+    <string name="collection_overall_summary_with_outside">기록 %1$d개 · 발견한 식물 %2$d종 (도감 밖 %3$d종)</string>
+    <string name="collection_all_records_title">모든 기록 보기</string>
+    <string name="collection_all_records_subtitle">도감에 없는 식물까지 %1$d개</string>
+    <string name="collection_bookmarks_title">책갈피</string>
+    <string name="collection_loading">불러오는 중…</string>
+    <string name="collection_bookmarks_count">저장한 기록 %1$d개</string>
+    <string name="collection_complete_badge">완성 🎉</string>
+    <string name="collection_filter_all">전체</string>
+    <string name="collection_filter_collected">발견</string>
+    <string name="collection_filter_missing">미발견</string>
+    <string name="collection_filter_chip">%1$s %2$d</string>
+    <string name="collection_catalog_not_found">도감을 찾을 수 없어요</string>
+    <string name="collection_catalog_progress">%1$d / %2$d종 발견</string>
+    <string name="collection_collected_cd">발견</string>
+    <string name="collection_not_collected">미발견</string>
+    <string name="collection_record_count">기록 %1$d개</string>
+    <string name="collection_all_records">모든 기록</string>
+    <string name="collection_records_empty_title">아직 수집한 식물이 없어요</string>
+    <string name="collection_records_empty_body">촬영 탭에서 주변 식물을 찍어 첫 기록을 남겨보세요.</string>
+    <string name="collection_records_period_empty_title">이 기간에 찍은 기록이 없어요</string>
+    <string name="collection_records_period_empty_body">다른 기간을 골라 보세요.</string>
+    <string name="collection_bookmarks_empty_title">책갈피한 기록이 없어요</string>
+    <string name="collection_bookmarks_empty_body">피드나 기록 상세에서 🔖 버튼을 눌러 마음에 드는 기록을 모아 보세요.</string>
+
+    <!-- species: SpeciesScreen -->
+    <string name="species_season_spring">봄</string>
+    <string name="species_season_summer">여름</string>
+    <string name="species_season_autumn">가을</string>
+    <string name="species_season_winter">겨울</string>
+    <string name="species_back">뒤로</string>
+    <string name="species_family">%1$s (과)</string>
+    <string name="species_seasons">관찰하기 좋은 때: %1$s</string>
+    <string name="species_hint">찾는 법: %1$s</string>
+    <string name="species_intro">소개</string>
+    <string name="species_wiki_not_found">설명을 찾지 못했어요.</string>
+    <string name="species_wiki_more">" 위키백과에서 더 보기"</string>
+    <string name="species_wiki_more_with_language">" 위키백과에서 더 보기 (%1$s)"</string>
+    <string name="species_wiki_source">출처: 위키백과 (CC BY-SA)</string>
+    <string name="species_not_recorded">아직 기록하지 않은 식물이에요</string>
+    <string name="species_capture">"  찾아서 촬영하기"</string>
+    <string name="species_my_records_count">내 기록 %1$d건</string>
+
+    <!-- feed: FeedScreen -->
+    <string name="feed_title">둘러보기</string>
+    <string name="feed_filter_all">전체</string>
+    <string name="feed_filter_following">팔로잉</string>
+    <string name="feed_notifications">알림</string>
+    <string name="feed_load_failed">불러오지 못했어요</string>
+    <string name="feed_following_empty_title">팔로우한 사람의 기록이 없어요</string>
+    <string name="feed_following_empty_body">전체 피드에서 마음에 드는 사람의 이름을 눌러 팔로우해 보세요.</string>
+    <string name="feed_empty_title">아직 공유된 기록이 없어요</string>
+    <string name="feed_empty_body">첫 번째로 식물을 기록해 공유해 보세요!</string>
+</resources>

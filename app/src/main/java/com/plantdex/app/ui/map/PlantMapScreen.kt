@@ -59,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -81,6 +82,7 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.plantdex.app.BuildConfig
+import com.plantdex.app.R
 import com.plantdex.app.data.geo.GeoBounds
 import com.plantdex.app.ui.components.PeriodFilterBar
 import com.plantdex.app.data.model.UserProfile
@@ -124,7 +126,7 @@ fun PlantMapScreen(
         topBar = {
             Column {
                 TopAppBar(
-                    title = { Text("식물 지도") },
+                    title = { Text(stringResource(R.string.map_title)) },
                     actions = {
                         SingleChoiceSegmentedButtonRow(Modifier.padding(end = 8.dp)) {
                             MapScope.entries.forEachIndexed { index, option ->
@@ -133,7 +135,7 @@ fun PlantMapScreen(
                                     onClick = { viewModel.setScope(option) },
                                     shape = SegmentedButtonDefaults.itemShape(index, MapScope.entries.size),
                                     icon = {},
-                                ) { Text(option.label, style = MaterialTheme.typography.labelMedium) }
+                                ) { Text(stringResource(option.labelRes), style = MaterialTheme.typography.labelMedium) }
                             }
                         }
                     },
@@ -143,15 +145,17 @@ fun PlantMapScreen(
         },
     ) { padding ->
         val modifier = Modifier.padding(padding)
+        val fetchErrorMessage = fetchError?.takeIf { scope == MapScope.Everyone }
+        val fetchErrorNotice = if (fetchErrorMessage != null) stringResource(R.string.map_load_failed_reason, fetchErrorMessage) else null
         when {
             !BuildConfig.HAS_MAPS_API_KEY -> MessageBox(
-                "지도 API 키가 설정되지 않았어요",
+                stringResource(R.string.map_api_key_missing_title),
                 modifier,
-                body = "local.properties 에 MAPS_API_KEY 를 추가한 뒤 다시 빌드해 주세요. (README 참고)",
+                body = stringResource(R.string.map_api_key_missing_body),
             )
             else -> when (val s = state) {
                 LoadState.Loading -> LoadingBox(modifier)
-                is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = s.message)
+                is LoadState.Error -> MessageBox(stringResource(R.string.map_load_failed), modifier, body = s.message)
                 is LoadState.Success -> PlantMap(
                     // 차단한 사용자의 기록은 지도에서도 숨깁니다.
                     data = remember(s.data, blockedIds) {
@@ -159,7 +163,7 @@ fun PlantMapScreen(
                         else s.data.copy(items = s.data.items.filter { it.entry.ownerId !in blockedIds })
                     },
                     isFetching = isFetching && scope == MapScope.Everyone,
-                    notice = fetchError?.takeIf { scope == MapScope.Everyone }?.let { "불러오지 못했어요: $it" },
+                    notice = fetchErrorNotice,
                     onViewportChanged = viewModel::onViewportChanged,
                     onEntryClick = onEntryClick,
                     modifier = modifier,
@@ -322,11 +326,11 @@ private fun PlantMap(
 
         val banner = when {
             notice != null -> notice
-            isFetching -> "이 지역의 기록을 불러오는 중…"
-            data.viewportDriven && data.truncated -> "기록이 많아 일부만 보여요. 확대하면 더 보여요"
-            data.viewportDriven && data.items.isEmpty() -> "이 지역에는 공개된 기록이 없어요. 지도를 옮겨 보세요"
-            data.items.isEmpty() -> "지도에 표시할 기록이 아직 없어요"
-            data.withoutLocation > 0 -> "위치 정보가 없는 기록 ${data.withoutLocation}개는 표시되지 않아요"
+            isFetching -> stringResource(R.string.map_banner_loading)
+            data.viewportDriven && data.truncated -> stringResource(R.string.map_banner_truncated)
+            data.viewportDriven && data.items.isEmpty() -> stringResource(R.string.map_banner_area_empty)
+            data.items.isEmpty() -> stringResource(R.string.map_banner_empty)
+            data.withoutLocation > 0 -> stringResource(R.string.map_banner_without_location, data.withoutLocation)
             else -> null
         }
         if (banner != null) {
@@ -472,7 +476,7 @@ private fun SelectedEntryCard(item: PlantMapItem, onClick: () -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    "${entry.ownerName} · 자세히 보기 ›",
+                    stringResource(R.string.map_entry_owner_details, entry.ownerName),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -500,17 +504,17 @@ private fun ClusterPanel(
                 Column(Modifier.weight(1f)) {
                     Text(summary.label, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(
-                        "기록 ${summary.recordCount}개 · ${summary.groups.size}종",
+                        stringResource(R.string.map_cluster_summary, summary.recordCount, summary.groups.size),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                IconButton(onClick = onClose) { Icon(Icons.Filled.Close, contentDescription = "닫기") }
+                IconButton(onClick = onClose) { Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.map_close)) }
             }
             TextButton(onClick = onZoom, modifier = Modifier.padding(start = 4.dp)) {
                 Icon(Icons.Filled.ZoomIn, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("이 지역 확대해서 보기")
+                Text(stringResource(R.string.map_zoom_into_area))
             }
             HorizontalDivider()
             // 좋아요가 많은 종·기록부터 보여줍니다.
@@ -543,7 +547,7 @@ private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (en
             )
             val likes = group.items.sumOf { it.entry.likeCount }
             Text(
-                if (likes > 0) "♥ $likes · ${group.items.size}건" else "${group.items.size}건",
+                if (likes > 0) stringResource(R.string.map_group_likes_count, likes, group.items.size) else stringResource(R.string.map_group_count, group.items.size),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
             )

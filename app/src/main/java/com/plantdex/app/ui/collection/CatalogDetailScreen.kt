@@ -1,5 +1,6 @@
 package com.plantdex.app.ui.collection
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,6 +56,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.compose.AsyncImage
+import com.plantdex.app.R
 import com.plantdex.app.data.catalog.CatalogProgress
 import com.plantdex.app.data.catalog.SpeciesProgress
 import com.plantdex.app.data.model.UserProfile
@@ -63,7 +66,11 @@ import com.plantdex.app.ui.components.MessageBox
 import com.plantdex.app.ui.components.PlantArtImage
 import com.plantdex.app.ui.components.appContainer
 
-private enum class SpeciesFilter(val label: String) { All("전체"), Collected("발견"), Missing("미발견") }
+private enum class SpeciesFilter(@StringRes val labelRes: Int) {
+    All(R.string.collection_filter_all),
+    Collected(R.string.collection_filter_collected),
+    Missing(R.string.collection_filter_missing),
+}
 
 /** 주제별 도감 한 권: 번호가 매겨진 종 목록과 발견 여부. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,7 +98,7 @@ fun CatalogDetailScreen(
                 title = { Text(progress?.let { "${it.catalog.emoji} ${it.catalog.title}" }.orEmpty()) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.collection_back))
                     }
                 },
             )
@@ -100,10 +107,10 @@ fun CatalogDetailScreen(
         val modifier = Modifier.padding(padding)
         when (val s = state) {
             LoadState.Loading -> LoadingBox(modifier)
-            is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = s.message)
+            is LoadState.Error -> MessageBox(stringResource(R.string.collection_load_failed), modifier, body = s.message)
             is LoadState.Success ->
                 if (progress == null) {
-                    MessageBox("도감을 찾을 수 없어요", modifier)
+                    MessageBox(stringResource(R.string.collection_catalog_not_found), modifier)
                 } else {
                     CatalogGrid(
                         progress = progress,
@@ -147,7 +154,7 @@ private fun CatalogGrid(
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "${progress.collected} / ${progress.total}종 발견",
+                        stringResource(R.string.collection_catalog_progress, progress.collected, progress.total),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f),
                     )
@@ -164,7 +171,7 @@ private fun CatalogGrid(
                         FilterChip(
                             selected = filter == option,
                             onClick = { filter = option },
-                            label = { Text("${option.label} $count") },
+                            label = { Text(stringResource(R.string.collection_filter_chip, stringResource(option.labelRes), count)) },
                         )
                     }
                 }
@@ -197,7 +204,7 @@ private fun SpeciesCell(number: Int, item: SpeciesProgress, onClick: () -> Unit)
                 )
                 Icon(
                     Icons.Filled.CheckCircle,
-                    contentDescription = "발견",
+                    contentDescription = stringResource(R.string.collection_collected_cd),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -244,7 +251,7 @@ private fun SpeciesCell(number: Int, item: SpeciesProgress, onClick: () -> Unit)
                 textAlign = TextAlign.Center,
             )
             Text(
-                if (latest != null) "기록 ${item.entries.size}개" else "미발견",
+                if (latest != null) stringResource(R.string.collection_record_count, item.entries.size) else stringResource(R.string.collection_not_collected),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
