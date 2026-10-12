@@ -60,14 +60,17 @@ fun FeedScreen(
         },
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val blockedIds by container.moderationRepository.blockedIds.collectAsStateWithLifecycle()
 
     Scaffold(topBar = { TopAppBar(title = { Text("둘러보기") }) }) { padding ->
         val modifier = Modifier.padding(padding)
         when (val s = state) {
             LoadState.Loading -> LoadingBox(modifier)
             is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = s.message)
-            is LoadState.Success ->
-                if (s.data.isEmpty()) {
+            is LoadState.Success -> {
+                // 차단한 사용자의 기록은 보이지 않게 합니다.
+                val visible = s.data.filter { it.ownerId !in blockedIds }
+                if (visible.isEmpty()) {
                     MessageBox("아직 공유된 기록이 없어요", modifier, body = "첫 번째로 식물을 기록해 공유해 보세요!")
                 } else {
                     LazyColumn(
@@ -75,7 +78,7 @@ fun FeedScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        items(s.data, key = { it.id }) { entry ->
+                        items(visible, key = { it.id }) { entry ->
                             FeedCard(
                                 entry = entry,
                                 onClick = { onEntryClick(entry.id) },
@@ -84,6 +87,7 @@ fun FeedScreen(
                         }
                     }
                 }
+            }
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.plantdex.app.ui.entry
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
+import androidx.compose.foundation.layout.Box
+import android.widget.Toast
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -18,13 +22,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,6 +51,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +69,9 @@ import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
+import com.plantdex.app.data.repository.ReportTarget
 import com.plantdex.app.ui.components.PlantBadge
+import com.plantdex.app.ui.components.ReportDialog
 import com.plantdex.app.ui.components.ReactionBar
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.localizedName
@@ -87,6 +99,24 @@ fun EntryDetailScreen(
     val message by viewModel.message.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var confirmDelete by remember { mutableStateOf(false) }
+    var menuOpen by remember { mutableStateOf(false) }
+    var reporting by remember { mutableStateOf(false) }
+    var confirmBlock by remember { mutableStateOf(false) }
+    val moderation = container.moderationRepository
+    val scope = rememberCoroutineScope()
+
+    fun moderate(success: String, action: suspend () -> Unit) {
+        scope.launch {
+            try {
+                action()
+                Toast.makeText(context, success, Toast.LENGTH_SHORT).show()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Toast.makeText(context, "처리하지 못했어요: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     LaunchedEffect(deleted) { if (deleted) onBack() }
     LaunchedEffect(message) {
@@ -119,6 +149,24 @@ fun EntryDetailScreen(
                             IconButton(onClick = { confirmDelete = true }) {
                                 Icon(Icons.Outlined.Delete, contentDescription = "삭제")
                             }
+                        } else {
+                            Box {
+                                IconButton(onClick = { menuOpen = true }) {
+                                    Icon(Icons.Filled.MoreVert, contentDescription = "더 보기")
+                                }
+                                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                                    DropdownMenuItem(
+                                        text = { Text("신고하기") },
+                                        leadingIcon = { Icon(Icons.Outlined.Flag, contentDescription = null) },
+                                        onClick = { menuOpen = false; reporting = true },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("${entry.ownerName}님 차단") },
+                                        leadingIcon = { Icon(Icons.Outlined.Block, contentDescription = null) },
+                                        onClick = { menuOpen = false; confirmBlock = true },
+                                    )
+                                }
+                            }
                         }
                     }
                 },
@@ -146,6 +194,35 @@ fun EntryDetailScreen(
                 }
             }
         }
+    }
+
+    if (reporting && entry != null) {
+        ReportDialog(
+            title = "이 기록 신고",
+            onDismiss = { reporting = false },
+            onReport = { reason ->
+                reporting = false
+                moderate("신고가 접수됐어요. 확인 후 조치할게요.") {
+                    moderation.report(ReportTarget.Entry, entry.id, reason, entryId = entry.id, targetOwnerId = entry.ownerId)
+                }
+            },
+        )
+    }
+
+    if (confirmBlock && entry != null) {
+        AlertDialog(
+            onDismissRequest = { confirmBlock = false },
+            title = { Text("${entry.ownerName}님을 차단할까요?") },
+            text = { Text("이 사용자의 기록과 댓글이 보이지 않고, 이 사용자의 활동 알림도 오지 않아요. 설정에서 언제든 해제할 수 있어요.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmBlock = false
+                    moderate("차단했어요.") { moderation.block(entry.ownerId, entry.ownerName) }
+                    onBack()
+                }) { Text("차단") }
+            },
+            dismissButton = { TextButton(onClick = { confirmBlock = false }) { Text("취소") } },
+        )
     }
 
     if (confirmDelete && entry != null) {
@@ -225,7 +302,14 @@ private fun EntryDetailContent(
                 HorizontalDivider()
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("다른 사용자에게 공개", Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                    Switch(checked = entry.isPublic, onCheckedChange = onPublicChange)
+                    Switch(checked = entry.isPublic, onCheckedChange = onPublicChange, enabled = !entry.isHidden)
+                }
+                if (entry.isHidden) {
+                    Text(
+                        "여러 사용자의 신고로 숨겨진 기록이에요. 다시 공개할 수 없어요.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
                 }
             }
         }

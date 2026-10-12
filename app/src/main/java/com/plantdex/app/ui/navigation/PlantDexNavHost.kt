@@ -38,6 +38,8 @@ import com.plantdex.app.ui.collection.UserCollectionScreen
 import com.plantdex.app.ui.entry.EntryDetailScreen
 import com.plantdex.app.ui.feed.FeedScreen
 import com.plantdex.app.ui.map.PlantMapScreen
+import com.plantdex.app.ui.settings.BlockedUsersScreen
+import com.plantdex.app.ui.settings.SettingsScreen
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -51,6 +53,8 @@ import kotlin.reflect.KClass
 @Serializable data class CatalogRoute(val catalogId: String)
 @Serializable data class EntryDetailRoute(val entryId: String)
 @Serializable data class UserCollectionRoute(val userId: String, val userName: String)
+@Serializable data object SettingsRoute
+@Serializable data object BlockedUsersRoute
 
 private enum class TopLevelDestination(
     val route: Any,
@@ -135,7 +139,17 @@ fun PlantDexNavHost(user: UserProfile) {
                     onCatalogClick = { navController.navigate(CatalogRoute(it)) },
                     onAllRecordsClick = { navController.navigate(MyRecordsRoute) },
                     onBookmarksClick = { navController.navigate(BookmarksRoute) },
+                    onSettingsClick = { navController.navigate(SettingsRoute) },
                 )
+            }
+            composable<SettingsRoute> {
+                SettingsScreen(
+                    onBlockedUsersClick = { navController.navigate(BlockedUsersRoute) },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable<BlockedUsersRoute> {
+                BlockedUsersScreen(onBack = { navController.popBackStack() })
             }
             composable<BookmarksRoute> {
                 BookmarksScreen(onEntryClick = ::openEntry, onBack = { navController.popBackStack() })

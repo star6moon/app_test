@@ -20,14 +20,15 @@ data class AuthUiState(
     val password: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    /** 비밀번호 재설정 메일을 보냈다는 안내 등 */
+    val infoMessage: String? = null,
 ) {
     val canSubmit: Boolean
         get() = !isLoading && email.isNotBlank() && password.length >= 6 &&
             (!isSignUp || displayName.isNotBlank() && displayName.trim().length <= MAX_NAME_LENGTH)
 }
 
-/** firestore.rules 의 users/{uid}.displayName 길이 제한과 같아야 합니다. */
-const val MAX_NAME_LENGTH = 30
+private const val MAX_NAME_LENGTH = AuthRepository.MAX_NAME_LENGTH
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
@@ -42,7 +43,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun submit() {
         val state = _uiState.value
         if (!state.canSubmit) return
-        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        _uiState.update { it.copy(isLoading = true, errorMessage = null, infoMessage = null) }
         viewModelScope.launch {
             try {
                 if (state.isSignUp) {
@@ -53,6 +54,39 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                 // 성공하면 AuthRepository.currentUser 가 바뀌면서 메인 화면으로 전환됩니다.
                 // ViewModel 이 Activity 범위라 로그아웃 후 입력값이 남지 않도록 초기화합니다.
                 _uiState.value = AuthUiState()
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.toMessage()) }
+            }
+        }
+    }
+
+    /** 구글 계정 선택 창에서 받은 토큰으로 로그인 */
+    fun signInWithGoogle(idToken: String) {
+        _uiState.update { it.copy(isLoading = true, errorMessage = null, infoMessage = null) }
+        viewModelScope.launch {
+            try {
+                authRepository.signInWithGoogle(idToken)
+                _uiState.value = AuthUiState()
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.toMessage()) }
+            }
+        }
+    }
+
+    fun showError(message: String) = _uiState.update { it.copy(errorMessage = message, infoMessage = null) }
+
+    /** 입력한 이메일로 비밀번호 재설정 메일을 보냅니다. */
+    fun sendPasswordReset() {
+        val email = _uiState.value.email.trim()
+        if (email.isEmpty()) {
+            _uiState.update { it.copy(errorMessage = "비밀번호를 재설정할 이메일을 먼저 입력해 주세요.", infoMessage = null) }
+            return
+        }
+        _uiState.update { it.copy(isLoading = true, errorMessage = null, infoMessage = null) }
+        viewModelScope.launch {
+            try {
+                authRepository.sendPasswordReset(email)
+                _uiState.update { it.copy(isLoading = false, infoMessage = "$email 로 비밀번호 재설정 메일을 보냈어요. 메일함을 확인해 주세요.") }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.toMessage()) }
             }

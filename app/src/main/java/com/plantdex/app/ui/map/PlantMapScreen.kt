@@ -113,6 +113,7 @@ fun PlantMapScreen(
     )
     val scope by viewModel.scope.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val blockedIds by container.moderationRepository.blockedIds.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -144,7 +145,11 @@ fun PlantMapScreen(
                 LoadState.Loading -> LoadingBox(modifier)
                 is LoadState.Error -> MessageBox("불러오지 못했어요", modifier, body = s.message)
                 is LoadState.Success -> PlantMap(
-                    data = s.data,
+                    // 차단한 사용자의 기록은 지도에서도 숨깁니다.
+                    data = remember(s.data, blockedIds) {
+                        if (blockedIds.isEmpty()) s.data
+                        else s.data.copy(items = s.data.items.filter { it.entry.ownerId !in blockedIds })
+                    },
                     onEntryClick = onEntryClick,
                     modifier = modifier,
                 )

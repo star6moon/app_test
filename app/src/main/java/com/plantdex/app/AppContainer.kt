@@ -16,6 +16,7 @@ import com.plantdex.app.data.plantnet.PlantIdentifier
 import com.plantdex.app.data.plantnet.CloudPlantIdentifier
 import com.plantdex.app.data.repository.AuthRepository
 import com.plantdex.app.data.repository.CollectionRepository
+import com.plantdex.app.data.repository.ModerationRepository
 import com.plantdex.app.data.repository.ReactionRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +37,7 @@ class AppContainer(context: Context) {
     /** 서버 함수 (Firestore 와 같은 서울 지역) */
     val functions: FirebaseFunctions = Firebase.functions(FUNCTIONS_REGION)
 
-    val authRepository = AuthRepository(Firebase.auth, Firebase.firestore)
+    val authRepository = AuthRepository(Firebase.auth, Firebase.firestore, functions)
 
     val collectionRepository = CollectionRepository(Firebase.firestore, Firebase.storage, functions)
 
@@ -45,6 +46,9 @@ class AppContainer(context: Context) {
 
     /** 좋아요·책갈피 */
     val reactionRepository = ReactionRepository(Firebase.firestore, authRepository, appScope)
+
+    /** 신고·차단 */
+    val moderationRepository = ModerationRepository(Firebase.firestore, authRepository, appScope)
 
     /** 학명 → 사용자 언어 이름 (GBIF, Wikidata). */
     val plantNameLocalizer: PlantNameLocalizer = GbifWikidataNameLocalizer(httpClient)

@@ -19,14 +19,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -35,7 +38,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import com.plantdex.app.ui.components.appContainer
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 
 @Composable
 fun AuthScreen() {
@@ -44,6 +50,8 @@ fun AuthScreen() {
         factory = viewModelFactory { initializer { AuthViewModel(container.authRepository) } },
     )
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Surface(Modifier.fillMaxSize()) {
         Column(
@@ -113,8 +121,33 @@ fun AuthScreen() {
                     Text(if (state.isSignUp) "회원가입" else "로그인")
                 }
             }
+            state.infoMessage?.let {
+                Text(it, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodySmall)
+            }
+            OutlinedButton(
+                onClick = {
+                    scope.launch {
+                        try {
+                            viewModel.signInWithGoogle(requestGoogleIdToken(context))
+                        } catch (e: GetCredentialCancellationException) {
+                            // 사용자가 창을 닫음
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (e: Exception) {
+                            viewModel.showError(e.message ?: "구글 로그인에 실패했어요.")
+                        }
+                    }
+                },
+                enabled = !state.isLoading,
+                modifier = Modifier.fillMaxWidth().height(48.dp),
+            ) { Text("Google 계정으로 계속하기") }
             TextButton(onClick = viewModel::toggleMode, enabled = !state.isLoading) {
                 Text(if (state.isSignUp) "이미 계정이 있어요 · 로그인" else "처음이신가요? · 회원가입")
+            }
+            if (!state.isSignUp) {
+                TextButton(onClick = viewModel::sendPasswordReset, enabled = !state.isLoading) {
+                    Text("비밀번호를 잊으셨나요?")
+                }
             }
         }
     }

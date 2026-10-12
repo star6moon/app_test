@@ -20,9 +20,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.PhotoLibrary
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,6 +63,7 @@ fun MyCollectionScreen(
     onCatalogClick: (catalogId: String) -> Unit,
     onAllRecordsClick: () -> Unit,
     onBookmarksClick: () -> Unit,
+    onSettingsClick: () -> Unit,
 ) {
     val container = appContainer()
     val viewModel: CatalogProgressViewModel = viewModel(
@@ -80,8 +81,8 @@ fun MyCollectionScreen(
             TopAppBar(
                 title = { Text("${user.displayName}님의 도감") },
                 actions = {
-                    IconButton(onClick = { container.authRepository.signOut() }) {
-                        Icon(Icons.AutoMirrored.Outlined.Logout, contentDescription = "로그아웃")
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(Icons.Outlined.Settings, contentDescription = "설정")
                     }
                 },
             )
