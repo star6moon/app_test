@@ -14,11 +14,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -29,6 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.plantdex.app.data.model.UserProfile
+import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.capture.CaptureScreen
 import com.plantdex.app.ui.collection.BookmarksScreen
 import com.plantdex.app.ui.collection.CatalogDetailScreen
@@ -70,6 +74,9 @@ private enum class TopLevelDestination(
     MyCollection(MyCollectionRoute, MyCollectionRoute::class, "내 도감", Icons.AutoMirrored.Filled.MenuBook),
 }
 
+/** 서버의 데이터 구조 버전. 올리면 모든 계정이 migrateMyData 를 다시 한 번 호출합니다. */
+private const val DATA_VERSION = 2
+
 @Composable
 fun PlantDexNavHost(user: UserProfile) {
     val navController = rememberNavController()
@@ -77,6 +84,17 @@ fun PlantDexNavHost(user: UserProfile) {
     val currentDestination = backStackEntry?.destination
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // 예전 버전에서 만든 기록을 새 구조(지도 영역 검색, 통계)에 맞춥니다. 계정마다 한 번만.
+    val context = LocalContext.current
+    val container = appContainer()
+    LaunchedEffect(user.uid) {
+        val prefs = context.getSharedPreferences("migrations", Context.MODE_PRIVATE)
+        val key = "v${DATA_VERSION}_${user.uid}"
+        if (prefs.getBoolean(key, false)) return@LaunchedEffect
+        runCatching { container.collectionRepository.migrateMyData() }
+            .onSuccess { prefs.edit().putBoolean(key, true).apply() }
+    }
     val coroutineScope = rememberCoroutineScope()
 
     fun openTab(route: Any) = navController.navigate(route) {

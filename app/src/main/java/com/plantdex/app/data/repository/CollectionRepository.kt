@@ -12,6 +12,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storageMetadata
 import com.plantdex.app.data.model.CaptureLocation
 import com.plantdex.app.data.model.CapturedPhoto
+import com.plantdex.app.data.geo.GeoBounds
+import com.plantdex.app.data.geo.GeoHash
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.model.PlantCandidate
 import com.plantdex.app.data.model.UserProfile
@@ -20,6 +22,9 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -41,6 +46,11 @@ class CollectionRepository(
      * 사진과 썸네일을 올린 뒤 서버 함수(createEntry)로 기록을 만듭니다.
      * 서버가 위치 필수 · 같은 종 10m 규칙을 확인하고, 통과하면 생성된 기록 id 를 돌려줍니다.
      */
+    /** 예전 버전에서 만든 내 기록을 새 구조로 맞춥니다 (지오해시, 통계). 실패해도 다음에 다시 시도합니다. */
+    suspend fun migrateMyData() {
+        functions.getHttpsCallable("migrateMyData").call().await()
+    }
+
     suspend fun addEntry(
         owner: UserProfile,
         photo: CapturedPhoto,
@@ -139,6 +149,31 @@ class CollectionRepository(
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .limit(limit)
             .observe()
+
+    /**
+     * 지도 화면에 보이는 영역의 공개 기록을 한 번 읽습니다.
+     * 영역을 덮는 지오해시 접두사마다 범위 검색하고, 전체 읽기 수는 [budget] 정도로 제한합니다.
+     * 반환값의 second 가 true 면 일부만 불러온 것 (확대하면 더 보입니다).
+     * 지오해시가 없는 예전 기록은 나오지 않습니다.
+     */
+    suspend fun fetchPublicInBounds(bounds: GeoBounds, budget: Int = 300): Pair<List<CollectionEntry>, Boolean> =
+        coroutineScope {
+            val prefixes = GeoHash.coveringPrefixes(bounds)
+            val perQuery = (budget / prefixes.size).coerceAtLeast(30)
+            val snapshots = prefixes.map { prefix ->
+                async {
+                    entries.whereEqualTo("isPublic", true)
+                        .orderBy("geohash")
+                        .startAt(prefix)
+                        .endAt(prefix + "\uf8ff")
+                        .limit(perQuery.toLong())
+                        .get()
+                        .await()
+                }
+            }.awaitAll()
+            val truncated = snapshots.any { it.size() >= perQuery }
+            snapshots.flatMap { snap -> snap.documents.mapNotNull { it.toEntry() } }.distinctBy { it.id } to truncated
+        }
 
     fun observeEntry(id: String): Flow<CollectionEntry?> = callbackFlow {
         val registration = entries.document(id).addSnapshotListener { snapshot, error ->

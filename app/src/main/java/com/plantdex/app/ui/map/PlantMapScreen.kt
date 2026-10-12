@@ -81,6 +81,8 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.plantdex.app.BuildConfig
+import com.plantdex.app.data.geo.GeoBounds
+import com.plantdex.app.ui.components.PeriodFilterBar
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
@@ -114,24 +116,30 @@ fun PlantMapScreen(
     val scope by viewModel.scope.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val blockedIds by container.moderationRepository.blockedIds.collectAsStateWithLifecycle()
+    val period by viewModel.period.collectAsStateWithLifecycle()
+    val isFetching by viewModel.isFetching.collectAsStateWithLifecycle()
+    val fetchError by viewModel.fetchError.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("식물 지도") },
-                actions = {
-                    SingleChoiceSegmentedButtonRow(Modifier.padding(end = 8.dp)) {
-                        MapScope.entries.forEachIndexed { index, option ->
-                            SegmentedButton(
-                                selected = scope == option,
-                                onClick = { viewModel.setScope(option) },
-                                shape = SegmentedButtonDefaults.itemShape(index, MapScope.entries.size),
-                                icon = {},
-                            ) { Text(option.label, style = MaterialTheme.typography.labelMedium) }
+            Column {
+                TopAppBar(
+                    title = { Text("식물 지도") },
+                    actions = {
+                        SingleChoiceSegmentedButtonRow(Modifier.padding(end = 8.dp)) {
+                            MapScope.entries.forEachIndexed { index, option ->
+                                SegmentedButton(
+                                    selected = scope == option,
+                                    onClick = { viewModel.setScope(option) },
+                                    shape = SegmentedButtonDefaults.itemShape(index, MapScope.entries.size),
+                                    icon = {},
+                                ) { Text(option.label, style = MaterialTheme.typography.labelMedium) }
+                            }
                         }
-                    }
-                },
-            )
+                    },
+                )
+                PeriodFilterBar(selected = period, onSelect = viewModel::setPeriod, modifier = Modifier.padding(bottom = 4.dp))
+            }
         },
     ) { padding ->
         val modifier = Modifier.padding(padding)
@@ -150,6 +158,9 @@ fun PlantMapScreen(
                         if (blockedIds.isEmpty()) s.data
                         else s.data.copy(items = s.data.items.filter { it.entry.ownerId !in blockedIds })
                     },
+                    isFetching = isFetching && scope == MapScope.Everyone,
+                    notice = fetchError?.takeIf { scope == MapScope.Everyone }?.let { "불러오지 못했어요: $it" },
+                    onViewportChanged = viewModel::onViewportChanged,
                     onEntryClick = onEntryClick,
                     modifier = modifier,
                 )
@@ -174,6 +185,9 @@ private fun summarize(items: Collection<PlantMapItem>): ClusterSummary<PlantMapI
 @Composable
 private fun PlantMap(
     data: PlantMapData,
+    isFetching: Boolean,
+    notice: String?,
+    onViewportChanged: (GeoBounds) -> Unit,
     onEntryClick: (entryId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -216,10 +230,25 @@ private fun PlantMap(
         }
     }
 
-    // 범위(내 도감/모두)를 바꿀 때마다 기록이 모두 보이도록 카메라를 맞춥니다.
+    // 지도가 멈출 때마다 보이는 영역을 알려 줍니다 (모두의 기록은 이 영역만 불러옴).
+    LaunchedEffect(mapLoaded, cameraPositionState.isMoving) {
+        if (!mapLoaded || cameraPositionState.isMoving) return@LaunchedEffect
+        val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds ?: return@LaunchedEffect
+        onViewportChanged(
+            GeoBounds(
+                south = bounds.southwest.latitude,
+                west = bounds.southwest.longitude,
+                north = bounds.northeast.latitude,
+                east = bounds.northeast.longitude,
+            ),
+        )
+    }
+
+    // 내 도감으로 바꿀 때마다 기록이 모두 보이도록 카메라를 맞춥니다.
+    // 모두의 기록은 지금 보고 있는 영역을 불러오므로 카메라를 움직이지 않습니다.
     val hasItems = data.items.isNotEmpty()
     LaunchedEffect(mapLoaded, data.scope, hasItems) {
-        if (!mapLoaded || !hasItems) return@LaunchedEffect
+        if (!mapLoaded || !hasItems || data.viewportDriven) return@LaunchedEffect
         selection = null
         val positions = data.items.map { it.latLng }
         val update = if (positions.distinct().size == 1) {
@@ -291,7 +320,16 @@ private fun PlantMap(
             )
         }
 
-        if (data.withoutLocation > 0 || data.items.isEmpty()) {
+        val banner = when {
+            notice != null -> notice
+            isFetching -> "이 지역의 기록을 불러오는 중…"
+            data.viewportDriven && data.truncated -> "기록이 많아 일부만 보여요. 확대하면 더 보여요"
+            data.viewportDriven && data.items.isEmpty() -> "이 지역에는 공개된 기록이 없어요. 지도를 옮겨 보세요"
+            data.items.isEmpty() -> "지도에 표시할 기록이 아직 없어요"
+            data.withoutLocation > 0 -> "위치 정보가 없는 기록 ${data.withoutLocation}개는 표시되지 않아요"
+            else -> null
+        }
+        if (banner != null) {
             Surface(
                 modifier = Modifier.align(Alignment.TopCenter).padding(12.dp),
                 shape = RoundedCornerShape(50),
@@ -299,10 +337,7 @@ private fun PlantMap(
                 shadowElevation = 2.dp,
             ) {
                 Text(
-                    when {
-                        data.items.isEmpty() -> "지도에 표시할 기록이 아직 없어요"
-                        else -> "위치 정보가 없는 기록 ${data.withoutLocation}개는 표시되지 않아요"
-                    },
+                    banner,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                 )

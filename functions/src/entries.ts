@@ -155,3 +155,31 @@ export const onReportCreated = onDocumentCreated("reports/{reportId}", async (ev
     if (typeof entryId === "string") await db.doc(`entries/${entryId}/comments/${targetId}`).delete().catch(() => undefined);
   }
 });
+
+/**
+ * 예전 버전에서 만든 내 데이터를 새 구조에 맞춥니다 (앱이 로그인 후 한 번 호출).
+ * - 지오해시가 없는 기록에 지오해시 추가 (지도 '모두의 기록' 에 나오도록)
+ * - 통계(기록 수, 종 수) 다시 계산 (프로필·랭킹용)
+ */
+export const migrateMyData = onCall(async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError("unauthenticated", "LOGIN_REQUIRED");
+  const snap = await db.collection("entries").where("ownerId", "==", uid).get();
+  let updated = 0;
+  let batch = db.batch();
+  let pending = 0;
+  for (const doc of snap.docs) {
+    const loc = doc.get("location");
+    if (doc.get("geohash") || !(loc instanceof GeoPoint)) continue;
+    batch.update(doc.ref, { geohash: geohash(loc.latitude, loc.longitude) });
+    updated++;
+    if (++pending === 400) {
+      await batch.commit();
+      batch = db.batch();
+      pending = 0;
+    }
+  }
+  if (pending > 0) await batch.commit();
+  await recomputeStats(uid);
+  return { updated };
+});

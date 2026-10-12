@@ -1,5 +1,5 @@
 export { identifyPlant } from "./identify";
-export { createEntry, onEntryCreated, onEntryDeleted, onReportCreated } from "./entries";
+export { createEntry, migrateMyData, onEntryCreated, onEntryDeleted, onReportCreated } from "./entries";
 export {
   onLikeCreated,
   onCommentCreated,

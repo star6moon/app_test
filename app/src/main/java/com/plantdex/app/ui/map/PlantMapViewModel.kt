@@ -8,17 +8,29 @@ import com.plantdex.app.data.art.PlantArt
 import com.plantdex.app.data.art.PlantArts
 import com.plantdex.app.data.catalog.CatalogRepository
 import com.plantdex.app.data.catalog.SpeciesKey
+import com.plantdex.app.data.filter.PeriodFilter
+import com.plantdex.app.data.geo.GeoBounds
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.names.PlantNameLocalizer
 import com.plantdex.app.data.repository.CollectionRepository
 import com.plantdex.app.ui.collection.toMessage
 import com.plantdex.app.ui.components.LoadState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +40,12 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Locale
+
+/** 지도를 멈춘 뒤 이만큼 기다렸다가 불러옵니다 (연속으로 움직일 때 읽기 횟수 절약). */
+private const val VIEWPORT_DEBOUNCE_MS = 500L
 
 /** 지도에 표시할 범위. */
 enum class MapScope(val label: String) {
@@ -63,9 +80,13 @@ data class PlantMapData(
     val items: List<PlantMapItem>,
     /** 위치 정보가 없어 지도에 표시하지 못한 기록 수 */
     val withoutLocation: Int,
+    /** true 면 지도 영역에 따라 불러온 데이터 (모두의 기록). 카메라를 자동으로 맞추지 않습니다. */
+    val viewportDriven: Boolean = false,
+    /** 기록이 많아 이 영역의 일부만 불러왔는지 */
+    val truncated: Boolean = false,
 )
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class PlantMapViewModel(
     private val uid: String,
     private val collectionRepository: CollectionRepository,
@@ -76,14 +97,60 @@ class PlantMapViewModel(
     private val _scope = MutableStateFlow(MapScope.Mine)
     val scope: StateFlow<MapScope> = _scope.asStateFlow()
 
+    private val _period = MutableStateFlow<PeriodFilter>(PeriodFilter.All)
+    val period: StateFlow<PeriodFilter> = _period.asStateFlow()
+
+    /** 지금 지도에 보이는 영역. 지도가 멈출 때마다 화면이 알려 줍니다. */
+    private val viewport = MutableStateFlow<GeoBounds?>(null)
+
+    /** 모두의 기록을 불러오는 중 (지도는 그대로 두고 작은 표시만) */
+    private val _isFetching = MutableStateFlow(false)
+    val isFetching: StateFlow<Boolean> = _isFetching.asStateFlow()
+
+    /** 영역 불러오기 실패 안내 (지도는 그대로 두고, 움직이면 다시 시도) */
+    private val _fetchError = MutableStateFlow<String?>(null)
+    val fetchError: StateFlow<String?> = _fetchError.asStateFlow()
+
+    private data class Source(val entries: List<CollectionEntry>, val viewportDriven: Boolean, val truncated: Boolean)
+
+    private fun source(scope: MapScope): Flow<Source> = when (scope) {
+        MapScope.Mine -> collectionRepository.observeMyEntries(uid).map { Source(it, viewportDriven = false, truncated = false) }
+        // 모두의 기록은 화면에 보이는 영역만 불러옵니다 (지도를 움직이면 다시 불러옴).
+        MapScope.Everyone -> viewport
+            .filterNotNull()
+            .debounce(VIEWPORT_DEBOUNCE_MS)
+            .distinctUntilChanged()
+            .mapLatest { bounds ->
+                _isFetching.value = true
+                try {
+                    val (entries, truncated) = collectionRepository.fetchPublicInBounds(bounds)
+                    _fetchError.value = null
+                    Source(entries, viewportDriven = true, truncated = truncated)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    _fetchError.value = e.toMessage()
+                    Source(emptyList(), viewportDriven = true, truncated = false)
+                } finally {
+                    _isFetching.value = false
+                }
+            }
+            .onStart { if (viewport.value == null) emit(Source(emptyList(), viewportDriven = true, truncated = false)) }
+    }
+
     val state: StateFlow<LoadState<PlantMapData>> = _scope
         .flatMapLatest { scope ->
-            val entries = when (scope) {
-                MapScope.Mine -> collectionRepository.observeMyEntries(uid)
-                MapScope.Everyone -> collectionRepository.observeFeed()
-            }
-            entries
-                .transformLatest<List<CollectionEntry>, LoadState<PlantMapData>> { emitMapData(scope, it) }
+            combine(source(scope), _period) { src, period -> src to period }
+                .transformLatest<Pair<Source, PeriodFilter>, LoadState<PlantMapData>> { (src, period) ->
+                    val today = LocalDate.now()
+                    val zone = ZoneId.systemDefault()
+                    emitMapData(
+                        scope,
+                        src.entries.filter { period.matches(it.capturedAt, today, zone) },
+                        src.viewportDriven,
+                        src.truncated,
+                    )
+                }
                 .catch { emit(LoadState.Error(it.toMessage())) }
         }
         // 도감 파일 읽기와 아이콘 계산을 메인 스레드 밖에서 합니다.
@@ -94,10 +161,13 @@ class PlantMapViewModel(
     private suspend fun FlowCollector<LoadState<PlantMapData>>.emitMapData(
         scope: MapScope,
         entries: List<CollectionEntry>,
+        viewportDriven: Boolean,
+        truncated: Boolean,
     ) {
         val located = entries.filter { it.location != null }
         val withoutLocation = entries.size - located.size
-        emit(LoadState.Success(PlantMapData(scope, located.map { it.toItem(it.displayName) }, withoutLocation)))
+        fun data(items: List<PlantMapItem>) = PlantMapData(scope, items, withoutLocation, viewportDriven, truncated)
+        emit(LoadState.Success(data(located.map { it.toItem(it.displayName) })))
 
         val locale = Locale.getDefault()
         val language = locale.toLanguageTag().substringBefore('-').lowercase()
@@ -115,11 +185,19 @@ class PlantMapViewModel(
                 }
             }.awaitAll()
         }
-        emit(LoadState.Success(PlantMapData(scope, localized, withoutLocation)))
+        emit(LoadState.Success(data(localized)))
     }
 
     fun setScope(scope: MapScope) {
         _scope.value = scope
+    }
+
+    fun setPeriod(period: PeriodFilter) {
+        _period.value = period
+    }
+
+    fun onViewportChanged(bounds: GeoBounds) {
+        viewport.value = bounds
     }
 
     private fun CollectionEntry.toItem(name: String): PlantMapItem {
