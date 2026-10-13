@@ -127,6 +127,13 @@ fun SpeciesScreen(
                             }
                         }
                     }
+                    species?.flowerLanguage?.takeIf { it.isNotBlank() }?.let {
+                        Text(
+                            stringResource(R.string.species_flower_language, it),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                     if (seasons.isNotEmpty()) {
                         Text(stringResource(R.string.species_seasons, seasons.joinToString("·")), style = MaterialTheme.typography.bodyMedium)
                     }

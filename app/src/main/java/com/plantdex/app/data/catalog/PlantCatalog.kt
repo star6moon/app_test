@@ -18,6 +18,8 @@ data class CatalogSpecies(
     val acceptGenus: Boolean = false,
     /** 아직 발견하지 못했을 때 보여줄 힌트 */
     val hint: String = "",
+    /** 전해지는 꽃말 (없으면 빈 문자열) */
+    val flowerLanguage: String = "",
     /** 이 종의 외형 그림 사양 (지도 마커, 도감, 카드에 사용) */
     val art: PlantArt? = null,
 )

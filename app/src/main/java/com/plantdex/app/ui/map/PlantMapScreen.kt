@@ -50,6 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -96,6 +97,16 @@ import kotlinx.coroutines.launch
 /** 위치 정보가 있는 기록이 하나도 없을 때 처음 보여줄 위치 (서울시청). */
 private val DEFAULT_POSITION = LatLng(37.5665, 126.9780)
 
+/** 지도를 처음 열 때의 시작 위치 */
+private sealed interface StartPoint {
+    /** 내 위치를 찾는 중 (지도를 그리기 전에 잠깐 기다림) */
+    data object Pending : StartPoint
+
+    /** 위치 권한이 없거나 찾지 못함: 기록에 맞추거나 서울에서 시작 */
+    data object Unknown : StartPoint
+    data class Known(val latLng: LatLng) : StartPoint
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantMapScreen(
@@ -121,6 +132,12 @@ fun PlantMapScreen(
     val period by viewModel.period.collectAsStateWithLifecycle()
     val isFetching by viewModel.isFetching.collectAsStateWithLifecycle()
     val fetchError by viewModel.fetchError.collectAsStateWithLifecycle()
+
+    val startPoint by produceState<StartPoint>(StartPoint.Pending) {
+        value = container.locationProvider.quickLatLng()
+            ?.let { (lat, lng) -> StartPoint.Known(LatLng(lat, lng)) }
+            ?: StartPoint.Unknown
+    }
 
     Scaffold(
         topBar = {
@@ -153,6 +170,8 @@ fun PlantMapScreen(
                 modifier,
                 body = stringResource(R.string.map_api_key_missing_body),
             )
+            // 내 위치를 아는 동안 잠깐 기다렸다가, 처음부터 내 위치에서 지도를 엽니다.
+            startPoint == StartPoint.Pending -> LoadingBox(modifier)
             else -> when (val s = state) {
                 LoadState.Loading -> LoadingBox(modifier)
                 is LoadState.Error -> MessageBox(stringResource(R.string.map_load_failed), modifier, body = s.message)
@@ -166,12 +185,16 @@ fun PlantMapScreen(
                     notice = fetchErrorNotice,
                     onViewportChanged = viewModel::onViewportChanged,
                     onEntryClick = onEntryClick,
+                    myLocation = (startPoint as? StartPoint.Known)?.latLng,
                     modifier = modifier,
                 )
             }
         }
     }
 }
+
+/** 내 위치에서 시작할 때의 확대 정도 (동네가 보이는 정도) */
+private const val MY_LOCATION_ZOOM = 15f
 
 /** 화면에서 이 거리(dp) 안에 있는 마커는 종류와 상관없이 하나로 묶습니다. 확대하면 다시 나뉩니다. */
 private const val CLUSTER_DISTANCE_DP = 80
@@ -193,13 +216,21 @@ private fun PlantMap(
     notice: String?,
     onViewportChanged: (GeoBounds) -> Unit,
     onEntryClick: (entryId: String) -> Unit,
+    /** 알면 지도를 여기서 시작합니다 */
+    myLocation: LatLng?,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(DEFAULT_POSITION, 11f)
+        position = if (myLocation != null) {
+            CameraPosition.fromLatLngZoom(myLocation, MY_LOCATION_ZOOM)
+        } else {
+            CameraPosition.fromLatLngZoom(DEFAULT_POSITION, 11f)
+        }
     }
+    // 내 위치에서 시작했으면 처음에는 기록 전체로 카메라를 옮기지 않습니다.
+    var skipFirstFit by remember { mutableStateOf(myLocation != null) }
     var mapLoaded by remember { mutableStateOf(false) }
     var selection by remember { mutableStateOf<MapSelection?>(null) }
     // 패널이 사라지는 애니메이션 중에도 내용을 보여주기 위해 마지막 선택을 따로 기억합니다.
@@ -248,11 +279,15 @@ private fun PlantMap(
         )
     }
 
-    // 내 도감으로 바꿀 때마다 기록이 모두 보이도록 카메라를 맞춥니다.
+    // 내 도감으로 바꿀 때마다 기록이 모두 보이도록 카메라를 맞춥니다 (내 위치에서 시작한 첫 화면은 제외).
     // 모두의 기록은 지금 보고 있는 영역을 불러오므로 카메라를 움직이지 않습니다.
     val hasItems = data.items.isNotEmpty()
     LaunchedEffect(mapLoaded, data.scope, hasItems) {
         if (!mapLoaded || !hasItems || data.viewportDriven) return@LaunchedEffect
+        if (skipFirstFit) {
+            skipFirstFit = false
+            return@LaunchedEffect
+        }
         selection = null
         val positions = data.items.map { it.latLng }
         val update = if (positions.distinct().size == 1) {

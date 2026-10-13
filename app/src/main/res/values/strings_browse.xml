@@ -74,6 +74,7 @@
     <string name="species_back">뒤로</string>
     <string name="species_family">%1$s (과)</string>
     <string name="species_seasons">관찰하기 좋은 때: %1$s</string>
+    <string name="species_flower_language">💐 꽃말: %1$s</string>
     <string name="species_hint">찾는 법: %1$s</string>
     <string name="species_intro">소개</string>
     <string name="species_wiki_not_found">설명을 찾지 못했어요.</string>

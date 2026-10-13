@@ -45,6 +45,14 @@ class PlantCatalogTest {
     }
 
     @Test
+    fun `flower language is parsed and trimmed`() {
+        assertEquals("감사하는 마음, 행복", catalog.species("dandelion")?.flowerLanguage)
+        assertEquals("", catalog.species("kobomugi")?.flowerLanguage)
+        assertTrue(catalog.species.count { it.flowerLanguage.isNotBlank() } >= 70)
+        assertTrue(catalog.species.all { it.flowerLanguage == it.flowerLanguage.trim() })
+    }
+
+    @Test
     fun `species ids are unique and every species is in a catalog`() {
         assertEquals(catalog.species.size, catalog.species.map { it.id }.toSet().size)
         val used = catalog.catalogs.flatMap { it.speciesIds }.toSet()

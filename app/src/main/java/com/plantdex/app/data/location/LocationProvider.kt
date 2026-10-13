@@ -55,6 +55,27 @@ class LocationProvider(private val context: Context) {
         )
     }
 
+    /**
+     * 지도 첫 화면용 빠른 위치 (위도, 경도). 지명은 찾지 않습니다.
+     * 마지막으로 알려진 위치를 바로 쓰고, 없을 때만 [timeoutMs] 동안 현재 위치를 구합니다.
+     */
+    @SuppressLint("MissingPermission") // hasPermission() 으로 확인
+    suspend fun quickLatLng(timeoutMs: Long = QUICK_TIMEOUT_MS): Pair<Double, Double>? {
+        if (!hasPermission()) return null
+        val location = orNull { fusedClient.lastLocation.await() }
+            ?: orNull {
+                withTimeoutOrNull(timeoutMs) {
+                    val tokenSource = CancellationTokenSource()
+                    try {
+                        fusedClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, tokenSource.token).await()
+                    } finally {
+                        tokenSource.cancel()
+                    }
+                }
+            }
+        return location?.let { it.latitude to it.longitude }
+    }
+
     private suspend fun placeName(latitude: Double, longitude: Double): String? {
         if (!Geocoder.isPresent()) return null
         val geocoder = Geocoder(context, Locale.getDefault())
@@ -97,6 +118,7 @@ class LocationProvider(private val context: Context) {
     }
 
     private companion object {
+        const val QUICK_TIMEOUT_MS = 2_500L
         const val LOCATION_TIMEOUT_MS = 8_000L
         const val GEOCODE_TIMEOUT_MS = 5_000L
     }

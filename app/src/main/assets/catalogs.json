@@ -8,6 +8,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "길가·잔디밭 어디서나. 꽃받침이 뒤로 젖혀져요",
+   "flowerLanguage": "감사하는 마음, 행복",
    "art": {
     "form": "daisy",
     "color": "#F7C93C",
@@ -25,6 +26,7 @@
    ],
    "acceptGenus": false,
    "hint": "토종 민들레. 꽃받침이 꽃을 꼭 감싸요",
+   "flowerLanguage": "감사하는 마음, 행복",
    "art": {
     "form": "daisy",
     "color": "#F9DA6A",
@@ -39,6 +41,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "잔디밭의 클로버. 흰 공 모양 꽃",
+   "flowerLanguage": "행운, 약속",
    "art": {
     "form": "leaf",
     "color": "#4FA44A",
@@ -57,6 +60,7 @@
    ],
    "acceptGenus": true,
    "hint": "봄 울타리를 노랗게 물들이는 꽃",
+   "flowerLanguage": "희망, 깊은 정",
    "art": {
     "form": "flower",
     "color": "#F5C518",
@@ -78,6 +82,7 @@
    ],
    "acceptGenus": false,
    "hint": "잎보다 꽃이 먼저 피는 봄 가로수",
+   "flowerLanguage": "정신의 아름다움",
    "art": {
     "form": "flower",
     "color": "#F7C6D9",
@@ -99,6 +104,7 @@
    ],
    "acceptGenus": false,
    "hint": "이른 봄 커다란 흰 꽃봉오리",
+   "flowerLanguage": "고귀함, 숭고한 정신",
    "art": {
     "form": "cup",
     "color": "#FBF7F0",
@@ -113,6 +119,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "부채꼴 잎, 가을이면 노랗게",
+   "flowerLanguage": "장수, 정숙",
    "art": {
     "form": "leaf",
     "color": "#F2C230",
@@ -140,6 +147,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "하트 모양 열매가 달리는 봄나물",
+   "flowerLanguage": "당신에게 나의 모든 것을 드립니다",
    "art": {
     "form": "spike",
     "color": "#FFFFFF",
@@ -156,6 +164,7 @@
    ],
    "acceptGenus": true,
    "hint": "양지바른 길가의 보라색 작은 꽃",
+   "flowerLanguage": "겸양, 진실한 사랑",
    "art": {
     "form": "flower",
     "color": "#7E57C2",
@@ -171,6 +180,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "돌돌 말린 꽃대에 아주 작은 하늘색 꽃",
+   "flowerLanguage": "나를 잊지 마세요",
    "art": {
     "form": "cluster",
     "color": "#9EC9F0",
@@ -186,6 +196,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "계란후라이를 닮은 꽃. 빈터 어디에나",
+   "flowerLanguage": "화해",
    "art": {
     "form": "daisy",
     "color": "#FFFFFF",
@@ -203,6 +214,7 @@
    ],
    "acceptGenus": false,
    "hint": "초여름 길가를 노랗게 덮어요",
+   "flowerLanguage": "상쾌한 기분",
    "art": {
     "form": "flower",
     "color": "#F4C20D",
@@ -220,6 +232,7 @@
    ],
    "acceptGenus": false,
    "hint": "가을 길가의 대표 꽃",
+   "flowerLanguage": "순정, 소녀의 순결",
    "art": {
     "form": "flower",
     "color": "#F28DB2",
@@ -235,6 +248,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "나라꽃. 여름 내내 피고 지기를 반복해요",
+   "flowerLanguage": "일편단심, 영원",
    "art": {
     "form": "flower",
     "color": "#E58FC0",
@@ -251,6 +265,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "5월 가로수에 쌀밥 같은 흰 꽃",
+   "flowerLanguage": "영원한 사랑",
    "art": {
     "form": "cluster",
     "color": "#FFFFFF",
@@ -267,6 +282,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "백 일 동안 피는 분홍 꽃, 매끈한 줄기",
+   "flowerLanguage": "떠나간 벗을 그리워함",
    "art": {
     "form": "cluster",
     "color": "#E86FA6",
@@ -286,6 +302,7 @@
    ],
    "acceptGenus": false,
    "hint": "담장을 타고 오르는 주황색 나팔 꽃",
+   "flowerLanguage": "명예, 그리움",
    "art": {
     "form": "funnel",
     "color": "#F28C28",
@@ -301,6 +318,7 @@
    ],
    "acceptGenus": false,
    "hint": "초여름의 커다란 공 모양 꽃송이",
+   "flowerLanguage": "진심, 변덕",
    "art": {
     "form": "cluster",
     "color": "#8FB3E8",
@@ -320,6 +338,7 @@
    ],
    "acceptGenus": true,
    "hint": "화단과 화분의 나팔 모양 꽃",
+   "flowerLanguage": "마음의 평화",
    "art": {
     "form": "funnel",
     "color": "#B04AC9",
@@ -336,6 +355,7 @@
    ],
    "acceptGenus": false,
    "hint": "봄 화단의 얼굴 무늬 꽃",
+   "flowerLanguage": "나를 생각해 주세요",
    "art": {
     "form": "flower",
     "color": "#8E6BD9",
@@ -354,6 +374,7 @@
    ],
    "acceptGenus": false,
    "hint": "밟혀도 잘 자라는 길가의 풀",
+   "flowerLanguage": "발자취",
    "art": {
     "form": "rosette",
     "color": "#5E9E44",
@@ -371,6 +392,7 @@
    ],
    "acceptGenus": false,
    "hint": "하트 잎 세 장과 작은 노란 꽃",
+   "flowerLanguage": "빛나는 마음",
    "art": {
     "form": "leaf",
     "color": "#7CB342",
@@ -387,6 +409,7 @@
    ],
    "acceptGenus": false,
    "hint": "줄기를 꺾으면 노란 즙이 나와요",
+   "flowerLanguage": "몰래 주는 사랑, 엄마의 사랑",
    "art": {
     "form": "flower",
     "color": "#F6CF2E",
@@ -402,6 +425,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "이른 봄 땅에 붙어 피는 작은 하늘색 꽃",
+   "flowerLanguage": "기쁜 소식",
    "art": {
     "form": "flower",
     "color": "#6FA8DC",
@@ -419,6 +443,7 @@
    ],
    "acceptGenus": false,
    "hint": "층층이 달린 잎 사이의 분홍 꽃",
+   "flowerLanguage": "그리운 사람",
    "art": {
     "form": "spike",
     "color": "#C75B9B",
@@ -432,6 +457,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "이른 봄 노란 꽃, 가을엔 빨간 열매",
+   "flowerLanguage": "영원불멸의 사랑",
    "art": {
     "form": "cluster",
     "color": "#F2C230",
@@ -450,6 +476,7 @@
    ],
    "acceptGenus": false,
    "hint": "겨울 끝자락에 가장 먼저 피는 꽃",
+   "flowerLanguage": "고결한 마음, 인내",
    "art": {
     "form": "flower",
     "color": "#FCE4EC",
@@ -469,6 +496,7 @@
    ],
    "acceptGenus": true,
    "hint": "4~5월 진한 향기의 보라색 꽃",
+   "flowerLanguage": "첫사랑, 젊은 날의 추억",
    "art": {
     "form": "cluster",
     "color": "#B39DDB",
@@ -487,6 +515,7 @@
    ],
    "acceptGenus": false,
    "hint": "그늘진 화단의 보라색 꽃이삭",
+   "flowerLanguage": "겸손, 기쁨의 연속",
    "art": {
     "form": "spike",
     "color": "#8E6CC9"
@@ -499,6 +528,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "봄 화단을 덮는 분홍 융단",
+   "flowerLanguage": "온화, 희생",
    "art": {
     "form": "flower",
     "color": "#F48FB1",
@@ -519,6 +549,7 @@
    ],
    "acceptGenus": false,
    "hint": "봄 화단과 아파트 단지의 진분홍 꽃",
+   "flowerLanguage": "첫사랑",
    "art": {
     "form": "flower",
     "color": "#E91E63",
@@ -539,6 +570,7 @@
    ],
    "acceptGenus": true,
    "hint": "5월 담장을 장식하는 꽃의 여왕",
+   "flowerLanguage": "사랑, 애정",
    "art": {
     "form": "flower",
     "color": "#E53950",
@@ -555,6 +587,7 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "봄 화단의 대표 알뿌리 꽃",
+   "flowerLanguage": "사랑의 고백",
    "art": {
     "form": "cup",
     "color": "#E53935"
@@ -570,6 +603,7 @@
    ],
    "acceptGenus": false,
    "hint": "아침에 피었다 낮에 오므라드는 덩굴 꽃",
+   "flowerLanguage": "기쁜 소식, 덧없는 사랑",
    "art": {
     "form": "funnel",
     "color": "#5C6BC0",
@@ -583,6 +617,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "해를 닮은 커다란 여름 꽃",
+   "flowerLanguage": "숭배, 기다림",
    "art": {
     "form": "daisy",
     "color": "#F9C80E",
@@ -600,6 +635,7 @@
    ],
    "acceptGenus": false,
    "hint": "가을 화단의 주황·노랑 꽃",
+   "flowerLanguage": "반드시 오고야 말 행복",
    "art": {
     "form": "flower",
     "color": "#F59E0B",
@@ -619,6 +655,7 @@
    ],
    "acceptGenus": false,
    "hint": "봄에 하얀 꽃이 가지를 따라 줄줄이",
+   "flowerLanguage": "노력",
    "art": {
     "form": "cluster",
     "color": "#FFFFFF",
@@ -637,6 +674,7 @@
    ],
    "acceptGenus": true,
    "hint": "손바닥 모양 잎, 가을이면 붉게",
+   "flowerLanguage": "사양, 은둔",
    "art": {
     "form": "leaf",
     "color": "#E0452B",
@@ -669,6 +707,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "사계절 푸른 생울타리 나무",
+   "flowerLanguage": "변함없다",
    "art": {
     "form": "tree",
     "color": "#3E7D3A",
@@ -684,6 +723,7 @@
    ],
    "acceptGenus": false,
    "hint": "이른 봄 잎보다 먼저 피는 분홍 꽃",
+   "flowerLanguage": "사랑의 기쁨, 절제",
    "art": {
     "form": "flower",
     "color": "#E58AC0",
@@ -699,6 +739,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "진달래가 진 뒤 잎과 함께 피는 연분홍 꽃",
+   "flowerLanguage": "사랑의 즐거움",
    "art": {
     "form": "flower",
     "color": "#F7C6DA",
@@ -717,6 +758,7 @@
    ],
    "acceptGenus": false,
    "hint": "계곡과 능선에 무리 지어 피는 진분홍 꽃",
+   "flowerLanguage": "사랑의 즐거움",
    "art": {
     "form": "flower",
     "color": "#D9478A",
@@ -733,6 +775,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "이른 봄 산의 노란 꽃. 잎에서 생강 냄새",
+   "flowerLanguage": "수줍음, 사랑의 고백",
    "art": {
     "form": "cluster",
     "color": "#F2D23C",
@@ -752,6 +795,7 @@
    ],
    "acceptGenus": false,
    "hint": "이른 봄 낙엽 사이로 솜털 덮인 꽃대",
+   "flowerLanguage": "인내, 믿음",
    "art": {
     "form": "flower",
     "color": "#B48FE0",
@@ -767,6 +811,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "꽃잎을 뒤로 젖힌 보라색 봄꽃",
+   "flowerLanguage": "바람난 여인, 질투",
    "art": {
     "form": "flower",
     "color": "#B867C9",
@@ -786,6 +831,7 @@
    ],
    "acceptGenus": false,
    "hint": "눈 속에서 피어나는 노란 꽃",
+   "flowerLanguage": "영원한 행복",
    "art": {
     "form": "flower",
     "color": "#F5C400",
@@ -817,6 +863,7 @@
    ],
    "acceptGenus": false,
    "hint": "방울 모양의 향기로운 흰 꽃",
+   "flowerLanguage": "틀림없이 행복해집니다, 순결",
    "art": {
     "form": "bell",
     "color": "#FFFFFF"
@@ -829,6 +876,7 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "활처럼 휜 줄기에 매달린 종 모양 꽃",
+   "flowerLanguage": "고귀한 봉사",
    "art": {
     "form": "bell",
     "color": "#F1F5E6",
@@ -845,6 +893,7 @@
    ],
    "acceptGenus": false,
    "hint": "하트 모양 분홍 꽃이 줄지어 달려요",
+   "flowerLanguage": "당신을 따르겠습니다",
    "art": {
     "form": "bell",
     "color": "#E85A8A",
@@ -859,6 +908,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "초여름 층층이 피는 십자 모양 흰 꽃",
+   "flowerLanguage": "견고",
    "art": {
     "form": "flower",
     "color": "#FBFBF3",
@@ -876,6 +926,7 @@
    ],
    "acceptGenus": false,
    "hint": "주황 꽃잎에 검은 점, 잎겨드랑이에 주아",
+   "flowerLanguage": "순결, 깨끗한 마음",
    "art": {
     "form": "flower",
     "color": "#F57C1F",
@@ -893,6 +944,7 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "하루만 피는 주황색 여름 꽃",
+   "flowerLanguage": "근심을 잊다",
    "art": {
     "form": "flower",
     "color": "#F28C28",
@@ -911,6 +963,7 @@
    ],
    "acceptGenus": false,
    "hint": "가을 산의 흰·연분홍 들국화",
+   "flowerLanguage": "어머니의 사랑, 순수",
    "art": {
     "form": "daisy",
     "color": "#FBEFF4",
@@ -931,6 +984,7 @@
    ],
    "acceptGenus": false,
    "hint": "가을 들과 산의 연보라 들국화",
+   "flowerLanguage": "그리움, 기다림",
    "art": {
     "form": "daisy",
     "color": "#B9A2E8",
@@ -990,6 +1044,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "붉은 줄기의 늘 푸른 우리 나무",
+   "flowerLanguage": "불로장생, 정절",
    "art": {
     "form": "conifer",
     "color": "#2F6B3A",
@@ -1024,6 +1079,7 @@
    ],
    "acceptGenus": false,
    "hint": "여름 산 습지의 분홍 꽃이삭",
+   "flowerLanguage": "기약 없는 사랑",
    "art": {
     "form": "cluster",
     "color": "#F28DB7",
@@ -1055,6 +1111,7 @@
    ],
    "acceptGenus": false,
    "hint": "가을 계곡가의 자주색 꽃",
+   "flowerLanguage": "나를 건드리지 마세요",
    "art": {
     "form": "funnel",
     "color": "#C2479B",
@@ -1068,6 +1125,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "여름의 보라·흰색 별 모양 꽃",
+   "flowerLanguage": "영원한 사랑",
    "art": {
     "form": "flower",
     "color": "#7E6BD6",
@@ -1085,6 +1143,7 @@
    ],
    "acceptGenus": false,
    "hint": "양지바른 무덤가의 고개 숙인 자주색 꽃",
+   "flowerLanguage": "슬픈 추억",
    "art": {
     "form": "bell",
     "color": "#7B1E4B",
@@ -1099,6 +1158,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "가을 산 능선을 은빛으로 물들여요",
+   "flowerLanguage": "활력",
    "art": {
     "form": "plume",
     "color": "#D9CBB0"
@@ -1113,6 +1173,7 @@
    ],
    "acceptGenus": false,
    "hint": "초여름 풀밭의 보라색 꽃",
+   "flowerLanguage": "좋은 소식, 기쁜 소식",
    "art": {
     "form": "iris",
     "color": "#5E4FC9",
@@ -1126,6 +1187,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "바닷가 모래땅의 진분홍 들장미",
+   "flowerLanguage": "온화, 원망",
    "art": {
     "form": "flower",
     "color": "#D81B60",
@@ -1215,6 +1277,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "바닷가 바위틈의 연보라 가을 꽃",
+   "flowerLanguage": "침묵, 기다림",
    "art": {
     "form": "daisy",
     "color": "#A992E6",
@@ -1286,6 +1349,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "겨울부터 봄까지 피는 붉은 꽃",
+   "flowerLanguage": "누구보다 그대를 사랑합니다",
    "art": {
     "form": "flower",
     "color": "#D32F2F",
@@ -1374,6 +1438,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "연못의 커다란 분홍 꽃과 둥근 잎",
+   "flowerLanguage": "순결, 청순한 마음",
    "art": {
     "form": "flower",
     "color": "#F48FB1",
@@ -1390,6 +1455,7 @@
    "synonyms": [],
    "acceptGenus": true,
    "hint": "물 위에 뜬 잎과 꽃. 낮에 피고 밤에 오므려요",
+   "flowerLanguage": "청순한 마음",
    "art": {
     "form": "flower",
     "color": "#FFFFFF",
@@ -1434,6 +1500,7 @@
    ],
    "acceptGenus": false,
    "hint": "물가와 갯벌의 키 큰 풀",
+   "flowerLanguage": "신의, 지혜",
    "art": {
     "form": "plume",
     "color": "#9C7B5B"
@@ -1475,6 +1542,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "이른 봄 개울가의 보송한 버들강아지",
+   "flowerLanguage": "친절",
    "art": {
     "form": "spike",
     "color": "#DCDCDC",
@@ -1491,6 +1559,7 @@
    ],
    "acceptGenus": false,
    "hint": "부풀어 오른 잎자루로 물에 떠요",
+   "flowerLanguage": "승리",
    "art": {
     "form": "cluster",
     "color": "#A78BDA",
@@ -1506,6 +1575,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "단오에 머리를 감던 향기로운 잎",
+   "flowerLanguage": "우아한 마음",
    "art": {
     "form": "spike",
     "color": "#C9B458",
@@ -1521,6 +1591,7 @@
    ],
    "acceptGenus": false,
    "hint": "가시 돋친 잎과 빨간 겨울 열매",
+   "flowerLanguage": "가정의 행복, 평화",
    "art": {
     "form": "leaf",
     "color": "#2E7D32",
@@ -1535,6 +1606,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "겨울에 붉게 물드는 잎과 빨간 열매",
+   "flowerLanguage": "전화위복",
    "art": {
     "form": "berries",
     "color": "#C62828",
@@ -1564,6 +1636,7 @@
    ],
    "acceptGenus": true,
    "hint": "제주에서 한겨울에 피는 향기로운 꽃",
+   "flowerLanguage": "자기 사랑, 자존심",
    "art": {
     "form": "flower",
     "color": "#FFFFFF",
@@ -1580,6 +1653,7 @@
    "synonyms": [],
    "acceptGenus": false,
    "hint": "늘 푸른 잎과 빨간 열매",
+   "flowerLanguage": "고상함",
    "art": {
     "form": "conifer",
     "color": "#2E5E35",
