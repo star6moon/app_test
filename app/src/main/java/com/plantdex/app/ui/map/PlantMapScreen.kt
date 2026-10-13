@@ -59,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -102,7 +103,7 @@ private sealed interface StartPoint {
     /** 내 위치를 찾는 중 (지도를 그리기 전에 잠깐 기다림) */
     data object Pending : StartPoint
 
-    /** 위치 권한이 없거나 찾지 못함: 기록에 맞추거나 서울에서 시작 */
+    /** 위치 권한이 없거나 찾지 못함: 최근 기록이나 서울에서 시작 */
     data object Unknown : StartPoint
     data class Known(val latLng: LatLng) : StartPoint
 }
@@ -193,8 +194,8 @@ fun PlantMapScreen(
     }
 }
 
-/** 내 위치에서 시작할 때의 확대 정도 (동네가 보이는 정도) */
-private const val MY_LOCATION_ZOOM = 15f
+/** 지도를 처음 열 때 가운데에서 보이게 할 반경 (m) */
+private const val START_RADIUS_METERS = 1_000.0
 
 /** 화면에서 이 거리(dp) 안에 있는 마커는 종류와 상관없이 하나로 묶습니다. 확대하면 다시 나뉩니다. */
 private const val CLUSTER_DISTANCE_DP = 80
@@ -222,15 +223,18 @@ private fun PlantMap(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    // 처음에는 내 위치(모르면 최근 기록, 그것도 없으면 서울)를 가운데로 반경 약 1km 가 보이게 엽니다.
+    // 기록 전체에 맞춰 카메라를 옮기지 않습니다.
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val cameraPositionState = rememberCameraPositionState {
-        position = if (myLocation != null) {
-            CameraPosition.fromLatLngZoom(myLocation, MY_LOCATION_ZOOM)
-        } else {
-            CameraPosition.fromLatLngZoom(DEFAULT_POSITION, 11f)
-        }
+        val center = myLocation
+            ?: data.items.maxByOrNull { it.entry.capturedAt }?.latLng
+            ?: DEFAULT_POSITION
+        position = CameraPosition.fromLatLngZoom(
+            center,
+            MapZoom.forRadius(center.latitude, START_RADIUS_METERS, screenWidthDp),
+        )
     }
-    // 내 위치에서 시작했으면 처음에는 기록 전체로 카메라를 옮기지 않습니다.
-    var skipFirstFit by remember { mutableStateOf(myLocation != null) }
     var mapLoaded by remember { mutableStateOf(false) }
     var selection by remember { mutableStateOf<MapSelection?>(null) }
     // 패널이 사라지는 애니메이션 중에도 내용을 보여주기 위해 마지막 선택을 따로 기억합니다.
@@ -277,26 +281,6 @@ private fun PlantMap(
                 east = bounds.northeast.longitude,
             ),
         )
-    }
-
-    // 내 도감으로 바꿀 때마다 기록이 모두 보이도록 카메라를 맞춥니다 (내 위치에서 시작한 첫 화면은 제외).
-    // 모두의 기록은 지금 보고 있는 영역을 불러오므로 카메라를 움직이지 않습니다.
-    val hasItems = data.items.isNotEmpty()
-    LaunchedEffect(mapLoaded, data.scope, hasItems) {
-        if (!mapLoaded || !hasItems || data.viewportDriven) return@LaunchedEffect
-        if (skipFirstFit) {
-            skipFirstFit = false
-            return@LaunchedEffect
-        }
-        selection = null
-        val positions = data.items.map { it.latLng }
-        val update = if (positions.distinct().size == 1) {
-            CameraUpdateFactory.newLatLngZoom(positions.first(), 15f)
-        } else {
-            val bounds = LatLngBounds.builder().apply { positions.forEach { include(it) } }.build()
-            CameraUpdateFactory.newLatLngBounds(bounds, 120)
-        }
-        animateSafely(cameraPositionState, update, 600)
     }
 
     // 패널을 열어 둔 사이 좋아요 수 등이 바뀌면 최신 기록으로 다시 채웁니다.
