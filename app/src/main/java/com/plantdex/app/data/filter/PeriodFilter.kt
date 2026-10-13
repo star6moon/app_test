@@ -39,7 +39,11 @@ sealed interface PeriodFilter {
         range(today, zone)?.contains(capturedAt) ?: true
 
     companion object {
-        val presets: List<PeriodFilter> = listOf(All, ThisWeek, ThisMonth, ThisYear)
+        /**
+         * 미리 정한 기간들. 매번 새로 만듭니다: 인터페이스의 companion 안에 값으로 저장하면,
+         * `PeriodFilter.All` 을 먼저 쓸 때 All 이 아직 만들어지는 중이라 목록에 null 이 들어갑니다.
+         */
+        val presets: List<PeriodFilter> get() = listOf(All, ThisWeek, ThisMonth, ThisYear)
 
         /** DatePicker 가 주는 UTC 자정 millis → 날짜 */
         fun utcMillisToDate(millis: Long): LocalDate = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate()
