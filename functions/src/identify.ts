@@ -1,4 +1,5 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { logger } from "firebase-functions";
 import { defineSecret, defineBoolean, defineInt } from "firebase-functions/params";
 import { FieldValue } from "firebase-admin/firestore";
 import { db } from "./admin";
@@ -56,6 +57,15 @@ async function callPlantNet(images: Buffer[], lang: string, noReject: boolean) {
   return { status: res.status, body: await res.text() };
 }
 
+function resultCount(body: string): number | undefined {
+  try {
+    const results = JSON.parse(body).results;
+    return Array.isArray(results) ? results.length : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function messageOf(body: string): string {
   try {
     return String(JSON.parse(body).message ?? "");
@@ -93,6 +103,17 @@ export const identifyPlant = onCall(
     let noReject = true;
     for (let attempt = 0; attempt < 3; attempt++) {
       const res = await callPlantNet(images, lang, noReject);
+      // Firebase 콘솔 → Functions → identifyPlant → 로그 에서 Pl@ntNet 응답을 확인할 수 있습니다.
+      logger.info("plantnet response", {
+        uid,
+        attempt,
+        status: res.status,
+        noReject,
+        lang,
+        images: images.length,
+        results: resultCount(res.body),
+        message: res.status === 200 ? undefined : messageOf(res.body),
+      });
       if (res.status === 400) {
         const msg = messageOf(res.body).toLowerCase();
         if (noReject && msg.includes("reject")) { noReject = false; continue; }
