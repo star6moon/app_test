@@ -139,6 +139,15 @@ jobs:
           printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json
           mkdir -p ~/.android
           printf '%s' "$DEBUG_KEYSTORE_BASE64" | base64 -d > ~/.android/debug.keystore
+          # 서명 지문 확인: Firebase 에 등록된 지문(google-services.json)과 같아야 Google 로그인이 됩니다.
+          sha1=$(keytool -list -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey \
+            | awk '/SHA1:/ {print $2}' | tr -d ':' | tr 'A-F' 'a-f')
+          echo "디버그 서명 SHA-1: $sha1"
+          if jq -e --arg h "$sha1" '[.. | .certificate_hash? // empty] | index($h)' app/google-services.json > /dev/null; then
+            echo "Firebase 에 등록된 지문과 같습니다."
+          else
+            echo "::warning::이 서명 지문($sha1)이 google-services.json 에 없습니다. DEBUG_KEYSTORE_BASE64 가 내 PC 의 ~/.android/debug.keystore 인지 확인하세요."
+          fi
       - name: Build debug APK
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
