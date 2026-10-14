@@ -41,6 +41,14 @@ android {
     }
 
     signingConfigs {
+        // 개발용 공용 서명 키 (저장소에 포함). PC 와 자동 빌드(CI)가 같은 키로 서명해야
+        // Firebase 에 등록한 지문과 맞아 Google 로그인이 됩니다. 배포(release)에는 절대 쓰지 마세요.
+        create("dev") {
+            storeFile = file("keystore/plantdex-dev.jks")
+            storePassword = "plantdex-dev"
+            keyAlias = "plantdex-dev"
+            keyPassword = "plantdex-dev"
+        }
         if (releaseStoreFile != null) {
             create("release") {
                 storeFile = file(releaseStoreFile)
@@ -52,6 +60,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("dev")
+        }
         release {
             // 코드 축소·난독화(R8)와 안 쓰는 리소스 제거로 앱 크기를 줄입니다.
             isMinifyEnabled = true

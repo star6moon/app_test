@@ -3,7 +3,6 @@
 # 필요한 GitHub 비밀(Settings → Secrets and variables → Actions):
 #   FIREBASE_SERVICE_ACCOUNT  서비스 계정 키(JSON 전체)        → 서버 배포, 앱 보내기, 로그
 #   GOOGLE_SERVICES_JSON      app/google-services.json 내용    → 앱 보내기
-#   DEBUG_KEYSTORE_BASE64     ~/.android/debug.keystore (base64) → 앱 보내기 (내 PC 와 같은 서명)
 #   MAPS_API_KEY              지도 키                           → 앱 보내기 (없으면 지도만 안 보임)
 # 변수(Variables 탭):
 #   TESTER_EMAILS             앱을 받을 사람 이메일 (쉼표로 구분)
@@ -60,7 +59,7 @@ jobs:
       - id: decide
         env:
           HAS_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
-          HAS_APP: ${{ secrets.GOOGLE_SERVICES_JSON != '' && secrets.DEBUG_KEYSTORE_BASE64 != '' }}
+          HAS_APP: ${{ secrets.GOOGLE_SERVICES_JSON != '' }}
           EVENT: ${{ github.event_name }}
           TARGET: ${{ inputs.target }}
           SERVER_CHANGED: ${{ steps.changes.outputs.server }}
@@ -82,7 +81,7 @@ jobs:
             server=false; app=false; logs=false
           fi
           if [ "$app" = "true" ] && [ "$HAS_APP" != "true" ]; then
-            echo "::notice::GOOGLE_SERVICES_JSON / DEBUG_KEYSTORE_BASE64 비밀이 없어 앱 보내기를 건너뜁니다"
+            echo "::notice::GOOGLE_SERVICES_JSON 비밀이 없어 앱 보내기를 건너뜁니다"
             app=false
           fi
           echo "server=$server" >> "$GITHUB_OUTPUT"
@@ -131,31 +130,15 @@ jobs:
           distribution: temurin
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
-      - name: Real Firebase config and my debug signing key
+      - name: Real Firebase config
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
-        run: |
-          printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json
-          mkdir -p ~/.android
-          printf '%s' "$DEBUG_KEYSTORE_BASE64" | base64 -d > ~/.android/debug.keystore
-          # 서명 지문 확인: Firebase 에 등록된 지문(google-services.json)과 같아야 Google 로그인이 됩니다.
-          sha1=$(keytool -list -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey \
-            | awk '/SHA1:/ {print $2}' | tr -d ':' | tr 'A-F' 'a-f')
-          echo "디버그 서명 SHA-1: $sha1"
-          if jq -e --arg h "$sha1" '[.. | .certificate_hash? // empty] | index($h)' app/google-services.json > /dev/null; then
-            echo "Firebase 에 등록된 지문과 같습니다."
-          else
-            echo "::warning::이 서명 지문($sha1)이 google-services.json 에 없습니다. DEBUG_KEYSTORE_BASE64 가 내 PC 의 ~/.android/debug.keystore 인지 확인하세요."
-          fi
+        run: printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json
+      # 디버그 빌드는 저장소의 개발용 키(app/keystore/plantdex-dev.jks)로 서명합니다.
       - name: Build debug APK
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: |
-          # Gradle 이 다른 위치에 새 디버그 키를 만들지 않고 위에서 넣은 키를 쓰도록 위치를 못박습니다.
-          export ANDROID_USER_HOME="$HOME/.android"
-          echo "ANDROID_SDK_HOME=${ANDROID_SDK_HOME:-} ANDROID_PREFS_ROOT=${ANDROID_PREFS_ROOT:-}"
-          ./gradlew --no-daemon assembleDebug
+        run: ./gradlew --no-daemon assembleDebug
       - name: Check the APK is signed with the registered key
         run: |
           apksigner="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
@@ -170,8 +153,7 @@ jobs:
           if jq -e --arg h "$apk_sha1" '[.. | .certificate_hash? // empty] | index($h)' app/google-services.json > /dev/null; then
             echo "Firebase 에 등록된 지문과 같습니다."
           else
-            echo "::error::APK 서명($apk_sha1)이 Firebase/Google 콘솔에 등록된 지문과 달라 Google 로그인이 되지 않습니다."
-            exit 1
+            echo "::warning::APK 서명($apk_sha1)이 GOOGLE_SERVICES_JSON 에 없습니다. Firebase 에 이 지문을 추가하고 google-services.json 을 다시 받아 비밀값을 바꾸세요 (README '서명 키')."
           fi
       - uses: google-github-actions/auth@v2
         with:

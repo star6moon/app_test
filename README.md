@@ -75,6 +75,13 @@ firebase/             # Firestore·Storage 보안 규칙, Firestore 색인
    Firebase 콘솔 → 프로젝트 설정 → 내 앱 → **디지털 지문 추가**에 붙여넣습니다. 릴리스 키를 만들었다면(6번) 그 SHA-1 도 추가합니다.
 5. SHA-1 을 추가한 **다음에** `google-services.json` 을 내려받아 `app/` 폴더에 넣습니다 (Google 로그인 정보가 들어 있어야 하므로 순서가 중요합니다. 저장소에는 커밋하지 않습니다).
 
+#### 서명 키
+
+- **개발용(debug)**: 저장소의 `app/keystore/plantdex-dev.jks` 로 서명합니다. 누가 어디서 빌드해도(PC, GitHub Actions) 지문이 같아서 Google 로그인이 됩니다. 이 지문을 Firebase 에 등록하세요.
+  - SHA-1: `37:8E:5F:6E:72:40:16:4D:60:24:40:A1:A0:3A:E8:4E:91:7E:E0:E7`
+  - SHA-256: `09:40:32:05:3D:B5:B9:38:15:CD:75:A6:6F:1D:89:ED:3B:9C:11:D7:0B:31:43:D5:AA:88:F6:B8:95:E0:97:FE`
+- **배포용(release)**: 6번에서 만드는 개인 키를 씁니다. 개발용 키는 배포에 쓰면 안 됩니다.
+
 ### 2. 서버 함수와 규칙 배포
 
 ```bash
