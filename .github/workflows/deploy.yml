@@ -162,6 +162,11 @@ jobs:
           apk_sha1=$("$apksigner" verify --print-certs app/build/outputs/apk/debug/app-debug.apk \
             | awk -F': ' '/certificate SHA-1 digest/ {print $NF; exit}' | tr -d ':' | tr 'A-F' 'a-f')
           echo "APK 서명 SHA-1: $apk_sha1"
+          aapt2="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/aapt2"
+          echo "APK 안의 웹 클라이언트 ID:"
+          "$aapt2" dump resources app/build/outputs/apk/debug/app-debug.apk | grep -A1 'string/default_web_client_id' | tail -1
+          echo "google-services.json 의 프로젝트 번호: $(jq -r .project_info.project_number app/google-services.json)"
+          echo "등록된 OAuth 클라이언트: $(jq -c '[.client[].oauth_client[] | {client_type, client_id: (.client_id[0:20])}]' app/google-services.json)"
           if jq -e --arg h "$apk_sha1" '[.. | .certificate_hash? // empty] | index($h)' app/google-services.json > /dev/null; then
             echo "Firebase 에 등록된 지문과 같습니다."
           else
