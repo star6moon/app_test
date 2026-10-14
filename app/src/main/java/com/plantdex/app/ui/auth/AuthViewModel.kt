@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.plantdex.app.data.repository.AuthRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,8 +68,12 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             try {
                 authRepository.signInWithGoogle(idToken)
                 _uiState.value = AuthUiState()
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = e.toMessage()) }
+                // 이메일 로그인용 문구("비밀번호가 올바르지 않습니다")가 나오지 않도록 원인을 그대로 보여줍니다.
+                val reason = "${e.javaClass.simpleName}: ${e.message.orEmpty()}".take(300)
+                _uiState.update { it.copy(isLoading = false, errorMessage = "구글 로그인을 완료하지 못했어요.\n($reason)") }
             }
         }
     }

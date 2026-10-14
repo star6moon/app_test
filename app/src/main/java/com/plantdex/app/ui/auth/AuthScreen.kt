@@ -55,6 +55,8 @@ fun AuthScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val googleFailedMessage = stringResource(R.string.auth_screen_google_failed)
+    val googleFailedDetailMessage = stringResource(R.string.auth_screen_google_failed_detail)
+    val googleSetupMessage = stringResource(R.string.auth_screen_google_setup_problem)
 
     Surface(Modifier.fillMaxSize()) {
         Column(
@@ -133,11 +135,17 @@ fun AuthScreen() {
                         try {
                             viewModel.signInWithGoogle(requestGoogleIdToken(context))
                         } catch (e: GetCredentialCancellationException) {
-                            // 사용자가 창을 닫음
+                            // 사용자가 창을 닫은 경우는 조용히 넘어갑니다. 하지만 Google 쪽 설정 문제
+                            // (예: "[16] Account reauth failed") 도 같은 예외로 오므로 그때는 이유를 보여줍니다.
+                            if (!e.isUserCancel()) {
+                                viewModel.showError(googleSetupMessage.format(e.describe()))
+                            }
                         } catch (e: CancellationException) {
                             throw e
-                        } catch (e: Exception) {
+                        } catch (e: GoogleSignInUnavailableException) {
                             viewModel.showError(e.message ?: googleFailedMessage)
+                        } catch (e: Exception) {
+                            viewModel.showError(googleFailedDetailMessage.format(e.describe()))
                         }
                     }
                 },
@@ -155,3 +163,12 @@ fun AuthScreen() {
         }
     }
 }
+
+/** 사용자가 직접 창을 닫았는지 (설정 문제로 취소된 경우와 구분) */
+private fun GetCredentialCancellationException.isUserCancel(): Boolean {
+    val text = message.orEmpty().lowercase()
+    return text.isBlank() || "cancelled by the user" in text || "canceled by the user" in text || "user canceled" in text
+}
+
+/** 원인 확인용: 예외 종류와 메시지 */
+private fun Exception.describe(): String = "${javaClass.simpleName}: ${message.orEmpty()}".take(300)
