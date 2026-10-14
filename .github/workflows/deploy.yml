@@ -151,7 +151,23 @@ jobs:
       - name: Build debug APK
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: ./gradlew --no-daemon assembleDebug
+        run: |
+          # Gradle 이 다른 위치에 새 디버그 키를 만들지 않고 위에서 넣은 키를 쓰도록 위치를 못박습니다.
+          export ANDROID_USER_HOME="$HOME/.android"
+          echo "ANDROID_SDK_HOME=${ANDROID_SDK_HOME:-} ANDROID_PREFS_ROOT=${ANDROID_PREFS_ROOT:-}"
+          ./gradlew --no-daemon assembleDebug
+      - name: Check the APK is signed with the registered key
+        run: |
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
+          apk_sha1=$("$apksigner" verify --print-certs app/build/outputs/apk/debug/app-debug.apk \
+            | awk -F': ' '/certificate SHA-1 digest/ {print $2; exit}' | tr -d ':' | tr 'A-F' 'a-f')
+          echo "APK 서명 SHA-1: $apk_sha1"
+          if jq -e --arg h "$apk_sha1" '[.. | .certificate_hash? // empty] | index($h)' app/google-services.json > /dev/null; then
+            echo "Firebase 에 등록된 지문과 같습니다."
+          else
+            echo "::error::APK 서명($apk_sha1)이 Firebase/Google 콘솔에 등록된 지문과 달라 Google 로그인이 되지 않습니다."
+            exit 1
+          fi
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
