@@ -17,6 +17,7 @@ import com.plantdex.app.data.geo.GeoHash
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.model.PlantCandidate
 import com.plantdex.app.data.model.UserProfile
+import com.plantdex.app.data.plantnet.CloudPlantIdentifier
 import com.plantdex.app.util.ImageUtils
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
@@ -117,6 +118,8 @@ class CollectionRepository(
             code == FirebaseFunctionsException.Code.NOT_FOUND ->
                 EntrySaveException("서버 기능이 아직 배포되지 않았어요. (firebase deploy --only functions)")
             code == FirebaseFunctionsException.Code.UNAVAILABLE -> EntrySaveException("네트워크 연결을 확인해 주세요.")
+            code == FirebaseFunctionsException.Code.UNAUTHENTICATED && message != "LOGIN_REQUIRED" ->
+                EntrySaveException(CloudPlantIdentifier.SERVER_PERMISSION_MESSAGE)
             else -> EntrySaveException("저장하지 못했습니다: ${message.orEmpty()}")
         }
     }

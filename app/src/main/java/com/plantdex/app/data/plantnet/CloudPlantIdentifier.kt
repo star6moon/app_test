@@ -55,11 +55,20 @@ class CloudPlantIdentifier(
 
     private fun FirebaseFunctionsException.toMessage(): String = when (code) {
         FirebaseFunctionsException.Code.RESOURCE_EXHAUSTED -> "오늘 식별할 수 있는 횟수를 모두 사용했어요. 내일 다시 시도해 주세요."
-        FirebaseFunctionsException.Code.UNAUTHENTICATED -> "다시 로그인해 주세요."
+        // 서버 코드가 로그인 없음을 알릴 때만 LOGIN_REQUIRED 를 보냅니다. 그 밖의 UNAUTHENTICATED 는
+        // 요청이 함수 코드에 닿기 전에 Cloud Run 권한(공개 호출 허용)에서 거부된 경우입니다.
+        FirebaseFunctionsException.Code.UNAUTHENTICATED ->
+            if (message == "LOGIN_REQUIRED") "다시 로그인해 주세요." else SERVER_PERMISSION_MESSAGE
         FirebaseFunctionsException.Code.FAILED_PRECONDITION -> "앱 인증(App Check)에 실패했어요. 최신 버전의 앱인지 확인해 주세요."
         FirebaseFunctionsException.Code.NOT_FOUND -> "서버 기능이 아직 배포되지 않았어요. (firebase deploy --only functions)"
         FirebaseFunctionsException.Code.UNAVAILABLE, FirebaseFunctionsException.Code.DEADLINE_EXCEEDED -> "네트워크 연결을 확인해 주세요."
         FirebaseFunctionsException.Code.INVALID_ARGUMENT -> "사진을 보내지 못했어요. 다시 찍어 주세요."
         else -> "식물 식별에 실패했습니다: ${message.orEmpty()}"
+    }
+
+    companion object {
+        /** Cloud Run 이 호출을 거부했을 때 (README "서버 함수 호출 권한" 참고) */
+        const val SERVER_PERMISSION_MESSAGE =
+            "서버가 요청을 거부했어요. 서버 함수의 '공개 호출 허용' 설정을 확인해 주세요. (README 참고)"
     }
 }

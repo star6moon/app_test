@@ -91,6 +91,15 @@ firebase deploy --only firestore,storage,functions
 - 색인 생성에는 몇 분이 걸립니다. 그동안 "Firestore 색인이 필요합니다" 메시지가 보일 수 있습니다.
 - 예전 버전에서 만든 기록은 앱이 로그인 후 한 번 자동으로 새 구조(지도 영역 검색, 통계)로 바꿉니다.
 
+#### 서버 함수 호출 권한 (식별할 때 "서버가 요청을 거부했어요" 가 나오면)
+
+첫 배포가 중간에 실패하면 함수의 **공개 호출 허용** 설정이 빠질 수 있습니다. 함수 코드가 Firebase 로그인을 직접 확인하므로, 이 설정을 켜도 로그인하지 않은 요청은 거부됩니다.
+
+1. `firebase deploy --only functions` 를 다시 실행해 `✔ Deploy complete!` 가 나오는지 확인합니다. 대부분 이것으로 해결됩니다.
+2. 그래도 같으면 [Cloud Run 콘솔](https://console.cloud.google.com/run)에서 프로젝트를 고르고 `identifyplant` 를 누릅니다.
+3. **보안(Security)** 탭 → **인증** 에서 **공개 액세스 허용(Allow public access / 인증되지 않은 호출 허용)** 을 고르고 저장합니다.
+4. `createentry`, `deleteaccount`, `migratemydata` 도 같은 문제가 있으면 똑같이 설정합니다 (`on...` 으로 시작하는 함수는 필요 없음).
+
 ### 3. App Check (우리 앱만 서버를 쓰도록)
 
 1. Firebase 콘솔 → **App Check** → 앱 → **Play Integrity** 등록.
