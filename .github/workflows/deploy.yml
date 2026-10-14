@@ -160,7 +160,7 @@ jobs:
         run: |
           apksigner="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
           apk_sha1=$("$apksigner" verify --print-certs app/build/outputs/apk/debug/app-debug.apk \
-            | awk -F': ' '/certificate SHA-1 digest/ {print $2; exit}' | tr -d ':' | tr 'A-F' 'a-f')
+            | awk -F': ' '/certificate SHA-1 digest/ {print $NF; exit}' | tr -d ':' | tr 'A-F' 'a-f')
           echo "APK 서명 SHA-1: $apk_sha1"
           if jq -e --arg h "$apk_sha1" '[.. | .certificate_hash? // empty] | index($h)' app/google-services.json > /dev/null; then
             echo "Firebase 에 등록된 지문과 같습니다."
