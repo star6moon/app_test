@@ -100,10 +100,13 @@ export const identifyPlant = onCall(
     await consumeQuota(uid);
 
     // 지원하지 않는 옵션(언어, no-reject)은 빼고 다시 시도합니다.
+    // 404(종을 찾지 못함)도 사용자 언어 탓일 수 있어 영어로 한 번 더 시도합니다.
+    // 앱이 영어 이름을 받으면 LocalizingPlantIdentifier 가 사용자 언어 이름을 채웁니다.
     let noReject = true;
     for (let attempt = 0; attempt < 3; attempt++) {
       const res = await callPlantNet(images, lang, noReject);
       // Firebase 콘솔 → Functions → identifyPlant → 로그 에서 Pl@ntNet 응답을 확인할 수 있습니다.
+      // ("message" 는 로그 문구 자리라서 Pl@ntNet 메시지는 다른 이름으로 남깁니다)
       logger.info("plantnet response", {
         uid,
         attempt,
@@ -111,14 +114,17 @@ export const identifyPlant = onCall(
         noReject,
         lang,
         images: images.length,
+        imageBytes: images.map((img) => img.length),
         results: resultCount(res.body),
-        message: res.status === 200 ? undefined : messageOf(res.body),
+        plantnetMessage: res.status === 200 ? undefined : messageOf(res.body),
+        plantnetBody: res.status === 200 ? undefined : res.body.slice(0, 500),
       });
       if (res.status === 400) {
         const msg = messageOf(res.body).toLowerCase();
         if (noReject && msg.includes("reject")) { noReject = false; continue; }
         if (lang !== "en" && msg.includes("lang")) { lang = "en"; continue; }
       }
+      if (res.status === 404 && lang !== "en") { lang = "en"; continue; }
       return { status: res.status, body: res.body, lang };
     }
     throw new HttpsError("internal", "PLANTNET_REJECTED_OPTIONS");
