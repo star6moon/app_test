@@ -16,9 +16,9 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: "무엇을 할까요 (all: 서버+앱, server, app, logs: 서버 로그 보기)"
+        description: "무엇을 할까요 (all: 서버+앱, server, app, logs: 서버 로그 보기, identify-test: 식물 식별 시험)"
         type: choice
-        options: [all, server, app, logs]
+        options: [all, server, app, logs, identify-test]
         default: all
       log_filter:
         description: "logs 일 때 추가 조건 (예: resource.labels.service_name=\"identifyplant\")"
@@ -39,6 +39,7 @@ jobs:
       server: ${{ steps.decide.outputs.server }}
       app: ${{ steps.decide.outputs.app }}
       logs: ${{ steps.decide.outputs.logs }}
+      test: ${{ steps.decide.outputs.test }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -65,20 +66,21 @@ jobs:
           SERVER_CHANGED: ${{ steps.changes.outputs.server }}
           APP_CHANGED: ${{ steps.changes.outputs.app }}
         run: |
-          server=false; app=false; logs=false
+          server=false; app=false; logs=false; test=false
           if [ "$EVENT" = "workflow_dispatch" ]; then
             case "$TARGET" in
               all) server=true; app=true ;;
               server) server=true ;;
               app) app=true ;;
               logs) logs=true ;;
+              identify-test) test=true ;;
             esac
           else
             server=$SERVER_CHANGED; app=$APP_CHANGED
           fi
           if [ "$HAS_SA" != "true" ]; then
             echo "::notice::FIREBASE_SERVICE_ACCOUNT 비밀이 없어 자동 배포를 건너뜁니다 (README '자동 배포' 참고)"
-            server=false; app=false; logs=false
+            server=false; app=false; logs=false; test=false
           fi
           if [ "$app" = "true" ] && [ "$HAS_APP" != "true" ]; then
             echo "::notice::GOOGLE_SERVICES_JSON 비밀이 없어 앱 보내기를 건너뜁니다"
@@ -87,7 +89,8 @@ jobs:
           echo "server=$server" >> "$GITHUB_OUTPUT"
           echo "app=$app" >> "$GITHUB_OUTPUT"
           echo "logs=$logs" >> "$GITHUB_OUTPUT"
-          echo "서버 배포: $server / 앱 보내기: $app / 로그: $logs"
+          echo "test=$test" >> "$GITHUB_OUTPUT"
+          echo "서버 배포: $server / 앱 보내기: $app / 로그: $logs / 식별 시험: $test"
 
   server:
     needs: plan
@@ -188,3 +191,69 @@ jobs:
           gcloud logging read "$filter" --project "$FIREBASE_PROJECT" --freshness=1d --limit=150 --format=json \
             | jq -r 'reverse | .[] | [.timestamp, .resource.labels.service_name, .severity,
                 ((.jsonPayload // .textPayload // .httpRequest // {}) | tostring | .[0:600])] | @tsv'
+
+  # 위키백과의 실제 식물 사진으로 (1) Pl@ntNet 을 직접, (2) 앱과 같은 경로(서버 함수)로 식별해 봅니다.
+  identify-test:
+    needs: plan
+    if: needs.plan.outputs.test == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+      - run: npm ci
+        working-directory: functions
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Test photos (Wikipedia)
+        run: |
+          mkdir -p test-photos
+          for page in Helianthus_annuus Taraxacum_officinale Bellis_perennis; do
+            thumb=$(curl -sS -A "PlantDex-identify-test" "https://en.wikipedia.org/api/rest_v1/page/summary/$page" | jq -r '.thumbnail.source // empty')
+            [ -z "$thumb" ] && { echo "$page: 사진 주소 없음"; continue; }
+            big=$(printf '%s' "$thumb" | sed -E 's#/[0-9]+px-#/1024px-#')
+            curl -sSfL -A "PlantDex-identify-test" -o "test-photos/$page.jpg" "$big" \
+              || curl -sSfL -A "PlantDex-identify-test" -o "test-photos/$page.jpg" "$thumb" \
+              || { echo "$page: 내려받기 실패"; rm -f "test-photos/$page.jpg"; continue; }
+            echo "$page: $(file -b "test-photos/$page.jpg" | cut -c1-60)"
+          done
+          ls test-photos/*.jpg > /dev/null
+      - name: Pl@ntNet directly
+        continue-on-error: true
+        run: |
+          key=$(gcloud secrets versions access latest --secret=PLANTNET_API_KEY --project "$FIREBASE_PROJECT")
+          echo "::add-mask::$key"
+          base="https://my-api.plantnet.org/v2/identify/all?api-key=$key&nb-results=3&include-related-images=false"
+          for photo in test-photos/*.jpg; do
+            echo "== $(basename "$photo")"
+            # 이름 | 추가 주소 옵션 | organs 값 (빈 값이면 보내지 않음)
+            while IFS='|' read -r name query organ; do
+              args=(-F "images=@$photo;type=image/jpeg")
+              [ -n "$organ" ] && args+=(-F "organs=$organ")
+              out=$(curl -sS -m 60 -o body.json -w '%{http_code}' -X POST "$base$query" "${args[@]}") || out="연결 실패"
+              summary=$(jq -r 'if .results then ([.results[:3][] | "\(.species.scientificNameWithoutAuthor) \((.score*1000|round)/10)%"] | join(", ")) else (.message // tostring) end' body.json 2>/dev/null || head -c 300 body.json)
+              echo "  [$name] HTTP $out: $summary"
+            done <<'EOF'
+          앱과 같은 요청|&lang=ko&no-reject=true|auto
+          영어|&lang=en|auto
+          영어, organs=flower|&lang=en|flower
+          영어, organs 없음|&lang=en|
+          EOF
+          done
+      - name: Through the app's server (identifyPlant)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then echo "::notice::GOOGLE_SERVICES_JSON 비밀이 없어 건너뜁니다"; exit 0; fi
+          WEB_API_KEY=$(printf '%s' "$GOOGLE_SERVICES_JSON" | jq -r '.client[0].api_key[0].current_key')
+          echo "::add-mask::$WEB_API_KEY"
+          export WEB_API_KEY ANDROID_PACKAGE=com.plantdex.app
+          # 개발용 서명 키(app/keystore/plantdex-dev.jks)의 SHA-1
+          export ANDROID_CERT_SHA1=378E5F6E7240164D602440A1A03AE84E917EE0E7
+          node functions/scripts/identify-test.mjs test-photos/*.jpg
