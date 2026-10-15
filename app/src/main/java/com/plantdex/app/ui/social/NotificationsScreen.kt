@@ -1,7 +1,9 @@
 package com.plantdex.app.ui.social
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,11 +24,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plantdex.app.R
 import com.plantdex.app.data.repository.AppNotification
 import com.plantdex.app.ui.components.MessageBox
+import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.UserAvatar
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.util.Formatters
@@ -66,9 +71,14 @@ fun NotificationsScreen(
                 stringResource(R.string.social_notifications_empty),
                 Modifier.padding(padding),
                 body = stringResource(R.string.social_notifications_empty_body),
+                emoji = "🔔",
             )
         } else {
-            LazyColumn(Modifier.fillMaxSize().padding(padding)) {
+            LazyColumn(
+                Modifier.fillMaxSize().padding(padding),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 items(visible, key = { it.id }) { n ->
                     NotificationRow(
                         n,
@@ -92,14 +102,26 @@ private fun NotificationRow(n: AppNotification, onClick: () -> Unit, onDelete: (
         "follow" -> "👋"
         else -> "🔔"
     }
-    ListItem(
-        leadingContent = { UserAvatar(n.actorName, null) },
-        headlineContent = { Text("$icon ${n.body}", maxLines = 2) },
-        supportingContent = { if (n.createdAt > 0) Text(Formatters.dateTime(n.createdAt)) },
-        trailingContent = {
-            IconButton(onClick = onDelete) { Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.social_notification_delete)) }
-        },
-        colors = if (n.read) ListItemDefaults.colors() else ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-        modifier = Modifier.clickable(onClick = onClick),
-    )
+    // 알림 한 줄을 종이 카드 한 장에. 읽지 않은 알림은 연한 크라프트색 바탕.
+    PaperCard(Modifier.fillMaxWidth(), onClick = onClick) {
+        ListItem(
+            leadingContent = { UserAvatar(n.actorName, null) },
+            headlineContent = { Text("$icon ${n.body}", maxLines = 2, style = MaterialTheme.typography.bodyMedium) },
+            supportingContent = {
+                if (n.createdAt > 0) {
+                    Text(
+                        Formatters.dateTime(n.createdAt),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+            trailingContent = {
+                IconButton(onClick = onDelete) { Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.social_notification_delete)) }
+            },
+            colors = ListItemDefaults.colors(
+                containerColor = if (n.read) Color.Transparent else MaterialTheme.colorScheme.secondaryContainer,
+            ),
+        )
+    }
 }

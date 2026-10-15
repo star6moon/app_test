@@ -3,10 +3,14 @@ package com.plantdex.app.ui.components
 import android.widget.Toast
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,9 +24,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plantdex.app.R
 import com.plantdex.app.data.model.CollectionEntry
@@ -30,9 +34,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
-private val LikeRed = Color(0xFFE53950)
-
-/** 좋아요(♥ 개수)와 책갈피 버튼 */
+/** 좋아요(♥ 개수, 테라코타색)·댓글 수·책갈피 버튼 */
 @Composable
 fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -77,13 +79,27 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
             Icon(
                 if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                 contentDescription = stringResource(if (liked) R.string.common_reaction_unlike else R.string.common_reaction_like),
-                tint = if (liked) LikeRed else MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = if (liked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Text(
             entry.likeCount.toString(),
             style = MaterialTheme.typography.labelLarge,
+            color = if (liked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        // 댓글 수는 보여주기만 합니다 (댓글은 기록 상세 화면에서).
+        Spacer(Modifier.width(16.dp))
+        Icon(
+            Icons.Outlined.ChatBubbleOutline,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            entry.commentCount.toString(),
+            style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 6.dp),
         )
         Spacer(Modifier.weight(1f))
         IconButton(

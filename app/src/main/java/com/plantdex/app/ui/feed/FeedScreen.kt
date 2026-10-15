@@ -3,7 +3,6 @@ package com.plantdex.app.ui.feed
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,17 +10,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SegmentedButton
@@ -42,7 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -55,7 +54,10 @@ import com.plantdex.app.ui.collection.EntryListViewModel
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
+import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.ReactionBar
+import com.plantdex.app.ui.components.ScientificName
+import com.plantdex.app.ui.components.UserAvatar
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.localizedName
 import com.plantdex.app.util.Formatters
@@ -125,7 +127,7 @@ fun FeedScreen(
         val modifier = Modifier.padding(padding)
         when (val s = state) {
             LoadState.Loading -> LoadingBox(modifier)
-            is LoadState.Error -> MessageBox(stringResource(R.string.feed_load_failed), modifier, body = s.message)
+            is LoadState.Error -> MessageBox(stringResource(R.string.feed_load_failed), modifier, body = s.message, emoji = "⚠️")
             is LoadState.Success -> {
                 // 차단한 사용자의 기록은 보이지 않게 합니다.
                 val visible = s.data.filter { it.ownerId !in blockedIds }
@@ -135,9 +137,15 @@ fun FeedScreen(
                             stringResource(R.string.feed_following_empty_title),
                             modifier,
                             body = stringResource(R.string.feed_following_empty_body),
+                            emoji = "👥",
                         )
                     } else {
-                        MessageBox(stringResource(R.string.feed_empty_title), modifier, body = stringResource(R.string.feed_empty_body))
+                        MessageBox(
+                            stringResource(R.string.feed_empty_title),
+                            modifier,
+                            body = stringResource(R.string.feed_empty_body),
+                            emoji = "🌿",
+                        )
                     }
                 } else {
                     LazyColumn(
@@ -159,47 +167,70 @@ fun FeedScreen(
     }
 }
 
+/** 피드 카드: 머리줄(아바타·이름·날짜) + 표본처럼 끼운 사진 + 반응 + 식물 이름·학명·장소·메모. */
 @Composable
 private fun FeedCard(entry: CollectionEntry, onClick: () -> Unit, onUserClick: () -> Unit) {
     val name = localizedName(entry)
-    Card(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+    PaperCard(Modifier.fillMaxWidth(), onClick = onClick) {
         Row(
             Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onUserClick)
-                .padding(12.dp),
+                .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                Modifier.size(32.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center,
-            ) {
+            UserAvatar(entry.ownerName, null, size = 36.dp)
+            Spacer(Modifier.width(10.dp))
+            Column(Modifier.weight(1f)) {
                 Text(
-                    entry.ownerName.take(1).ifEmpty { "?" },
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    style = MaterialTheme.typography.labelLarge,
+                    entry.ownerName,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    Formatters.dateTime(entry.capturedAt),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Spacer(Modifier.width(8.dp))
-            Text(entry.ownerName, style = MaterialTheme.typography.titleSmall)
         }
         AsyncImage(
             model = entry.photoUrl,
             contentDescription = name,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth().aspectRatio(4f / 3f),
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .fillMaxWidth()
+                .aspectRatio(4f / 3f)
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
         )
         ReactionBar(entry, Modifier.fillMaxWidth().padding(horizontal = 4.dp))
-        Column(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(name, style = MaterialTheme.typography.titleMedium)
-            Text(entry.scientificName, style = MaterialTheme.typography.bodySmall, fontStyle = FontStyle.Italic)
-            Text(
-                listOfNotNull(Formatters.dateTime(entry.capturedAt), entry.location?.placeName).joinToString(" · "),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            ScientificName(entry.scientificName)
+            val placeName = entry.location?.placeName
+            if (!placeName.isNullOrBlank()) {
+                Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Outlined.Place,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Text(
+                        placeName,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
             if (entry.memo.isNotBlank()) {
-                Spacer(Modifier.size(4.dp))
+                Spacer(Modifier.height(6.dp))
                 Text(entry.memo, style = MaterialTheme.typography.bodyMedium)
             }
         }
