@@ -98,6 +98,9 @@ class PlantNetIdentifier(
             val text = response.body?.string().orEmpty()
             return when {
                 response.isSuccessful -> parseCandidates(text, lang)
+                // 이름을 제공하지 않는 언어(예: 한국어)는 404 "No localization available for ko" 로 옵니다.
+                response.code == 404 && lang != FALLBACK_LANGUAGE && isMissingLocalization(errorMessage(text)) ->
+                    throw RejectedOptionException(OPTION_LANG, errorMessage(text))
                 // Pl@ntNet 은 어떤 종과도 일치하지 않으면 404 "Species not found" 를 돌려줍니다.
                 response.code == 404 -> emptyList()
                 response.code == 401 || response.code == 403 ->
@@ -131,6 +134,8 @@ class PlantNetIdentifier(
         private val JPEG = "image/jpeg".toMediaType()
 
         private val json = Json { ignoreUnknownKeys = true }
+
+        private fun isMissingLocalization(message: String) = message.contains("localization", ignoreCase = true)
 
         fun parseCandidates(body: String, lang: String): List<PlantCandidate> =
             json.decodeFromString<IdentifyResponse>(body).results

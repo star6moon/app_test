@@ -100,6 +100,22 @@ class PlantNetIdentifierTest {
     }
 
     @Test
+    fun `language without localization retries in english`() = runTest {
+        // Pl@ntNet 은 한국어 이름이 없어서 lang=ko 에 404 를 돌려줍니다.
+        server.enqueue(
+            MockResponse().setResponseCode(404)
+                .setBody("""{"statusCode":404,"error":"Not Found","message":"No localization available for ko"}"""),
+        )
+        server.enqueue(MockResponse().setResponseCode(200).setBody(SAMPLE_RESPONSE))
+
+        val candidates = identifier(language = "ko").identify(listOf(image))
+
+        assertEquals("ko", server.takeRequest().requestUrl!!.queryParameter("lang"))
+        assertEquals("en", server.takeRequest().requestUrl!!.queryParameter("lang"))
+        assertEquals("en", candidates[0].namesLanguage)
+    }
+
+    @Test
     fun `retries without no-reject when the server does not accept it`() = runTest {
         server.enqueue(
             MockResponse().setResponseCode(400).setBody(

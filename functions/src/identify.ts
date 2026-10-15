@@ -13,6 +13,9 @@ export const APP_CHECK_REQUIRED = defineBoolean("APP_CHECK_REQUIRED", { default:
 /** 사용자 한 명이 하루에 식별할 수 있는 횟수 (Pl@ntNet 무료 한도 500회/일을 모두가 나눠 씀) */
 const DAILY_LIMIT_PER_USER = defineInt("IDENTIFY_DAILY_LIMIT", { default: 50 });
 
+/** Pl@ntNet 이 이름을 제공하지 않는 언어 (서버 인스턴스가 살아 있는 동안 기억) */
+const unlocalizedLangs = new Set<string>(["ko"]);
+
 const MAX_IMAGES = 3;
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 
@@ -100,8 +103,10 @@ export const identifyPlant = onCall(
     await consumeQuota(uid);
 
     // 지원하지 않는 옵션(언어, no-reject)은 빼고 다시 시도합니다.
-    // 404(종을 찾지 못함)도 사용자 언어 탓일 수 있어 영어로 한 번 더 시도합니다.
+    // Pl@ntNet 은 한국어 이름이 없어 lang=ko 에 404 "No localization available for ko" 를 돌려주므로
+    // 그런 언어는 기억해 두고 처음부터 영어로 요청합니다.
     // 앱이 영어 이름을 받으면 LocalizingPlantIdentifier 가 사용자 언어 이름을 채웁니다.
+    if (unlocalizedLangs.has(lang)) lang = "en";
     let noReject = true;
     for (let attempt = 0; attempt < 3; attempt++) {
       const res = await callPlantNet(images, lang, noReject);
@@ -124,7 +129,11 @@ export const identifyPlant = onCall(
         if (noReject && msg.includes("reject")) { noReject = false; continue; }
         if (lang !== "en" && msg.includes("lang")) { lang = "en"; continue; }
       }
-      if (res.status === 404 && lang !== "en") { lang = "en"; continue; }
+      if (res.status === 404 && lang !== "en" && /locali[sz]ation/i.test(messageOf(res.body))) {
+        unlocalizedLangs.add(lang);
+        lang = "en";
+        continue;
+      }
       return { status: res.status, body: res.body, lang };
     }
     throw new HttpsError("internal", "PLANTNET_REJECTED_OPTIONS");
