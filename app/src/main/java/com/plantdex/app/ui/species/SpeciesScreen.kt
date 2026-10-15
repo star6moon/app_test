@@ -1,29 +1,37 @@
 package com.plantdex.app.ui.species
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.outlined.CameraAlt
-import androidx.compose.material3.AssistChip
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -35,17 +43,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plantdex.app.R
 import com.plantdex.app.data.catalog.SpeciesKey
 import com.plantdex.app.data.info.WikiSummary
 import com.plantdex.app.ui.components.EntryGrid
+import com.plantdex.app.ui.components.InfoPill
+import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.PlantArtImage
+import com.plantdex.app.ui.components.ScientificName
+import com.plantdex.app.ui.components.SectionHeader
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.rememberPlantArt
 import kotlinx.coroutines.flow.catch
@@ -115,66 +127,119 @@ fun SpeciesScreen(
             onEntryClick = { onEntryClick(it.id) },
             modifier = Modifier.fillMaxSize().padding(padding),
             header = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PlantArtImage(art, Modifier.size(96.dp))
-                        Spacer(Modifier.width(16.dp))
-                        Column {
-                            Text(title, style = MaterialTheme.typography.headlineSmall)
-                            Text(scientificName, style = MaterialTheme.typography.bodyMedium, fontStyle = FontStyle.Italic)
-                            family?.takeIf { it.isNotBlank() }?.let {
-                                Text(stringResource(R.string.species_family, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Column(
+                    Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    // 표본 그림을 둥근 액자처럼 크게
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1.6f)
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        PlantArtImage(art, Modifier.fillMaxHeight(0.8f).aspectRatio(1f))
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text(title, style = MaterialTheme.typography.headlineMedium)
+                        ScientificName(scientificName, style = MaterialTheme.typography.bodyLarge, maxLines = 2)
+                    }
+                    val familyText = family?.takeIf { it.isNotBlank() }
+                    if (familyText != null || seasons.isNotEmpty() || catalogs.isNotEmpty()) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            familyText?.let { InfoPill(stringResource(R.string.species_family, it)) }
+                            if (seasons.isNotEmpty()) {
+                                InfoPill(
+                                    stringResource(R.string.species_seasons, seasons.joinToString("·")),
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                )
+                            }
+                            catalogs.forEach { c ->
+                                InfoPill(
+                                    "${c.emoji} ${c.title}",
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    contentColor = MaterialTheme.colorScheme.onSurface,
+                                )
                             }
                         }
                     }
+                    // 꽃말: 테라코타 색 인용 상자
                     species?.flowerLanguage?.takeIf { it.isNotBlank() }?.let {
-                        Text(
-                            stringResource(R.string.species_flower_language, it),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                    if (seasons.isNotEmpty()) {
-                        Text(stringResource(R.string.species_seasons, seasons.joinToString("·")), style = MaterialTheme.typography.bodyMedium)
-                    }
-                    species?.hint?.takeIf { it.isNotBlank() }?.let {
-                        Text(stringResource(R.string.species_hint, it), style = MaterialTheme.typography.bodyMedium)
-                    }
-                    if (catalogs.isNotEmpty()) {
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            catalogs.forEach { c -> AssistChip(onClick = {}, label = { Text("${c.emoji} ${c.title}") }) }
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        ) {
+                            Row(Modifier.height(IntrinsicSize.Min).padding(14.dp)) {
+                                Box(
+                                    Modifier
+                                        .width(3.dp)
+                                        .fillMaxHeight()
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.tertiary),
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    stringResource(R.string.species_flower_language, it),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+                            }
                         }
                     }
-                    Card(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(stringResource(R.string.species_intro), style = MaterialTheme.typography.titleMedium)
-                            val summary = wiki
-                            when {
-                                wikiLoading -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
-                                summary == null -> Text(
-                                    stringResource(R.string.species_wiki_not_found),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                else -> {
-                                    Text(summary.extract, style = MaterialTheme.typography.bodyMedium)
-                                    summary.pageUrl?.let { url ->
-                                        TextButton(onClick = { uriHandler.openUri(url) }) {
-                                            Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
-                                            Text(
-                                                if (summary.language != language) {
-                                                    stringResource(R.string.species_wiki_more_with_language, summary.language)
-                                                } else {
-                                                    stringResource(R.string.species_wiki_more)
-                                                },
-                                            )
-                                        }
-                                    }
-                                    Text(
-                                        stringResource(R.string.species_wiki_source),
-                                        style = MaterialTheme.typography.labelSmall,
+                    species?.hint?.takeIf { it.isNotBlank() }?.let {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        ) {
+                            Row(Modifier.padding(14.dp)) {
+                                Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp))
+                                Spacer(Modifier.width(10.dp))
+                                Text(stringResource(R.string.species_hint, it), style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        SectionHeader(stringResource(R.string.species_intro))
+                        PaperCard(Modifier.fillMaxWidth()) {
+                            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                val summary = wiki
+                                when {
+                                    wikiLoading -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
+                                    summary == null -> Text(
+                                        stringResource(R.string.species_wiki_not_found),
+                                        style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
+                                    else -> {
+                                        Text(summary.extract, style = MaterialTheme.typography.bodyMedium)
+                                        summary.pageUrl?.let { url ->
+                                            TextButton(onClick = { uriHandler.openUri(url) }) {
+                                                Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
+                                                Text(
+                                                    if (summary.language != language) {
+                                                        stringResource(R.string.species_wiki_more_with_language, summary.language)
+                                                    } else {
+                                                        stringResource(R.string.species_wiki_more)
+                                                    },
+                                                )
+                                            }
+                                        }
+                                        Text(
+                                            stringResource(R.string.species_wiki_source),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -182,14 +247,20 @@ fun SpeciesScreen(
                     val mine = myEntries
                     when {
                         mine == null -> Unit
-                        mine.isEmpty() -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(stringResource(R.string.species_not_recorded), style = MaterialTheme.typography.titleMedium)
-                            Button(onClick = onCaptureClick) {
-                                Icon(Icons.Outlined.CameraAlt, contentDescription = null)
-                                Text(stringResource(R.string.species_capture))
+                        mine.isEmpty() -> PaperCard(Modifier.fillMaxWidth()) {
+                            Column(
+                                Modifier.fillMaxWidth().padding(20.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+                                Text(stringResource(R.string.species_not_recorded), style = MaterialTheme.typography.titleMedium)
+                                Button(onClick = onCaptureClick) {
+                                    Icon(Icons.Outlined.CameraAlt, contentDescription = null)
+                                    Text(stringResource(R.string.species_capture))
+                                }
                             }
                         }
-                        else -> Text(stringResource(R.string.species_my_records_count, mine.size), style = MaterialTheme.typography.titleMedium)
+                        else -> SectionHeader(stringResource(R.string.species_my_records_count, mine.size))
                     }
                 }
             },

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,12 +15,15 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.outlined.Crop
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -41,6 +45,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.plantdex.app.R
+import com.plantdex.app.ui.components.InfoPill
+import com.plantdex.app.ui.components.PaperCard
 
 /**
  * 찍은 사진 확인 화면.
@@ -78,67 +84,87 @@ fun ReviewContent(
         Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Box(Modifier.weight(1f).fillMaxWidth().clip(MaterialTheme.shapes.large)) {
-            state.photos.getOrNull(index)?.let { file ->
-                AsyncImage(
-                    model = file,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-            if (state.isBusy) {
-                Surface(Modifier.fillMaxSize(), color = Color.Black.copy(alpha = 0.4f)) {
-                    Box(contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Color.White) }
+        // 고른 사진을 표본처럼 종이 카드 안에 크게
+        PaperCard(Modifier.weight(1f).fillMaxWidth(), shape = MaterialTheme.shapes.large) {
+            Box(
+                Modifier
+                    .padding(8.dp)
+                    .fillMaxSize()
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+            ) {
+                state.photos.getOrNull(index)?.let { file ->
+                    AsyncImage(
+                        model = file,
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize(),
+                    )
                 }
-            }
-            if (index == 0 && state.photos.isNotEmpty()) {
-                Text(
-                    stringResource(R.string.capture_main_photo),
-                    color = Color.White,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(8.dp)
-                        .background(Color.Black.copy(alpha = 0.5f), MaterialTheme.shapes.small)
-                        .padding(horizontal = 8.dp, vertical = 2.dp),
-                )
+                if (state.isBusy) {
+                    Surface(Modifier.fillMaxSize(), color = Color.Black.copy(alpha = 0.4f)) {
+                        Box(contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Color.White) }
+                    }
+                }
+                if (index == 0 && state.photos.isNotEmpty()) {
+                    InfoPill(
+                        stringResource(R.string.capture_main_photo),
+                        modifier = Modifier.align(Alignment.TopStart).padding(10.dp),
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                }
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        // 사진 칸: 둥근 썸네일 + 다른 부위 추가 칸
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
             state.photos.forEachIndexed { i, file ->
                 AsyncImage(
                     model = file,
                     contentDescription = stringResource(R.string.capture_photo_description, i + 1),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(64.dp)
-                        .clip(MaterialTheme.shapes.small)
+                        .size(68.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                         .border(
-                            width = if (i == index) 3.dp else 0.dp,
-                            color = if (i == index) MaterialTheme.colorScheme.primary else Color.Transparent,
-                            shape = MaterialTheme.shapes.small,
+                            width = if (i == index) 3.dp else 1.dp,
+                            color = if (i == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                            shape = MaterialTheme.shapes.medium,
                         )
                         .clickable { selected = i },
                 )
             }
             if (state.canAddMore && state.photos.isNotEmpty()) {
-                OutlinedButton(
+                FilledTonalButton(
                     onClick = onAddMore,
                     enabled = !state.isBusy,
-                    modifier = Modifier.height(64.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.height(68.dp),
                 ) {
                     Icon(Icons.Outlined.AddAPhoto, contentDescription = null)
                     Text(stringResource(R.string.capture_add_other_part), style = MaterialTheme.typography.labelLarge)
                 }
             }
         }
-        Text(
-            stringResource(R.string.capture_review_hint, MAX_PHOTOS),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+
+        // 도움말 상자
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        ) {
+            Row(Modifier.padding(12.dp)) {
+                Icon(Icons.Outlined.Lightbulb, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    stringResource(R.string.capture_review_hint, MAX_PHOTOS),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(onClick = { cropping = index }, enabled = !state.isBusy && state.photos.isNotEmpty()) {
                 Icon(Icons.Outlined.Crop, contentDescription = null)
@@ -150,13 +176,13 @@ fun ReviewContent(
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedButton(onClick = onReset, enabled = !state.isBusy, modifier = Modifier.weight(1f).height(48.dp)) {
+            OutlinedButton(onClick = onReset, enabled = !state.isBusy, modifier = Modifier.weight(1f).height(52.dp)) {
                 Text(stringResource(R.string.capture_start_over))
             }
             Button(
                 onClick = onIdentify,
                 enabled = !state.isBusy && state.photos.isNotEmpty(),
-                modifier = Modifier.weight(1f).height(48.dp),
+                modifier = Modifier.weight(1f).height(52.dp),
             ) { Text(stringResource(R.string.capture_identify_photos, state.photos.size)) }
         }
     }

@@ -1,6 +1,7 @@
 package com.plantdex.app.ui.capture
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -61,7 +63,7 @@ fun CropScreen(file: File, onCancel: () -> Unit, onConfirm: (CropRect) -> Unit) 
             stringResource(R.string.capture_crop_title),
             color = Color.White,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
         )
         BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
             val density = LocalDensity.current
@@ -144,9 +146,15 @@ fun CropScreen(file: File, onCancel: () -> Unit, onConfirm: (CropRect) -> Unit) 
             Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.capture_cancel), color = Color.White) }
-            TextButton(onClick = { rect = CropRect.Full }, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.capture_crop_full), color = Color.White) }
-            Button(onClick = { onConfirm(rect) }, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.capture_crop)) }
+            OutlinedButton(
+                onClick = onCancel,
+                modifier = Modifier.weight(1f).height(52.dp),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+            ) { Text(stringResource(R.string.capture_cancel), color = Color.White) }
+            TextButton(onClick = { rect = CropRect.Full }, modifier = Modifier.weight(1f).height(52.dp)) {
+                Text(stringResource(R.string.capture_crop_full), color = Color.White)
+            }
+            Button(onClick = { onConfirm(rect) }, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.capture_crop)) }
         }
     }
 }

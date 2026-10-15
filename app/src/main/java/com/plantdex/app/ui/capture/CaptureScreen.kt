@@ -19,16 +19,23 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -61,6 +68,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.compose.AsyncImage
 import com.plantdex.app.R
+import com.plantdex.app.ui.components.EmojiBadge
+import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.appContainer
 import java.io.File
 
@@ -190,24 +199,41 @@ private fun CameraPermissionGate(content: @Composable () -> Unit) {
         content()
     } else {
         Column(
-            Modifier.fillMaxSize().padding(32.dp),
+            Modifier.fillMaxSize().padding(horizontal = 32.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
         ) {
-            Text(stringResource(R.string.capture_camera_permission_title), style = MaterialTheme.typography.titleMedium)
+            EmojiBadge("📷", size = 104.dp)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.capture_camera_permission_title),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+            )
             Text(
                 stringResource(R.string.capture_location_permission_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
-            Button(onClick = { launcher.launch(permissions) }) { Text(stringResource(R.string.capture_grant_permission)) }
+            Spacer(Modifier.height(8.dp))
+            Button(
+                onClick = { launcher.launch(permissions) },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+            ) {
+                Icon(Icons.Outlined.CameraAlt, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.capture_grant_permission))
+            }
             if (askedOnce) {
-                OutlinedButton(onClick = {
-                    context.startActivity(
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
-                    )
-                }) { Text(stringResource(R.string.capture_grant_in_settings)) }
+                OutlinedButton(
+                    onClick = {
+                        context.startActivity(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                ) { Text(stringResource(R.string.capture_grant_in_settings)) }
             }
         }
     }
@@ -262,9 +288,9 @@ private fun CameraContent(
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .clip(MaterialTheme.shapes.small)
+                    .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.45f))
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
             )
             if (photoCount > 0) {
                 AssistChip(
@@ -310,11 +336,14 @@ private fun CameraContent(
                 .size(76.dp)
                 .border(4.dp, Color.White.copy(alpha = 0.5f), CircleShape),
         ) {
-            if (isTaking) CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 3.dp)
+            if (isTaking) {
+                CircularProgressIndicator(Modifier.size(28.dp), color = MaterialTheme.colorScheme.primary, strokeWidth = 3.dp)
+            }
         }
     }
 }
 
+/** 식별 중(사진 위에 어둡게) 또는 등록 중(크림색 바탕) 안내 */
 @Composable
 private fun IdentifyingContent(photoFile: File?) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -327,12 +356,18 @@ private fun IdentifyingContent(photoFile: File?) {
             )
             Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.5f)))
         }
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            CircularProgressIndicator(color = Color.White)
+        Column(
+            Modifier.padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            if (photoFile == null) EmojiBadge("🌱")
+            CircularProgressIndicator(color = if (photoFile != null) Color.White else MaterialTheme.colorScheme.primary)
             Text(
                 if (photoFile != null) stringResource(R.string.capture_identifying) else stringResource(R.string.capture_saving),
-                color = Color.White,
+                color = if (photoFile != null) Color.White else MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
             )
         }
     }
@@ -346,22 +381,38 @@ private fun FailedContent(
     onSaveDraft: () -> Unit,
 ) {
     Column(
-        Modifier.fillMaxSize().padding(32.dp),
+        Modifier.fillMaxSize().statusBarsPadding().padding(horizontal = 32.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
     ) {
         if (state.photo != null) {
-            AsyncImage(
-                model = state.photo.file,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(200.dp).clip(MaterialTheme.shapes.large),
-            )
+            PaperCard(shape = MaterialTheme.shapes.large) {
+                AsyncImage(
+                    model = state.photo.file,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(200.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                )
+            }
+        } else {
+            EmojiBadge("⚠️")
         }
+        Spacer(Modifier.height(4.dp))
         Text(state.message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
-        Button(onClick = onRetake) { Text(stringResource(R.string.capture_retake)) }
+        Spacer(Modifier.height(4.dp))
+        Button(onClick = onRetake, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+            Icon(Icons.Outlined.CameraAlt, contentDescription = null, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.capture_retake))
+        }
         if (state.photo != null) {
-            OutlinedButton(onClick = onRetry) { Text(stringResource(R.string.capture_retry_identify)) }
+            OutlinedButton(onClick = onRetry, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                Text(stringResource(R.string.capture_retry_identify))
+            }
             TextButton(onClick = onSaveDraft) { Text(stringResource(R.string.capture_save_draft_identify_later)) }
         }
     }
