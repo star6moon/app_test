@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
@@ -15,7 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.plantdex.app.R
@@ -42,6 +45,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.ui.components.CollectionSummary
+import com.plantdex.app.ui.components.EmojiBadge
 import com.plantdex.app.ui.components.EntryGrid
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
@@ -130,17 +134,31 @@ fun UserCollectionScreen(
                 val entries = (state as? LoadState.Success)?.data
                 if (entries != null && entries.isNotEmpty()) CollectionSummary(entries)
                 if (entries != null && entries.isEmpty()) {
-                    Text(
-                        stringResource(R.string.collection_no_public_entries),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    // 공개 기록이 없을 때: 빈 도감 그림과 안내
+                    Column(
+                        Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        EmojiBadge("📖", size = 72.dp)
+                        Text(
+                            stringResource(R.string.collection_no_public_entries),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 }
             }
         }
         when (val s = state) {
             LoadState.Loading -> LoadingBox(Modifier.padding(padding))
-            is LoadState.Error -> MessageBox(stringResource(R.string.collection_load_failed), Modifier.padding(padding), body = s.message)
+            is LoadState.Error -> MessageBox(
+                stringResource(R.string.collection_load_failed),
+                Modifier.padding(padding),
+                body = s.message,
+                emoji = "⚠️",
+            )
             is LoadState.Success -> EntryGrid(
                 entries = s.data,
                 onEntryClick = { onEntryClick(it.id) },
@@ -191,13 +209,14 @@ internal fun EntryCollectionContent(
     modifier: Modifier = Modifier,
     emptyBody: String? = null,
     showSummary: Boolean = true,
+    emptyEmoji: String = "📖",
 ) {
     when (state) {
         LoadState.Loading -> LoadingBox(modifier)
-        is LoadState.Error -> MessageBox(stringResource(R.string.collection_load_failed), modifier, body = state.message)
+        is LoadState.Error -> MessageBox(stringResource(R.string.collection_load_failed), modifier, body = state.message, emoji = "⚠️")
         is LoadState.Success ->
             if (state.data.isEmpty()) {
-                MessageBox(emptyTitle, modifier, body = emptyBody)
+                MessageBox(emptyTitle, modifier, body = emptyBody, emoji = emptyEmoji)
             } else {
                 EntryGrid(
                     entries = state.data,

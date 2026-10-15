@@ -89,6 +89,7 @@ fun BookmarksScreen(
             onEntryClick = { onEntryClick(it.id) },
             modifier = Modifier.padding(padding),
             showSummary = false,
+            emptyEmoji = "🔖",
         )
     }
 }

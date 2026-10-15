@@ -1,7 +1,6 @@
 package com.plantdex.app.ui.collection
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,18 +20,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -41,8 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,12 +54,15 @@ import com.plantdex.app.ui.achievements.MissionsCard
 import com.plantdex.app.ui.achievements.rememberAchievements
 import com.plantdex.app.ui.profile.ProfileHeader
 import kotlinx.coroutines.flow.catch
+import com.plantdex.app.ui.components.InfoPill
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
+import com.plantdex.app.ui.components.PaperCard
+import com.plantdex.app.ui.components.SectionHeader
 import com.plantdex.app.ui.components.appContainer
 
-/** 내 도감 홈: 전체 수집률과 주제별 도감 목록. */
+/** 내 도감 홈: 야외 관찰 노트의 표지처럼 전체 수집률, 주제별 도감, 메뉴를 차례로 보여줍니다. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyCollectionScreen(
@@ -104,71 +103,137 @@ fun MyCollectionScreen(
         val modifier = Modifier.padding(padding)
         when (val s = state) {
             LoadState.Loading -> LoadingBox(modifier)
-            is LoadState.Error -> MessageBox(stringResource(R.string.collection_load_failed), modifier, body = s.message)
+            is LoadState.Error -> MessageBox(
+                stringResource(R.string.collection_load_failed),
+                modifier,
+                body = s.message,
+                emoji = "⚠️",
+            )
             is LoadState.Success -> LazyColumn(
                 modifier = modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                // 표지: 프로필, 전체 수집률
                 profile?.let { p ->
                     item { ProfileHeader(profile = p, isMe = true, isFollowing = null, onFollowChange = {}) }
                 }
-                achievements?.missions?.takeIf { it.isNotEmpty() }?.let { missions ->
-                    item { MissionsCard(missions) }
-                }
                 item { OverallCard(s.data) }
-                achievements?.let { a ->
-                    item { BadgesSummaryCard(a.badges, onClick = onBadgesClick) }
+                achievements?.missions?.takeIf { it.isNotEmpty() }?.let { missions ->
+                    item { MissionsCard(missions, Modifier.padding(top = 4.dp)) }
                 }
-                item { RankingCard(onClick = onRankingClick) }
+                // 본문: 주제별 도감
                 items(s.data.catalogs, key = { it.catalog.id }) { progress ->
                     CatalogCard(progress, onClick = { onCatalogClick(progress.catalog.id) })
                 }
-                item { AllRecordsCard(s.data, onClick = onAllRecordsClick) }
-                item { BookmarksCard(bookmarkIds?.size, onClick = onBookmarksClick) }
+                // 목차: 기록·책갈피·배지·랭킹·설정
+                item {
+                    MenuRow(
+                        icon = Icons.Outlined.PhotoLibrary,
+                        title = stringResource(R.string.collection_all_records_title),
+                        subtitle = stringResource(R.string.collection_all_records_subtitle, s.data.recordCount),
+                        onClick = onAllRecordsClick,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+                item {
+                    val count = bookmarkIds?.size
+                    MenuRow(
+                        icon = Icons.Outlined.BookmarkBorder,
+                        title = stringResource(R.string.collection_bookmarks_title),
+                        subtitle = if (count == null) {
+                            stringResource(R.string.collection_loading)
+                        } else {
+                            stringResource(R.string.collection_bookmarks_count, count)
+                        },
+                        onClick = onBookmarksClick,
+                    )
+                }
+                achievements?.let { a ->
+                    item { BadgesSummaryCard(a.badges, onClick = onBadgesClick) }
+                }
+                item {
+                    MenuRow(
+                        icon = Icons.Outlined.EmojiEvents,
+                        title = stringResource(R.string.collection_ranking_title),
+                        subtitle = stringResource(R.string.collection_ranking_subtitle),
+                        onClick = onRankingClick,
+                    )
+                }
+                item {
+                    MenuRow(
+                        icon = Icons.Outlined.Settings,
+                        title = stringResource(R.string.collection_settings),
+                        subtitle = null,
+                        onClick = onSettingsClick,
+                    )
+                }
             }
         }
     }
 }
 
+/** 메뉴 한 줄: 연초록 원 안의 아이콘 + 명조체 제목 + 설명 + 화살표. */
 @Composable
-private fun RankingCard(onClick: () -> Unit) {
-    OutlinedCard(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("🏆", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.collection_ranking_title), style = MaterialTheme.typography.titleMedium)
-                Text(
-                    stringResource(R.string.collection_ranking_subtitle),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+private fun MenuRow(
+    icon: ImageVector,
+    title: String,
+    subtitle: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    PaperCard(modifier.fillMaxWidth(), onClick = onClick) {
+        Row(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(22.dp),
                 )
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(title, style = MaterialTheme.typography.titleMedium)
+                if (subtitle != null) {
+                    Text(
+                        subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
 
+/** 전체 도감 진행 카드 (기록·종 수는 바로 위 프로필에 있으므로 수집률 중심으로). */
 @Composable
 private fun OverallCard(progress: CollectionProgress) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        ),
-    ) {
-        Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(stringResource(R.string.collection_overall_title), style = MaterialTheme.typography.labelLarge)
+    PaperCard(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
+        Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            SectionHeader(stringResource(R.string.collection_overall_title))
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     "${progress.collectedSpecies}",
                     style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
                     stringResource(R.string.collection_overall_total_species, progress.totalSpecies),
                     style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 6.dp),
                 )
             }
@@ -185,14 +250,16 @@ private fun OverallCard(progress: CollectionProgress) {
                     stringResource(R.string.collection_overall_summary, progress.recordCount, progress.discoveredSpecies)
                 },
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
 }
 
+/** 주제별 도감 한 권 (표지 그림 + 제목 + 진행 막대). */
 @Composable
 private fun CatalogCard(progress: CatalogProgress, onClick: () -> Unit) {
-    OutlinedCard(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+    PaperCard(Modifier.fillMaxWidth(), onClick = onClick) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
                 Modifier
@@ -210,6 +277,8 @@ private fun CatalogCard(progress: CatalogProgress, onClick: () -> Unit) {
                         progress.catalog.title,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                     if (progress.isComplete) CompleteBadge()
                     Text(
@@ -225,8 +294,9 @@ private fun CatalogCard(progress: CatalogProgress, onClick: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                ProgressBar(progress.collected, progress.total)
+                ProgressBar(progress.collected, progress.total, Modifier.padding(top = 4.dp))
             }
+            Spacer(Modifier.width(4.dp))
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
@@ -236,60 +306,26 @@ private fun CatalogCard(progress: CatalogProgress, onClick: () -> Unit) {
     }
 }
 
-@Composable
-private fun AllRecordsCard(progress: CollectionProgress, onClick: () -> Unit) {
-    OutlinedCard(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.PhotoLibrary, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.collection_all_records_title), style = MaterialTheme.typography.titleMedium)
-                Text(
-                    stringResource(R.string.collection_all_records_subtitle, progress.recordCount),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
-        }
-    }
-}
-
-@Composable
-private fun BookmarksCard(count: Int?, onClick: () -> Unit) {
-    OutlinedCard(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.BookmarkBorder, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.collection_bookmarks_title), style = MaterialTheme.typography.titleMedium)
-                Text(
-                    if (count == null) stringResource(R.string.collection_loading) else stringResource(R.string.collection_bookmarks_count, count),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
-        }
-    }
-}
-
+/** 둥근 진행 막대: 숲색 막대, 베이지 바탕. */
 @Composable
 internal fun ProgressBar(collected: Int, total: Int, modifier: Modifier = Modifier) {
     LinearProgressIndicator(
         progress = { if (total == 0) 0f else collected.toFloat() / total },
         modifier = modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(50)),
+        color = MaterialTheme.colorScheme.primary,
+        trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        gapSize = 0.dp,
+        drawStopIndicator = {},
     )
 }
 
+/** 도감을 다 채웠을 때 붙는 테라코타 꼬리표. */
 @Composable
 internal fun CompleteBadge() {
-    Surface(
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+    InfoPill(
+        stringResource(R.string.collection_complete_badge),
         modifier = Modifier.padding(end = 8.dp),
-    ) {
-        Text(stringResource(R.string.collection_complete_badge), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
-    }
+        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+    )
 }

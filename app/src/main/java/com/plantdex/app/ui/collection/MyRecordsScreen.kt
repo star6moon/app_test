@@ -70,6 +70,7 @@ fun MyRecordsScreen(
                 state = filtered,
                 emptyTitle = if (period == PeriodFilter.All) stringResource(R.string.collection_records_empty_title) else stringResource(R.string.collection_records_period_empty_title),
                 emptyBody = if (period == PeriodFilter.All) stringResource(R.string.collection_records_empty_body) else stringResource(R.string.collection_records_period_empty_body),
+                emptyEmoji = if (period == PeriodFilter.All) "🌱" else "🗓️",
                 onEntryClick = { onEntryClick(it.id) },
             )
         }

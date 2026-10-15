@@ -1,18 +1,24 @@
 package com.plantdex.app.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
@@ -50,13 +56,19 @@ fun PeriodFilterBar(
                 selected = selected == preset,
                 onClick = { onSelect(preset) },
                 label = { Text(preset.label) },
+                shape = CircleShape,
+                colors = softFilterChipColors(),
+                border = softFilterChipBorder(selected == preset),
             )
         }
         FilterChip(
             selected = selected is PeriodFilter.Custom,
             onClick = { picking = true },
             label = { Text(if (selected is PeriodFilter.Custom) selected.label else stringResource(R.string.common_period_custom)) },
-            leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) },
+            shape = CircleShape,
+            colors = softFilterChipColors(),
+            border = softFilterChipBorder(selected is PeriodFilter.Custom),
         )
     }
 
@@ -87,3 +99,21 @@ fun PeriodFilterBar(
         }
     }
 }
+
+/** 부드러운 필터 칩 색: 고르면 연초록(primaryContainer), 아니면 밝은 종이색. */
+@Composable
+fun softFilterChipColors(): SelectableChipColors = FilterChipDefaults.filterChipColors(
+    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+    labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+)
+
+/** 부드러운 필터 칩 테두리: 고르지 않은 칩만 옅은 선을 둘러요. */
+@Composable
+fun softFilterChipBorder(selected: Boolean): BorderStroke = FilterChipDefaults.filterChipBorder(
+    enabled = true,
+    selected = selected,
+    borderColor = MaterialTheme.colorScheme.outlineVariant,
+)

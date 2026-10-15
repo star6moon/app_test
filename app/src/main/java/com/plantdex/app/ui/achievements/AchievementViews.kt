@@ -1,7 +1,6 @@
 package com.plantdex.app.ui.achievements
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,14 +20,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.outlined.MilitaryTech
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -38,9 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,6 +49,9 @@ import com.plantdex.app.R
 import com.plantdex.app.data.achievements.Badge
 import com.plantdex.app.data.achievements.Mission
 import com.plantdex.app.ui.components.LoadingBox
+import com.plantdex.app.ui.components.MessageBox
+import com.plantdex.app.ui.components.PaperCard
+import com.plantdex.app.ui.components.SectionHeader
 import com.plantdex.app.ui.components.appContainer
 
 @Composable
@@ -67,35 +69,47 @@ fun rememberAchievements(uid: String): Achievements? {
 /** 내 도감 화면의 '이번 주 미션' 카드 */
 @Composable
 fun MissionsCard(missions: List<Mission>, modifier: Modifier = Modifier) {
-    Card(
-        modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
-    ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.badges_weekly_missions), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                Text(
-                    stringResource(R.string.badges_missions_progress, missions.count { it.done }, missions.size),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            }
+    PaperCard(modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            SectionHeader(
+                stringResource(R.string.badges_weekly_missions),
+                action = {
+                    Text(
+                        stringResource(R.string.badges_missions_progress, missions.count { it.done }, missions.size),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+            )
             missions.forEach { mission ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(mission.emoji, style = MaterialTheme.typography.titleMedium)
-                    Spacer(Modifier.width(10.dp))
-                    Column(Modifier.weight(1f)) {
+                    Box(
+                        Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (mission.done) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(mission.emoji, style = MaterialTheme.typography.titleMedium)
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(
                             mission.title,
                             style = MaterialTheme.typography.bodyMedium,
+                            color = if (mission.done) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
                             textDecoration = if (mission.done) TextDecoration.LineThrough else null,
                         )
-                        LinearProgressIndicator(
-                            progress = { mission.shownProgress.toFloat() / mission.goal },
-                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp).height(6.dp).clip(CircleShape),
-                        )
+                        SoftProgressBar(mission.shownProgress.toFloat() / mission.goal.coerceAtLeast(1))
                     }
-                    Spacer(Modifier.width(10.dp))
-                    Text(if (mission.done) "✅" else "${mission.shownProgress}/${mission.goal}", style = MaterialTheme.typography.labelLarge)
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        if (mission.done) "✅" else "${mission.shownProgress}/${mission.goal}",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                 }
             }
         }
@@ -106,17 +120,39 @@ fun MissionsCard(missions: List<Mission>, modifier: Modifier = Modifier) {
 @Composable
 fun BadgesSummaryCard(badges: List<Badge>, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val emptyHint = stringResource(R.string.badges_summary_empty)
-    OutlinedCard(modifier.fillMaxWidth().clickable(onClick = onClick)) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(stringResource(R.string.badges_summary_count, badges.count { it.earned }, badges.size), style = MaterialTheme.typography.titleMedium)
-                Text(
-                    badges.filter { it.earned }.joinToString(" ") { it.emoji }.ifEmpty { emptyHint },
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
+    PaperCard(modifier.fillMaxWidth(), onClick = onClick) {
+        Row(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Outlined.MilitaryTech,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(22.dp),
                 )
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(stringResource(R.string.badges_summary_count, badges.count { it.earned }, badges.size), style = MaterialTheme.typography.titleMedium)
+                val earned = badges.filter { it.earned }.joinToString(" ") { it.emoji }
+                Text(
+                    earned.ifEmpty { emptyHint },
+                    style = if (earned.isEmpty()) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyLarge,
+                    color = if (earned.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -138,11 +174,13 @@ fun BadgesScreen(uid: String, onBack: () -> Unit) {
     ) { padding ->
         if (achievements == null) {
             LoadingBox(Modifier.padding(padding))
+        } else if (achievements.badges.isEmpty()) {
+            MessageBox(stringResource(R.string.badges_summary_empty), Modifier.padding(padding), emoji = "🏅")
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 110.dp),
                 modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -152,28 +190,65 @@ fun BadgesScreen(uid: String, onBack: () -> Unit) {
     }
 }
 
+/** 배지 한 칸: 얻은 배지는 연초록 원에 선명하게, 아직인 배지는 베이지 원에 흐리게 + 진행 막대. */
 @Composable
 private fun BadgeCell(badge: Badge) {
-    Column(
-        Modifier.fillMaxWidth().alpha(if (badge.earned) 1f else 0.45f),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Box(
-            Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(
-                    if (badge.earned) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                ),
-            contentAlignment = Alignment.Center,
-        ) { Text(badge.emoji, style = MaterialTheme.typography.headlineMedium) }
-        Text(badge.title, style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center)
-        Text(
-            if (badge.earned) badge.description else "${badge.description} (${badge.progress.coerceAtMost(badge.goal)}/${badge.goal})",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
+    PaperCard(Modifier.fillMaxWidth()) {
+        Column(
+            Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Box(
+                Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (badge.earned) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    badge.emoji,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.alpha(if (badge.earned) 1f else 0.35f),
+                )
+            }
+            Text(
+                badge.title,
+                style = MaterialTheme.typography.titleSmall,
+                color = if (badge.earned) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                if (badge.earned) badge.description else "${badge.description} (${badge.progress.coerceAtMost(badge.goal)}/${badge.goal})",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                minLines = 2,
+            )
+            SoftProgressBar(
+                badge.progress.coerceAtMost(badge.goal).toFloat() / badge.goal.coerceAtLeast(1),
+                Modifier.padding(horizontal = 8.dp),
+                color = if (badge.earned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+            )
+        }
     }
+}
+
+/** 얇고 둥근 진행 막대 (베이지 바탕). */
+@Composable
+private fun SoftProgressBar(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primary,
+) {
+    LinearProgressIndicator(
+        progress = { progress.coerceIn(0f, 1f) },
+        modifier = modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
+        color = color,
+        trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        gapSize = 0.dp,
+        drawStopIndicator = {},
+    )
 }
