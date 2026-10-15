@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#2E6A3F</color>
+    <!-- 앱이 켜지는 동안 보이는 바탕색 (Compose 테마의 background 와 같게) -->
+    <color name="paper">#F5F0E6</color>
 </resources>

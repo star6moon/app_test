@@ -1,7 +1,8 @@
 package com.plantdex.app.ui.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -11,16 +12,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -52,39 +51,45 @@ fun EntryGrid(
     }
 }
 
+/** 표본 카드: 종이 카드 안에 사진을 한 겹 들여 넣고, 명조체 이름과 기울임 학명을 붙입니다. */
 @Composable
 private fun EntryGridItem(entry: CollectionEntry, onClick: () -> Unit) {
     val name = localizedName(entry)
-    Card(modifier = Modifier.clickable(onClick = onClick)) {
+    PaperCard(onClick = onClick) {
         AsyncImage(
             model = entry.listImageUrl,
             contentDescription = name,
             contentScale = ContentScale.Crop,
             modifier = Modifier
+                .padding(start = 6.dp, top = 6.dp, end = 6.dp)
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
         )
-        Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.padding(horizontal = 10.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(1.dp)) {
             Text(
                 name,
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                entry.scientificName,
-                style = MaterialTheme.typography.bodySmall,
-                fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                Formatters.date(entry.capturedAt) + if (entry.likeCount > 0) "  ♥ ${entry.likeCount}" else "",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            ScientificName(entry.scientificName)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    Formatters.date(entry.capturedAt),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                )
+                if (entry.likeCount > 0) {
+                    Text(
+                        "♥ ${entry.likeCount}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                    )
+                }
+            }
         }
     }
 }
@@ -96,7 +101,7 @@ fun CollectionSummary(entries: List<CollectionEntry>, modifier: Modifier = Modif
     Column(modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
         Text(
             stringResource(R.string.common_collection_species_count, speciesCount),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.headlineSmall,
         )
         Text(
             stringResource(R.string.common_collection_entry_count, entries.size),

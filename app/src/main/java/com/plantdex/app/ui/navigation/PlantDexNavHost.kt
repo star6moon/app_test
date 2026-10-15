@@ -2,6 +2,21 @@ package com.plantdex.app.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
@@ -163,17 +178,12 @@ fun PlantDexNavHost(user: UserProfile) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            NavigationBar {
-                TopLevelDestination.entries.forEach { destination ->
-                    val selected = currentDestination?.hierarchy?.any { it.hasRoute(destination.routeClass) } == true
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = { openTab(destination.route) },
-                        icon = { Icon(destination.icon, contentDescription = null) },
-                        label = { Text(stringResource(destination.labelRes)) },
-                    )
-                }
-            }
+            PlantDexBottomBar(
+                isSelected = { destination ->
+                    currentDestination?.hierarchy?.any { it.hasRoute(destination.routeClass) } == true
+                },
+                onSelect = { openTab(it.route) },
+            )
         },
     ) { padding ->
         NavHost(
@@ -281,6 +291,62 @@ fun PlantDexNavHost(user: UserProfile) {
                     userName = route.userName,
                     onEntryClick = ::openEntry,
                     onBack = { navController.popBackStack() },
+                )
+            }
+        }
+    }
+}
+
+/** 화면 아래에 떠 있는 알약 모양 탭 막대. 가운데 촬영 버튼은 초록 원으로 강조합니다. */
+@Composable
+private fun PlantDexBottomBar(
+    isSelected: (TopLevelDestination) -> Boolean,
+    onSelect: (TopLevelDestination) -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .navigationBarsPadding()
+            .padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+        shape = RoundedCornerShape(32.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shadowElevation = 6.dp,
+    ) {
+        NavigationBar(
+            containerColor = Color.Transparent,
+            tonalElevation = 0.dp,
+            windowInsets = WindowInsets(0, 0, 0, 0),
+        ) {
+            TopLevelDestination.entries.forEach { destination ->
+                val isCapture = destination == TopLevelDestination.Capture
+                val label = stringResource(destination.labelRes)
+                val labelContent: (@Composable () -> Unit)? = if (isCapture) null else { { Text(label) } }
+                NavigationBarItem(
+                    selected = isSelected(destination),
+                    onClick = { onSelect(destination) },
+                    icon = {
+                        if (isCapture) {
+                            Box(
+                                Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(destination.icon, contentDescription = label, tint = MaterialTheme.colorScheme.onPrimary)
+                            }
+                        } else {
+                            Icon(destination.icon, contentDescription = null)
+                        }
+                    },
+                    label = labelContent,
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = if (isCapture) Color.Transparent else MaterialTheme.colorScheme.primaryContainer,
+                        selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
                 )
             }
         }

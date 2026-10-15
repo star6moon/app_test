@@ -3,7 +3,9 @@ package com.plantdex.app.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -36,18 +38,23 @@ fun LoadingBox(modifier: Modifier = Modifier) {
     }
 }
 
+/** 빈 목록·오류 안내. [emoji] 그림과 명조체 제목, 설명, (선택) 버튼을 가운데에 보여줍니다. */
 @Composable
 fun MessageBox(
     title: String,
     modifier: Modifier = Modifier,
     body: String? = null,
+    emoji: String = "🌱",
+    action: (@Composable () -> Unit)? = null,
 ) {
     Box(modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(title, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+            EmojiBadge(emoji)
+            Spacer(Modifier.height(8.dp))
+            Text(title, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
             if (body != null) {
                 Text(
                     body,
@@ -55,6 +62,10 @@ fun MessageBox(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                 )
+            }
+            if (action != null) {
+                Spacer(Modifier.height(8.dp))
+                action()
             }
         }
     }
