@@ -177,6 +177,7 @@ cd functions && npm test   # 서버 함수 테스트
 | `app/` | 내 PC 와 같은 서명으로 디버그 APK 를 만들어 Firebase App Distribution 으로 폰에 보냄 |
 
 Actions 탭 → Deploy → **Run workflow** 로 직접 실행할 수도 있고, `logs` 를 고르면 최근 24시간 서버 로그를 출력합니다.
+`identify-test` 를 고르면 위키백과의 식물 사진으로 Pl@ntNet 과 서버 함수 식별을 시험합니다 (사진을 직접 찍지 않아도 됨).
 필요한 비밀과 변수는 파일 맨 위 주석에 있습니다. 비밀이 없으면 건너뛰기만 하고 실패로 표시하지 않습니다.
 
 서비스 계정 역할: **편집자**, **Cloud Run 관리자**, **Secret Manager 관리자**, **서비스 계정 사용자**.
