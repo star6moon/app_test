@@ -33,20 +33,25 @@ import androidx.compose.ui.unit.dp
 
 // 자연 도감 디자인의 공통 부품. 화면은 Card 대신 PaperCard, 학명은 ScientificName 을 씁니다.
 
-/** 크림색 바탕 위에 놓인 밝은 종이 카드 (그림자 없이 얇은 테두리). */
+/**
+ * 크림색 바탕 위에 놓인 밝은 종이 카드 (얇은 테두리). 보통은 그림자가 없고,
+ * 지도처럼 사진·그림 위에 떠 있는 카드만 [shadow] 를 줍니다.
+ */
 @Composable
 fun PaperCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     shape: Shape = MaterialTheme.shapes.medium,
+    shadow: Dp = 0.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)
     val border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    val elevation = CardDefaults.cardElevation(defaultElevation = shadow, pressedElevation = shadow)
     if (onClick != null) {
-        Card(onClick = onClick, modifier = modifier, shape = shape, colors = colors, border = border, content = content)
+        Card(onClick = onClick, modifier = modifier, shape = shape, colors = colors, elevation = elevation, border = border, content = content)
     } else {
-        Card(modifier = modifier, shape = shape, colors = colors, border = border, content = content)
+        Card(modifier = modifier, shape = shape, colors = colors, elevation = elevation, border = border, content = content)
     }
 }
 

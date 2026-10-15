@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,14 +29,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.unit.Dp
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
+import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.PlantBadge
+import com.plantdex.app.ui.components.ScientificName
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +64,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -356,7 +357,9 @@ private fun PlantMap(
             Surface(
                 modifier = Modifier.align(Alignment.TopCenter).padding(12.dp),
                 shape = RoundedCornerShape(50),
-                tonalElevation = 3.dp,
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                 shadowElevation = 2.dp,
             ) {
                 Text(
@@ -460,18 +463,23 @@ private fun ClusterMarker(summary: ClusterSummary<PlantMapItem>) {
 @Composable
 private fun SelectedEntryCard(item: PlantMapItem, onClick: () -> Unit) {
     val entry = item.entry
-    Card(
+    PaperCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp)
-            .clickable(onClick = onClick),
+            .padding(12.dp),
+        onClick = onClick,
+        shape = MaterialTheme.shapes.large,
+        shadow = 6.dp,
     ) {
-        Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
                 model = entry.listImageUrl,
                 contentDescription = item.name,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(88.dp).clip(MaterialTheme.shapes.medium),
+                modifier = Modifier
+                    .size(88.dp)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -480,13 +488,7 @@ private fun SelectedEntryCard(item: PlantMapItem, onClick: () -> Unit) {
                     Spacer(Modifier.width(6.dp))
                     Text(item.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
-                Text(
-                    entry.scientificName,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontStyle = FontStyle.Italic,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                ScientificName(entry.scientificName)
                 Text(
                     listOfNotNull(Formatters.date(entry.capturedAt), entry.location?.placeName).joinToString(" · "),
                     style = MaterialTheme.typography.bodySmall,
@@ -515,7 +517,7 @@ private fun ClusterPanel(
     onZoom: () -> Unit,
     onClose: () -> Unit,
 ) {
-    Card(Modifier.fillMaxWidth().padding(12.dp)) {
+    PaperCard(Modifier.fillMaxWidth().padding(12.dp), shape = MaterialTheme.shapes.large, shadow = 6.dp) {
         Column(Modifier.padding(top = 12.dp, bottom = 8.dp)) {
             Row(Modifier.padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 StackedBadges(summary, size = 32.dp)
@@ -535,7 +537,7 @@ private fun ClusterPanel(
                 Spacer(Modifier.width(4.dp))
                 Text(stringResource(R.string.map_zoom_into_area))
             }
-            HorizontalDivider()
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             // 좋아요가 많은 종·기록부터 보여줍니다.
             val groups = remember(summary) { summary.groupsByLikes({ it.entry.likeCount }, { it.entry.capturedAt }) }
             LazyColumn(
@@ -568,7 +570,7 @@ private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (en
             Text(
                 if (likes > 0) stringResource(R.string.map_group_likes_count, likes, group.items.size) else stringResource(R.string.map_group_count, group.items.size),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
+                color = if (likes > 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
             )
         }
         LazyRow(
@@ -584,7 +586,10 @@ private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (en
                         model = item.entry.listImageUrl,
                         contentDescription = item.name,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(76.dp).clip(MaterialTheme.shapes.small),
+                        modifier = Modifier
+                            .size(76.dp)
+                            .clip(MaterialTheme.shapes.small)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                     )
                     Text(
                         Formatters.date(item.entry.capturedAt),
@@ -596,7 +601,7 @@ private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (en
                         Text(
                             "♥ ${item.entry.likeCount}",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.tertiary,
                         )
                     }
                 }

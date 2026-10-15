@@ -1,13 +1,22 @@
 package com.plantdex.app.ui.settings
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,8 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -35,7 +42,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -43,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plantdex.app.R
 import com.plantdex.app.data.repository.AuthRepository
+import com.plantdex.app.ui.components.PaperCard
+import com.plantdex.app.ui.components.SectionHeader
 import com.plantdex.app.ui.components.appContainer
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -87,29 +98,40 @@ fun SettingsScreen(onBlockedUsersClick: () -> Unit, onBack: () -> Unit) {
             )
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
-            SectionTitle(stringResource(R.string.settings_section_account))
-            SettingRow(Icons.Outlined.Edit, stringResource(R.string.settings_change_nickname), user?.displayName) { editingName = true }
-            if (auth.hasPasswordLogin) {
-                SettingRow(Icons.Outlined.Key, stringResource(R.string.settings_password_reset), auth.email) {
-                    val email = auth.email ?: return@SettingRow
-                    run(context.getString(R.string.settings_password_reset_sent, email)) { auth.sendPasswordReset(email) }
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            SettingsGroup(stringResource(R.string.settings_section_account)) {
+                SettingRow(Icons.Outlined.Edit, stringResource(R.string.settings_change_nickname), user?.displayName) { editingName = true }
+                if (auth.hasPasswordLogin) {
+                    GroupDivider()
+                    SettingRow(Icons.Outlined.Key, stringResource(R.string.settings_password_reset), auth.email) {
+                        val email = auth.email ?: return@SettingRow
+                        run(context.getString(R.string.settings_password_reset_sent, email)) { auth.sendPasswordReset(email) }
+                    }
                 }
+                GroupDivider()
+                SettingRow(Icons.AutoMirrored.Outlined.Logout, stringResource(R.string.settings_sign_out), null, danger = true) { auth.signOut() }
             }
-            SettingRow(Icons.AutoMirrored.Outlined.Logout, stringResource(R.string.settings_sign_out), null) { auth.signOut() }
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-            SectionTitle(stringResource(R.string.settings_section_community))
-            SettingRow(Icons.Outlined.Block, stringResource(R.string.settings_blocked_users), stringResource(R.string.settings_blocked_count, blocked.size)) { onBlockedUsersClick() }
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SettingsGroup(stringResource(R.string.settings_section_community)) {
+                SettingRow(Icons.Outlined.Block, stringResource(R.string.settings_blocked_users), stringResource(R.string.settings_blocked_count, blocked.size)) { onBlockedUsersClick() }
+            }
 
-            SectionTitle(stringResource(R.string.settings_section_danger))
-            SettingRow(
-                Icons.Outlined.DeleteForever,
-                stringResource(R.string.settings_delete_account),
-                stringResource(R.string.settings_delete_account_summary),
-                danger = true,
-            ) { confirmDelete = true }
+            SettingsGroup(stringResource(R.string.settings_section_danger)) {
+                SettingRow(
+                    Icons.Outlined.DeleteForever,
+                    stringResource(R.string.settings_delete_account),
+                    stringResource(R.string.settings_delete_account_summary),
+                    danger = true,
+                ) { confirmDelete = true }
+            }
+            Spacer(Modifier.height(8.dp))
         }
     }
 
@@ -166,16 +188,21 @@ fun SettingsScreen(onBlockedUsersClick: () -> Unit, onBack: () -> Unit) {
     }
 }
 
+/** 구역 제목 + 그 아래 종이 카드 한 장에 묶인 설정 줄들. */
 @Composable
-private fun SectionTitle(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp),
-    )
+private fun SettingsGroup(title: String, content: @Composable ColumnScope.() -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(title)
+        PaperCard(Modifier.fillMaxWidth(), content = content)
+    }
 }
 
+@Composable
+private fun GroupDivider() {
+    HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+}
+
+/** 설정 한 줄: 둥근 아이콘 + 제목 + (선택) 설명. [danger] 이면 오류 색으로 표시합니다. */
 @Composable
 private fun SettingRow(
     icon: ImageVector,
@@ -185,11 +212,30 @@ private fun SettingRow(
     onClick: () -> Unit,
 ) {
     val color = if (danger) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-    ListItem(
-        headlineContent = { Text(title, color = color) },
-        supportingContent = subtitle?.let { { Text(it) } },
-        leadingContent = { Icon(icon, contentDescription = null, tint = color) },
-        colors = ListItemDefaults.colors(),
-        modifier = Modifier.clickable(onClick = onClick),
-    )
+    val iconBackground = if (danger) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer
+    val iconTint = if (danger) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(iconBackground),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge, color = color)
+            if (subtitle != null) {
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
 }

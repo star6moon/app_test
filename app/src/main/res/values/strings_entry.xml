@@ -45,6 +45,7 @@
     <string name="entry_comments_reported">신고했어요. 검토 후 조치할게요.</string>
     <string name="entry_comments_more">더 보기</string>
     <string name="entry_comments_report">신고</string>
+    <string name="entry_comments_empty">아직 댓글이 없어요. 첫 댓글을 남겨 보세요</string>
 
     <!-- ui/settings/SettingsScreen.kt -->
     <string name="settings_action_failed">처리하지 못했어요.</string>

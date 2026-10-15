@@ -9,6 +9,17 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.ui.draw.clip
+import com.plantdex.app.ui.components.InfoPill
+import com.plantdex.app.ui.components.PaperCard
+import com.plantdex.app.ui.components.ScientificName
+import com.plantdex.app.ui.components.UserAvatar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +37,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Flag
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Share
@@ -60,7 +70,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -249,6 +258,7 @@ fun EntryDetailScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun EntryDetailContent(
     entry: CollectionEntry,
@@ -261,40 +271,60 @@ private fun EntryDetailContent(
     onAuthorClick: (uid: String, name: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.verticalScroll(rememberScrollState())) {
+    Column(
+        modifier
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        // 표본처럼 둥글게 들어앉힌 사진
         AsyncImage(
             model = entry.photoUrl,
             contentDescription = name,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
         )
-        ReactionBar(entry, Modifier.fillMaxWidth().padding(horizontal = 8.dp))
-        Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                PlantBadge(rememberPlantArt(entry.scientificName, entry.family), size = 56.dp)
-                Spacer(Modifier.width(14.dp))
-                Column {
-                    Text(name, style = MaterialTheme.typography.headlineSmall)
-                    Text(entry.scientificName, style = MaterialTheme.typography.titleMedium, fontStyle = FontStyle.Italic)
-                    val family = entry.family
-                    val genus = entry.genus
-                    val familyText = if (family != null) stringResource(R.string.entry_detail_family, family) else null
-                    val genusText = if (genus != null) stringResource(R.string.entry_detail_genus, genus) else null
-                    val taxonomy = listOfNotNull(familyText, genusText)
-                    if (taxonomy.isNotEmpty()) {
-                        Text(
-                            taxonomy.joinToString(" · "),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+        ReactionBar(entry, Modifier.fillMaxWidth())
+
+        // 이름·학명·분류 꼬리표
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            PlantBadge(rememberPlantArt(entry.scientificName, entry.family), size = 56.dp)
+            Spacer(Modifier.width(14.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(name, style = MaterialTheme.typography.headlineSmall)
+                ScientificName(entry.scientificName, style = MaterialTheme.typography.titleMedium, maxLines = 2)
             }
-            OutlinedButton(onClick = onSpeciesClick, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.entry_detail_view_species))
-            }
-            HorizontalDivider()
+        }
+        val family = entry.family
+        val genus = entry.genus
+        val familyText = if (family != null) stringResource(R.string.entry_detail_family, family) else null
+        val genusText = if (genus != null) stringResource(R.string.entry_detail_genus, genus) else null
+        val placeName = entry.location?.placeName?.takeIf { it.isNotBlank() }
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            InfoPill(
+                Formatters.date(entry.capturedAt),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            if (placeName != null) InfoPill(placeName)
+            if (familyText != null) InfoPill(familyText)
+            if (genusText != null) InfoPill(genusText)
+        }
+        OutlinedButton(onClick = onSpeciesClick, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.entry_detail_view_species))
+        }
+
+        // 관찰 정보 카드
+        PaperCard(Modifier.fillMaxWidth()) {
             InfoRow(Icons.Outlined.Schedule, stringResource(R.string.entry_detail_captured_at), Formatters.dateTime(entry.capturedAt))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
             val location = entry.location
             if (location != null) {
                 InfoRow(
@@ -309,41 +339,85 @@ private fun EntryDetailContent(
             } else {
                 InfoRow(Icons.Outlined.Place, stringResource(R.string.entry_detail_location), stringResource(R.string.entry_detail_no_location))
             }
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
             InfoRow(Icons.Outlined.Verified, stringResource(R.string.entry_detail_ai_confidence), "${Formatters.percent(entry.score)} (Pl@ntNet)")
-            InfoRow(Icons.Outlined.Person, stringResource(R.string.entry_detail_recorded_by), entry.ownerName, onClick = onUserClick)
-            if (entry.memo.isNotBlank()) {
-                HorizontalDivider()
-                Text(entry.memo, style = MaterialTheme.typography.bodyLarge)
-            }
-            if (isOwner) {
-                HorizontalDivider()
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.entry_detail_public_toggle), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                    Switch(checked = entry.isPublic, onCheckedChange = onPublicChange, enabled = !entry.isHidden)
-                }
-                if (entry.isHidden) {
-                    Text(
-                        stringResource(R.string.entry_detail_hidden_notice),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            }
-            HorizontalDivider()
-            CommentsSection(entryId = entry.id, entryOwnerId = entry.ownerId, onAuthorClick = onAuthorClick)
         }
+
+        // 기록한 사람
+        PaperCard(Modifier.fillMaxWidth(), onClick = onUserClick) {
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                UserAvatar(entry.ownerName, null, size = 40.dp)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.entry_detail_recorded_by),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(entry.ownerName, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                }
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        // 메모
+        if (entry.memo.isNotBlank()) {
+            PaperCard(Modifier.fillMaxWidth()) {
+                Text(entry.memo, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
+            }
+        }
+
+        // 공개 설정 (내 기록일 때만)
+        if (isOwner) {
+            PaperCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.entry_detail_public_toggle), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                        Switch(checked = entry.isPublic, onCheckedChange = onPublicChange, enabled = !entry.isHidden)
+                    }
+                    if (entry.isHidden) {
+                        Text(
+                            stringResource(R.string.entry_detail_hidden_notice),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                    }
+                }
+            }
+        }
+
+        CommentsSection(entryId = entry.id, entryOwnerId = entry.ownerId, onAuthorClick = onAuthorClick)
+        Spacer(Modifier.height(8.dp))
     }
 }
 
+/** 관찰 정보 한 줄: 연초록 원 안의 아이콘 + 이름표 + 값. */
 @Composable
 private fun InfoRow(icon: ImageVector, label: String, value: String, onClick: (() -> Unit)? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
-        verticalAlignment = Alignment.Top,
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+        Box(
+            Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(20.dp))
+        }
         Spacer(Modifier.width(12.dp))
         Column {
             Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
