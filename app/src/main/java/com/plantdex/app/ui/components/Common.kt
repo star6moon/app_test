@@ -38,7 +38,7 @@ fun LoadingBox(modifier: Modifier = Modifier) {
     }
 }
 
-/** 빈 목록·오류 안내. [emoji] 그림과 명조체 제목, 설명, (선택) 버튼을 가운데에 보여줍니다. */
+/** 빈 목록·오류 안내. [emoji] 그림과 제목, 설명, (선택) 버튼을 가운데에 보여줍니다. */
 @Composable
 fun MessageBox(
     title: String,

@@ -51,6 +51,12 @@
     <string name="settings_action_failed">처리하지 못했어요.</string>
     <string name="settings_title">설정</string>
     <string name="settings_back">뒤로</string>
+    <string name="settings_section_display">화면</string>
+    <string name="settings_theme_title">화면 모드</string>
+    <string name="settings_theme_summary">'휴대폰 설정'을 고르면 휴대폰의 다크 모드를 따라가요</string>
+    <string name="settings_theme_system">휴대폰 설정</string>
+    <string name="settings_theme_light">밝게</string>
+    <string name="settings_theme_dark">어둡게</string>
     <string name="settings_section_account">계정</string>
     <string name="settings_change_nickname">닉네임 변경</string>
     <string name="settings_password_reset">비밀번호 재설정 메일 받기</string>

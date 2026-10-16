@@ -51,7 +51,7 @@ fun EntryGrid(
     }
 }
 
-/** 표본 카드: 종이 카드 안에 사진을 한 겹 들여 넣고, 명조체 이름과 기울임 학명을 붙입니다. */
+/** 표본 카드: 종이 카드 안에 사진을 한 겹 들여 넣고, 굵은 이름과 기울임 학명을 붙입니다. */
 @Composable
 private fun EntryGridItem(entry: CollectionEntry, onClick: () -> Unit) {
     val name = localizedName(entry)

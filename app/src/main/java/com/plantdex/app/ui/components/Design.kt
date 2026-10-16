@@ -75,7 +75,7 @@ fun ScientificName(
     )
 }
 
-/** 구역 제목: 작은 초록 잎 표시 + 명조체 제목 + (선택) 오른쪽 버튼. */
+/** 구역 제목: 작은 초록 잎 표시 + 굵은 제목 + (선택) 오른쪽 버튼. */
 @Composable
 fun SectionHeader(
     title: String,
@@ -144,7 +144,7 @@ fun StatTile(value: String, label: String, modifier: Modifier = Modifier) {
     }
 }
 
-/** 화면 맨 위의 큰 명조체 제목과 부제 (탭 첫 화면용). */
+/** 화면 맨 위의 큰 제목과 부제 (탭 첫 화면용). */
 @Composable
 fun ScreenHeading(title: String, modifier: Modifier = Modifier, subtitle: String? = null) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -173,7 +173,7 @@ fun MyCollectionScreen(
     }
 }
 
-/** 메뉴 한 줄: 연초록 원 안의 아이콘 + 명조체 제목 + 설명 + 화살표. */
+/** 메뉴 한 줄: 연초록 원 안의 아이콘 + 제목 + 설명 + 화살표. */
 @Composable
 private fun MenuRow(
     icon: ImageVector,

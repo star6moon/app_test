@@ -19,10 +19,7 @@ internal val PlantDexShapes = Shapes(
     extraLarge = RoundedCornerShape(32.dp),
 )
 
-/**
- * 자연 도감 디자인은 크림색 종이가 기본이라, 기기가 다크 모드여도 밝은 테마를 씁니다.
- * (어두운 색 [DarkColors] 는 나중에 설정에서 고를 수 있게 남겨 둡니다.)
- */
+/** [darkTheme] 는 설정의 화면 모드에서 정해집니다 (MainActivity). 기본은 밝은 크림색 종이. */
 @Composable
 fun PlantDexTheme(
     darkTheme: Boolean = false,

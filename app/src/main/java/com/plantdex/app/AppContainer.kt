@@ -21,6 +21,7 @@ import com.plantdex.app.data.repository.DraftRepository
 import com.plantdex.app.data.repository.ModerationRepository
 import com.plantdex.app.data.repository.ReactionRepository
 import com.plantdex.app.data.repository.SocialRepository
+import com.plantdex.app.data.settings.ThemeSettings
 import com.plantdex.app.push.DeepLink
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -84,6 +85,9 @@ class AppContainer(context: Context) {
 
     /** 직접 누른 임시저장 (기기에만 보관) */
     val draftRepository = DraftRepository(context.applicationContext.filesDir)
+
+    /** 화면 모드 (휴대폰 설정 따르기 / 밝게 / 어둡게) */
+    val themeSettings = ThemeSettings(context.applicationContext)
 
     companion object {
         const val FUNCTIONS_REGION = "asia-northeast3"

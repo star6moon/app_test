@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Key
@@ -33,6 +34,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -52,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plantdex.app.R
 import com.plantdex.app.data.repository.AuthRepository
+import com.plantdex.app.data.settings.ThemeMode
 import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.SectionHeader
 import com.plantdex.app.ui.components.appContainer
@@ -106,6 +111,12 @@ fun SettingsScreen(onBlockedUsersClick: () -> Unit, onBack: () -> Unit) {
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
+            SettingsGroup(stringResource(R.string.settings_section_display)) {
+                val themeSettings = appContainer().themeSettings
+                val themeMode by themeSettings.mode.collectAsStateWithLifecycle()
+                ThemeModeRow(themeMode, onSelect = themeSettings::setMode)
+            }
+
             SettingsGroup(stringResource(R.string.settings_section_account)) {
                 SettingRow(Icons.Outlined.Edit, stringResource(R.string.settings_change_nickname), user?.displayName) { editingName = true }
                 if (auth.hasPasswordLogin) {
@@ -185,6 +196,53 @@ fun SettingsScreen(onBlockedUsersClick: () -> Unit, onBack: () -> Unit) {
             },
             dismissButton = { TextButton(enabled = !busy, onClick = { confirmDelete = false }) { Text(stringResource(R.string.settings_cancel)) } },
         )
+    }
+}
+
+/** 화면 모드: 휴대폰 설정 따르기 / 밝게 / 어둡게 중 하나를 고릅니다. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ThemeModeRow(selected: ThemeMode, onSelect: (ThemeMode) -> Unit) {
+    val options = listOf(
+        ThemeMode.System to R.string.settings_theme_system,
+        ThemeMode.Light to R.string.settings_theme_light,
+        ThemeMode.Dark to R.string.settings_theme_dark,
+    )
+    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Outlined.DarkMode,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_theme_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_theme_summary),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+            options.forEachIndexed { i, (mode, labelRes) ->
+                SegmentedButton(
+                    selected = selected == mode,
+                    onClick = { onSelect(mode) },
+                    shape = SegmentedButtonDefaults.itemShape(i, options.size),
+                ) { Text(stringResource(labelRes)) }
+            }
+        }
     }
 }
 

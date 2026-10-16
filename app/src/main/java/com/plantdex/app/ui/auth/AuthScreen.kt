@@ -69,7 +69,7 @@ fun AuthScreen() {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Spacer(Modifier.height(32.dp))
-            // 표지: 잎 그림 + 명조체 앱 이름 + 한 줄 소개
+            // 표지: 잎 그림 + 앱 이름 + 한 줄 소개
             EmojiBadge("🌿", size = 104.dp)
             Spacer(Modifier.height(4.dp))
             Text("PlantDex", style = MaterialTheme.typography.displaySmall, color = MaterialTheme.colorScheme.primary)
