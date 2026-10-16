@@ -1,8 +1,10 @@
 package com.plantdex.app
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
@@ -16,7 +18,11 @@ import com.plantdex.app.ui.theme.PlantDexTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // 앱은 항상 밝은 테마이므로, 기기가 다크 모드여도 상태 표시줄 아이콘을 어둡게 둡니다.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
         val container = (application as PlantDexApplication).container
         val authRepository = container.authRepository
         if (savedInstanceState == null) DeepLink.from(intent)?.let { container.pendingDeepLink.value = it }

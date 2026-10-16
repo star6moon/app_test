@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 10+ : 기기 설정이 앱을 억지로 어둡게 바꾸지 않도록 (앱은 항상 크림색 테마) -->
+    <style name="Theme.PlantDex" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/paper</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>

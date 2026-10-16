@@ -198,8 +198,11 @@ fun PlantMapScreen(
 /** 지도를 처음 열 때 가운데에서 보이게 할 반경 (m) */
 private const val START_RADIUS_METERS = 1_000.0
 
-/** 화면에서 이 거리(dp) 안에 있는 마커는 종류와 상관없이 하나로 묶습니다. 확대하면 다시 나뉩니다. */
-private const val CLUSTER_DISTANCE_DP = 80
+/**
+ * 화면에서 이 거리(dp) 안에 있는 마커는 종류와 상관없이 하나로 묶습니다. 확대하면 다시 나뉩니다.
+ * 마커(약 36dp)가 거의 겹칠 때만 묶이도록 작게 둡니다.
+ */
+private const val CLUSTER_DISTANCE_DP = 40
 
 /** 지도 아래에 띄우는 선택 정보: 마커 하나 또는 묶음 하나 */
 private sealed interface MapSelection {
