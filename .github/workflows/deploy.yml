@@ -128,6 +128,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 버전 번호(커밋 수)를 세려면 전체 기록이 필요합니다
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

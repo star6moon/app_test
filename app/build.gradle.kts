@@ -25,6 +25,15 @@ val mapsApiKey: String = localOrEnv("MAPS_API_KEY") ?: ""
 //   RELEASE_STORE_PASSWORD=...  RELEASE_KEY_ALIAS=plantdex  RELEASE_KEY_PASSWORD=...
 val releaseStoreFile: String? = localOrEnv("RELEASE_STORE_FILE")
 
+// 버전 번호 = 지금까지의 커밋 수. 커밋할 때마다 1씩 올라가서 폰에 덮어 설치할 수 있고,
+// 내 PC 와 자동 배포가 같은 번호를 씁니다. (git 이 없으면 1)
+val buildNumber: Int = runCatching {
+    providers.exec {
+        commandLine("git", "rev-list", "--count", "HEAD")
+        isIgnoreExitValue = true
+    }.standardOutput.asText.get().trim().toInt()
+}.getOrDefault(1)
+
 android {
     namespace = "com.plantdex.app"
     compileSdk = 35
@@ -33,8 +42,8 @@ android {
         applicationId = "com.plantdex.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = buildNumber
+        versionName = "0.1.$buildNumber"
 
         buildConfigField("Boolean", "HAS_MAPS_API_KEY", (mapsApiKey.isNotBlank()).toString())
         manifestPlaceholders["mapsApiKey"] = mapsApiKey
