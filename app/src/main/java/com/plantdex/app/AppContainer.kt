@@ -10,7 +10,9 @@ import com.google.firebase.storage.storage
 import com.plantdex.app.data.catalog.CatalogRepository
 import com.plantdex.app.data.location.LocationProvider
 import com.plantdex.app.data.names.GbifWikidataNameLocalizer
+import com.plantdex.app.data.names.PlantNameBook
 import com.plantdex.app.data.names.PlantNameLocalizer
+import com.plantdex.app.data.names.PlantNames
 import com.plantdex.app.data.plantnet.LocalizingPlantIdentifier
 import com.plantdex.app.data.plantnet.PlantIdentifier
 import com.plantdex.app.data.plantnet.CloudPlantIdentifier
@@ -26,6 +28,7 @@ import com.plantdex.app.push.DeepLink
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import java.util.Locale
@@ -85,6 +88,14 @@ class AppContainer(context: Context) {
 
     /** 직접 누른 임시저장 (기기에만 보관) */
     val draftRepository = DraftRepository(context.applicationContext.filesDir)
+
+    /** 식물 이름 목록(한국어·영어)과 이름 고르기 */
+    val plantNameBook = PlantNameBook(context.applicationContext)
+    val plantNames = PlantNames(plantNameBook) { runCatching { catalogRepository.catalog }.getOrNull() }
+
+    init {
+        appScope.launch(Dispatchers.IO) { plantNameBook.preload() }
+    }
 
     /** 화면 모드 (휴대폰 설정 따르기 / 밝게 / 어둡게) */
     val themeSettings = ThemeSettings(context.applicationContext)

@@ -52,6 +52,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plantdex.app.R
 import com.plantdex.app.data.catalog.SpeciesKey
 import com.plantdex.app.data.info.WikiSummary
+import com.plantdex.app.ui.components.EnglishName
+import com.plantdex.app.ui.components.plantName
 import com.plantdex.app.ui.components.EntryGrid
 import com.plantdex.app.ui.components.InfoPill
 import com.plantdex.app.ui.components.PaperCard
@@ -91,7 +93,8 @@ fun SpeciesScreen(
     val catalogs = remember(species) { species?.let { catalog?.catalogsOf(it.id) }.orEmpty() }
     val seasonResIds = catalogs.mapNotNull { SEASONS[it.id] }
     val seasons = seasonResIds.map { stringResource(it) }
-    val title = species?.name ?: name
+    val plant = plantName(scientificName, species?.name ?: name)
+    val title = plant.korean
     val key = remember(scientificName) { SpeciesKey.of(scientificName, catalog) }
     val art = rememberPlantArt(scientificName, family)
 
@@ -145,6 +148,7 @@ fun SpeciesScreen(
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(title, style = MaterialTheme.typography.headlineMedium)
+                        EnglishName(plant.english, style = MaterialTheme.typography.bodyMedium)
                         ScientificName(scientificName, style = MaterialTheme.typography.bodyLarge, maxLines = 2)
                     }
                     val familyText = family?.takeIf { it.isNotBlank() }

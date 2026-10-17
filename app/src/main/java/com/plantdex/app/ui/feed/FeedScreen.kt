@@ -51,6 +51,8 @@ import coil3.compose.AsyncImage
 import com.plantdex.app.R
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.ui.collection.EntryListViewModel
+import com.plantdex.app.ui.components.EnglishName
+import com.plantdex.app.ui.components.plantName
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
@@ -170,7 +172,8 @@ fun FeedScreen(
 /** 피드 카드: 머리줄(아바타·이름·날짜) + 표본처럼 끼운 사진 + 반응 + 식물 이름·학명·장소·메모. */
 @Composable
 private fun FeedCard(entry: CollectionEntry, onClick: () -> Unit, onUserClick: () -> Unit) {
-    val name = localizedName(entry)
+    val plant = plantName(entry)
+    val name = plant.korean
     PaperCard(Modifier.fillMaxWidth(), onClick = onClick) {
         Row(
             Modifier
@@ -209,6 +212,7 @@ private fun FeedCard(entry: CollectionEntry, onClick: () -> Unit, onUserClick: (
         ReactionBar(entry, Modifier.fillMaxWidth().padding(horizontal = 4.dp))
         Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(name, style = MaterialTheme.typography.titleMedium)
+            EnglishName(plant.english)
             ScientificName(entry.scientificName)
             val placeName = entry.location?.placeName
             if (!placeName.isNullOrBlank()) {

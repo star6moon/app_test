@@ -54,7 +54,8 @@ fun EntryGrid(
 /** 표본 카드: 종이 카드 안에 사진을 한 겹 들여 넣고, 굵은 이름과 기울임 학명을 붙입니다. */
 @Composable
 private fun EntryGridItem(entry: CollectionEntry, onClick: () -> Unit) {
-    val name = localizedName(entry)
+    val plant = plantName(entry)
+    val name = plant.korean
     PaperCard(onClick = onClick) {
         AsyncImage(
             model = entry.listImageUrl,
@@ -74,6 +75,7 @@ private fun EntryGridItem(entry: CollectionEntry, onClick: () -> Unit) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            EnglishName(plant.english, style = MaterialTheme.typography.labelSmall)
             ScientificName(entry.scientificName)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(

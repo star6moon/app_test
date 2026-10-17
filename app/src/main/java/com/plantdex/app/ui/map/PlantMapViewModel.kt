@@ -13,7 +13,9 @@ import com.plantdex.app.data.catalog.SpeciesKey
 import com.plantdex.app.data.filter.PeriodFilter
 import com.plantdex.app.data.geo.GeoBounds
 import com.plantdex.app.data.model.CollectionEntry
+import com.plantdex.app.data.names.NameScript
 import com.plantdex.app.data.names.PlantNameLocalizer
+import com.plantdex.app.data.names.PlantNames
 import com.plantdex.app.data.repository.CollectionRepository
 import com.plantdex.app.ui.collection.toMessage
 import com.plantdex.app.ui.components.LoadState
@@ -94,6 +96,7 @@ class PlantMapViewModel(
     private val collectionRepository: CollectionRepository,
     private val localizer: PlantNameLocalizer,
     private val catalogRepository: CatalogRepository,
+    private val plantNames: PlantNames,
 ) : ViewModel() {
 
     private val _scope = MutableStateFlow(MapScope.Mine)
@@ -169,21 +172,23 @@ class PlantMapViewModel(
         val located = entries.filter { it.location != null }
         val withoutLocation = entries.size - located.size
         fun data(items: List<PlantMapItem>) = PlantMapData(scope, items, withoutLocation, viewportDriven, truncated)
-        emit(LoadState.Success(data(located.map { it.toItem(it.displayName) })))
-
-        val locale = Locale.getDefault()
-        val language = locale.toLanguageTag().substringBefore('-').lowercase()
-        if (located.none { it.commonNameLanguage != language }) return
+        // 한국어 이름(없으면 학명의 한글 발음)을 바로 보여주고, 한글 발음뿐인 종은 GBIF·Wikidata 에서 한 번 더 찾습니다.
+        val resolved = located.map { entry ->
+            entry to plantNames.resolve(entry.scientificName, entry.commonName?.takeIf { entry.commonNameLanguage != "en" })
+        }
+        emit(LoadState.Success(data(resolved.map { (entry, name) -> entry.toItem(name.korean) })))
+        if (resolved.none { it.second.isPronunciation }) return
 
         val localized = coroutineScope {
-            located.map { entry ->
+            resolved.map { (entry, name) ->
                 async {
-                    val name = if (entry.commonNameLanguage == language) {
-                        entry.displayName
+                    val korean = if (name.isPronunciation) {
+                        localizer.localName(entry.scientificName, entry.gbifId, Locale.KOREAN)
+                            ?.takeIf { NameScript.matches(it, "ko") } ?: name.korean
                     } else {
-                        localizer.localName(entry.scientificName, entry.gbifId, locale) ?: entry.displayName
+                        name.korean
                     }
-                    entry.toItem(name)
+                    entry.toItem(korean)
                 }
             }.awaitAll()
         }

@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.ui.draw.clip
+import com.plantdex.app.ui.components.EnglishName
+import com.plantdex.app.ui.components.plantName
 import com.plantdex.app.ui.components.InfoPill
 import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.ScientificName
@@ -143,7 +145,8 @@ fun EntryDetailScreen(
     }
 
     val entry = (state as? LoadState.Success)?.data
-    val name = localizedName(entry)
+    val plant = entry?.let { plantName(it) }
+    val name = plant?.korean.orEmpty()
     val isOwner = entry != null && viewModel.isOwner(entry)
 
     Scaffold(
@@ -201,6 +204,7 @@ fun EntryDetailScreen(
                     EntryDetailContent(
                         entry = data,
                         name = name,
+                        englishName = plant?.english,
                         isOwner = isOwner,
                         onPublicChange = { viewModel.setPublic(data, it) },
                         onCorrectClick = { correcting = true },
@@ -300,6 +304,7 @@ fun EntryDetailScreen(
 private fun EntryDetailContent(
     entry: CollectionEntry,
     name: String,
+    englishName: String?,
     isOwner: Boolean,
     onPublicChange: (Boolean) -> Unit,
     onCorrectClick: () -> Unit,
@@ -334,6 +339,7 @@ private fun EntryDetailContent(
             Spacer(Modifier.width(14.dp))
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(name, style = MaterialTheme.typography.headlineSmall)
+                EnglishName(englishName, style = MaterialTheme.typography.bodyMedium)
                 ScientificName(entry.scientificName, style = MaterialTheme.typography.titleMedium, maxLines = 2)
             }
         }

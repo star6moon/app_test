@@ -55,6 +55,8 @@ import com.plantdex.app.R
 import com.plantdex.app.data.model.PlantCandidate
 import com.plantdex.app.data.rules.NearbyRecord
 import com.plantdex.app.data.rules.NearbyRule
+import com.plantdex.app.ui.components.EnglishName
+import com.plantdex.app.ui.components.plantName
 import com.plantdex.app.ui.components.InfoPill
 import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.PlantBadge
@@ -306,10 +308,11 @@ private fun CandidateCard(
                     PlantBadge(rememberPlantArt(candidate.scientificName, candidate.family), size = if (hero) 64.dp else 44.dp)
                 }
                 Spacer(Modifier.width(12.dp))
+                val plant = plantName(candidate)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            candidate.displayName,
+                            plant.korean,
                             style = if (hero) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleMedium,
                             modifier = Modifier.weight(1f, fill = false),
                         )
@@ -322,12 +325,14 @@ private fun CandidateCard(
                             )
                         }
                     }
-                    if (candidate.commonNames.isNotEmpty()) {
-                        ScientificName(
-                            candidate.scientificName,
-                            style = if (hero) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
-                        )
-                    }
+                    EnglishName(
+                        plant.english,
+                        style = if (hero) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.labelMedium,
+                    )
+                    ScientificName(
+                        candidate.scientificName,
+                        style = if (hero) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
+                    )
                 }
                 RadioButton(selected = selected, onClick = null)
             }

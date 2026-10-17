@@ -29,6 +29,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.unit.Dp
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
+import com.plantdex.app.ui.components.EnglishName
+import com.plantdex.app.ui.components.plantName
 import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.PlantBadge
 import com.plantdex.app.ui.components.ScientificName
@@ -124,6 +126,7 @@ fun PlantMapScreen(
                     collectionRepository = container.collectionRepository,
                     localizer = container.plantNameLocalizer,
                     catalogRepository = container.catalogRepository,
+                    plantNames = container.plantNames,
                 )
             }
         },
@@ -491,6 +494,7 @@ private fun SelectedEntryCard(item: PlantMapItem, onClick: () -> Unit) {
                     Spacer(Modifier.width(6.dp))
                     Text(item.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
+                EnglishName(plantName(entry).english)
                 ScientificName(entry.scientificName)
                 Text(
                     listOfNotNull(Formatters.date(entry.capturedAt), entry.location?.placeName).joinToString(" · "),

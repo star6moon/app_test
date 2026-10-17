@@ -71,6 +71,10 @@ class PlantCatalog(
 
     fun catalog(id: String): Catalog? = catalogs.firstOrNull { it.id == id }
 
+    /** 학명(이명 포함)이 정확히 같은 도감 종. 속 단위로는 찾지 않습니다 (이름 표시용). */
+    fun exact(scientificName: String): CatalogSpecies? =
+        ScientificName.binomialKey(scientificName)?.let { byBinomial[it] }
+
     /** 학명에 해당하는 도감 종. 정확히 일치하는 종이 우선이고, 없으면 속 단위로 인정하는 종을 찾습니다. */
     fun match(scientificName: String): CatalogSpecies? =
         ScientificName.binomialKey(scientificName)?.let { byBinomial[it] }
