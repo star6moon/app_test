@@ -189,6 +189,16 @@ Actions 탭 → Deploy → **Run workflow** 로 직접 실행할 수도 있고, 
 GitHub 저장소 → **Actions** → 실행 기록 → 아래 *Artifacts* 에서 `app-debug-apk` 를 내려받을 수 있습니다.
 (CI 는 가짜 `google-services.json` 으로 빌드하므로 이 APK 는 로그인 등 서버 기능이 동작하지 않습니다. 실제 사용할 APK 는 직접 빌드하세요.)
 
+## 식물 이름 (한국어 · 영어)
+
+화면에는 **한국어 이름**을 크게, 그 바로 아래에 **영어 이름**을 작게, 그 아래 학명을 기울여 보여줍니다.
+한국어 이름은 ① 식별·기록에 들어 있던 한국어 이름 → ② 앱 도감 → ③ 앱에 들어 있는 이름 목록 → ④ 학명의 한글 발음 순서로 고릅니다
+(④는 `LatinHangul`: Helianthus annuus → 헬리안투스 안누우스. 이 경우 GBIF·Wikidata 에서 한 번 더 찾아봅니다).
+
+이름 목록 `app/src/main/assets/plant_names.json` 은 Actions → Deploy → Run workflow → **`names`** 로 새로 만듭니다 (약 1시간, `tools/plant_names/build.py`).
+Pl@ntNet 이 아는 모든 종(약 8.6만)의 학명·영어 이름에 Wikidata 한국어 이름과 GBIF 의 한국 식물 한국어 일반명을 붙여 같은 브랜치에 커밋합니다.
+봇 커밋은 자동 배포를 일으키지 않으므로, 만든 뒤 Deploy → `app` 을 한 번 실행하세요.
+
 ## 신고와 제재
 
 신고 사유마다 처리가 다릅니다. 같은 사람이 여러 번 신고해도 한 명으로 세고, 주인 본인의 신고는 세지 않습니다.
