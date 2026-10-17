@@ -4,6 +4,7 @@
 
 1. Pl@ntNet 이 알아보는 모든 종의 학명과 영어 일반명을 받습니다.
 2. 각 학명의 한국어 이름을 Wikidata 에서 찾습니다 (한국어 라벨 / 한국어 일반명 P1843).
+   Wikidata 에 없으면 GBIF 에서 찾습니다: 한국에서 관찰된 식물 종 목록을 받아 각 종의 한국어 일반명을 모읍니다.
 3. app/src/main/assets/plant_names.json 으로 저장합니다.
    {"v": 1, "names": {"taraxacum officinale": ["서양민들레", "Common dandelion"], ...}}
    키는 앱의 ScientificName.binomialKey 와 같은 규칙("속명 종소명" 소문자)입니다.
@@ -22,6 +23,7 @@ import urllib.request
 
 PLANTNET = "https://my-api.plantnet.org/v2"
 WIKIDATA_SPARQL = "https://query.wikidata.org/sparql"
+GBIF = "https://api.gbif.org/v1"
 USER_AGENT = "PlantDexNameBuilder/1.0 (https://github.com/star6moon/app_test)"
 HANGUL = re.compile(r"[가-힣]")
 HYBRID_MARKS = {"×", "x", "X"}
@@ -156,6 +158,54 @@ SELECT ?name ?label ?common WHERE {{
     return found
 
 
+def gbif_korea_names():
+    """한국에서 관찰 기록이 있는 식물 종 → 한국어 일반명 (GBIF). {학명: 한국어 이름}"""
+    from collections import Counter
+    from concurrent.futures import ThreadPoolExecutor
+
+    keys = []
+    offset, size = 0, 1000
+    while True:
+        data = http(
+            f"{GBIF}/occurrence/search?country=KR&kingdomKey=6&limit=0&facet=speciesKey"
+            f"&facetLimit={size}&facetOffset={offset}",
+            tries=4, timeout=120,
+        )
+        counts = (data.get("facets") or [{}])[0].get("counts") or []
+        keys.extend(c["name"] for c in counts)
+        if len(counts) < size:
+            break
+        offset += size
+    print(f"GBIF: 한국에서 관찰된 식물 {len(keys)}종", flush=True)
+
+    def one(key):
+        try:
+            sp = http(f"{GBIF}/species/{key}", tries=3, timeout=30)
+            vn = http(f"{GBIF}/species/{key}/vernacularNames?limit=300", tries=3, timeout=30)
+        except Exception as e:  # 한 종이 실패해도 나머지는 계속
+            return None, None
+        names = [
+            v["vernacularName"].strip()
+            for v in vn.get("results", [])
+            if v.get("language") == "kor" and HANGUL.search(v.get("vernacularName") or "")
+        ]
+        if not names:
+            return sp.get("canonicalName"), None
+        # 여러 출처가 같은 이름을 쓰면 그 이름, 아니면 처음 이름
+        best = Counter(names).most_common(1)[0][0]
+        return sp.get("canonicalName"), best
+
+    found = {}
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for i, (name, ko) in enumerate(pool.map(one, keys)):
+            if name and ko:
+                found[name] = ko
+            if i % 2000 == 0:
+                print(f"  GBIF {i}/{len(keys)} (한국어 {len(found)})", flush=True)
+    print(f"GBIF 한국어 이름 {len(found)}종", flush=True)
+    return found
+
+
 def main():
     out = sys.argv[1]
     key = os.environ["PLANTNET_API_KEY"]
@@ -164,12 +214,21 @@ def main():
     if not species:
         sys.exit("Pl@ntNet 종 목록을 받지 못했습니다")
     korean = wikidata_korean([name for name, _ in species.values()])
+    try:
+        gbif = gbif_korea_names()
+    except Exception as e:
+        print(f"GBIF 단계 실패: {e}", flush=True)
+        gbif = {}
+    gbif_by_key = {binomial_key(n): ko for n, ko in gbif.items() if binomial_key(n)}
 
     names = {}
     for k, (name, english) in sorted(species.items()):
-        ko = korean.get(name, "")
+        ko = korean.get(name, "") or gbif_by_key.get(k, "")
         if ko or english:
             names[k] = [ko, english]
+    # Pl@ntNet 목록에 이름이 다르게 올라 있어도 찾을 수 있도록 GBIF 의 한국 식물도 넣습니다.
+    for k, ko in gbif_by_key.items():
+        names.setdefault(k, [ko, ""])
     with open(out, "w", encoding="utf-8") as f:
         json.dump({"v": 1, "names": names}, f, ensure_ascii=False, separators=(",", ":"))
     with_ko = sum(1 for v in names.values() if v[0])
