@@ -37,12 +37,12 @@ def binomial_key(name: str):
     return f"{words[0].lower()} {epithet}"
 
 
-def http(url, data=None, headers=None, tries=6):
+def http(url, data=None, headers=None, tries=6, timeout=120):
     headers = {"User-Agent": USER_AGENT, **(headers or {})}
     for attempt in range(tries):
         try:
             req = urllib.request.Request(url, data=data, headers=headers)
-            with urllib.request.urlopen(req, timeout=120) as res:
+            with urllib.request.urlopen(req, timeout=timeout) as res:
                 return json.loads(res.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
             body = e.read()[:300].decode("utf-8", "replace")
@@ -60,31 +60,59 @@ def http(url, data=None, headers=None, tries=6):
 
 
 def plantnet_species(key: str):
-    """Pl@ntNet 의 종 목록 [(학명, 영어 일반명)] — 'all' 프로젝트가 안 되면 프로젝트별로 모읍니다."""
-    def project_species(project):
-        url = f"{PLANTNET}/projects/{project}/species?lang=en&api-key={urllib.parse.quote(key)}"
-        data = http(url)
-        return data if isinstance(data, list) else data.get("species") or data.get("results") or []
+    """Pl@ntNet 의 종 목록 {binomial: (학명, 영어 일반명)}.
+    전체 목록은 한 번에 받으면 시간이 너무 걸려서 쪽(page) 단위로 받고, 안 되면 지역 프로젝트별로 모읍니다."""
+    k = urllib.parse.quote(key)
+    items = []
 
+    def as_list(data):
+        if isinstance(data, list):
+            return data
+        if isinstance(data, dict):
+            for field in ("species", "results", "data", "items"):
+                if isinstance(data.get(field), list):
+                    return data[field]
+        return []
+
+    # 1) 쪽 단위 전체 목록
     try:
-        items = project_species("all")
-        print(f"Pl@ntNet 'all': {len(items)}종", flush=True)
+        page, size = 1, 1000
+        while True:
+            data = http(f"{PLANTNET}/species?lang=en&pageSize={size}&page={page}&api-key={k}", tries=3, timeout=180)
+            got = as_list(data)
+            if page == 1:
+                print(f"/v2/species 응답 형태: {type(data).__name__}, 첫 쪽 {len(got)}종", flush=True)
+            items.extend(got)
+            if len(got) < size or page > 400:
+                break
+            if page == 1 and len(got) > size:  # 쪽 나누기를 무시하고 전부 준 경우
+                break
+            page += 1
+        print(f"Pl@ntNet 전체 목록: {len(items)}종", flush=True)
     except RuntimeError as e:
-        print(f"'all' 목록 실패 ({e}), 프로젝트별로 모읍니다", flush=True)
-        projects = http(f"{PLANTNET}/projects?lang=en&api-key={urllib.parse.quote(key)}")
+        print(f"전체 목록 실패: {e}", flush=True)
         items = []
+
+    # 2) 지역 프로젝트별 (전체 목록이 비었을 때)
+    if not items:
+        projects = as_list(http(f"{PLANTNET}/projects?lang=en&api-key={k}", tries=3, timeout=120))
+        print(f"프로젝트 {len(projects)}개", flush=True)
         for p in projects:
             pid = p.get("id") if isinstance(p, dict) else p
+            if pid in ("all", "k-world-flora"):
+                continue
             try:
-                got = project_species(pid)
+                got = as_list(http(f"{PLANTNET}/projects/{pid}/species?lang=en&api-key={k}", tries=2, timeout=300))
                 print(f"  {pid}: {len(got)}종", flush=True)
                 items.extend(got)
-            except RuntimeError as err:
+            except (RuntimeError, urllib.error.URLError, TimeoutError) as err:
                 print(f"  {pid}: 실패 {err}", flush=True)
 
     species = {}
     for it in items:
-        name = it.get("scientificNameWithoutAuthor") or it.get("scientificName") or ""
+        if not isinstance(it, dict):
+            continue
+        name = it.get("scientificNameWithoutAuthor") or it.get("scientificName") or it.get("name") or ""
         key_ = binomial_key(name)
         if not key_:
             continue
@@ -133,6 +161,8 @@ def main():
     key = os.environ["PLANTNET_API_KEY"]
     species = plantnet_species(key)
     print(f"학명 {len(species)}종", flush=True)
+    if not species:
+        sys.exit("Pl@ntNet 종 목록을 받지 못했습니다")
     korean = wikidata_korean([name for name, _ in species.values()])
 
     names = {}
