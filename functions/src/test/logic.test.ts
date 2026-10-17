@@ -27,3 +27,39 @@ test("distance and geohash", () => {
   assert.equal(geohash(37.5665, 126.978, 6), "wydm9q");
   assert.equal(geohash(57.64911, 10.40744, 11), "u4pruydqqvj");
 });
+
+import { decideAction, suspensionDays, ReportInfo } from "../moderationPolicy";
+
+const r = (reporterId: string, reasonCode: ReportInfo["reasonCode"], createdAtMillis = 1000): ReportInfo =>
+  ({ reporterId, reasonCode, createdAtMillis });
+
+test("wrong info from two people asks the owner to correct the entry", () => {
+  assert.equal(decideAction("entry", [r("a", "wrong_info")], "owner").action, "none");
+  assert.equal(decideAction("entry", [r("a", "wrong_info"), r("a", "wrong_info")], "owner").action, "none");
+  const two = [r("a", "wrong_info"), r("b", "wrong_info")];
+  assert.deepEqual(decideAction("entry", two, "owner"), { action: "needs_correction", strike: false, reason: "wrong_info" });
+  // 고친 뒤에는 그 이후 신고만 셉니다.
+  assert.equal(decideAction("entry", two, "owner", 5000).action, "none");
+  assert.equal(decideAction("entry", [...two, r("c", "wrong_info", 6000), r("d", "wrong_info", 7000)], "owner", 5000).action, "needs_correction");
+});
+
+test("violations hide content and give a strike; the owner's own report is ignored", () => {
+  const reports = [r("a", "abuse"), r("b", "spam"), r("owner", "inappropriate_photo")];
+  assert.equal(decideAction("comment", reports, "owner").action, "none");
+  const three = [...reports, r("c", "abuse")];
+  assert.deepEqual(decideAction("comment", three, "owner"), { action: "hide", strike: true, reason: "abuse" });
+  assert.deepEqual(decideAction("user", three, "owner"), { action: "none", strike: true, reason: "abuse" });
+});
+
+test("not-real photos are hidden without a strike, and wrong info alone never hides", () => {
+  const notReal = [r("a", "not_real_photo"), r("b", "not_real_photo"), r("c", "other")];
+  assert.deepEqual(decideAction("entry", notReal, "owner"), { action: "hide", strike: false, reason: "not_real_photo" });
+  const wrong = ["a", "b", "c", "d"].map((id) => r(id, "wrong_info"));
+  assert.equal(decideAction("entry", wrong, "owner").action, "needs_correction");
+  // 대상에 맞지 않는 사유는 무시 (댓글에 '정보 불일치')
+  assert.equal(decideAction("comment", wrong, "owner").action, "none");
+});
+
+test("suspensions get longer", () => {
+  assert.deepEqual([1, 2, 3, 4, 9].map(suspensionDays), [3, 7, 30, 30, 30]);
+});

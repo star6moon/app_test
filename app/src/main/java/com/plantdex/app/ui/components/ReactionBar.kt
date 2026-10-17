@@ -52,6 +52,8 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
     var bookmarkBusy by remember { mutableStateOf(false) }
     val likeFailedMessage = stringResource(R.string.common_reaction_like_failed)
     val bookmarkFailedMessage = stringResource(R.string.common_reaction_bookmark_failed)
+    val suspension by appContainer().moderationRepository.suspension.collectAsStateWithLifecycle()
+    val suspendedMessage = stringResource(R.string.moderation_suspended_action)
 
     fun run(onDone: () -> Unit, failure: String, action: suspend () -> Unit) {
         scope.launch {
@@ -72,6 +74,10 @@ fun ReactionBar(entry: CollectionEntry, modifier: Modifier = Modifier) {
         IconButton(
             enabled = likesLoaded && !likeBusy,
             onClick = {
+                if (!liked && suspension.isSuspended) {
+                    Toast.makeText(context, suspendedMessage, Toast.LENGTH_SHORT).show()
+                    return@IconButton
+                }
                 likeBusy = true
                 run({ likeBusy = false }, likeFailedMessage) { reactions.setLiked(entry.id, !liked) }
             },

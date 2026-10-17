@@ -127,4 +127,30 @@
     <!-- ui/components/EntryViews.kt -->
     <string name="common_collection_species_count">수집한 식물 %1$d종</string>
     <string name="common_collection_entry_count">총 %1$d개의 기록</string>
+    <!-- 신고 사유와 제재 -->
+    <string name="report_reason_not_real_photo">실제 식물을 촬영한 사진이 아님</string>
+    <string name="report_reason_wrong_info">식물 정보가 일치하지 않음</string>
+    <string name="report_reason_inappropriate_photo">부적절한 사진</string>
+    <string name="report_reason_abuse">욕설/비하</string>
+    <string name="report_reason_spam">상업적 광고 및 판매</string>
+    <string name="report_reason_other">기타</string>
+    <string name="report_policy_wrong_info">2명 이상 신고하면 작성자가 식물 정보를 고칠 때까지 비공개로 바뀌어요.</string>
+    <string name="report_policy_violation">3명 이상 신고하면 숨겨지고 작성자에게 경고가 쌓여요. 경고 3번이면 활동이 정지돼요.</string>
+    <string name="moderation_suspended_banner">신고 누적으로 %1$s까지 기록·댓글·좋아요·팔로우가 제한돼요.</string>
+    <string name="moderation_suspended_action">신고 누적으로 활동이 정지된 동안에는 할 수 없어요.</string>
+    <string name="moderation_suspended_comment">신고 누적으로 %1$s까지 댓글을 쓸 수 없어요.</string>
+    <string name="entry_detail_needs_correction_notice">\'식물 정보가 일치하지 않는다\'는 신고가 쌓여 비공개로 바뀌었어요. 식물 정보를 고치면 다시 공개할 수 있어요.</string>
+    <string name="entry_detail_correct_button">식물 정보 고치기</string>
+    <string name="entry_correct_title">식물 정보 고치기</string>
+    <string name="entry_correct_current">지금: %1$s (%2$s)</string>
+    <string name="entry_correct_search">식물 이름이나 학명으로 찾기</string>
+    <string name="entry_correct_picked">선택: %1$s</string>
+    <string name="entry_correct_no_result">도감에서 찾지 못했어요. 직접 입력해 주세요.</string>
+    <string name="entry_correct_manual">도감에 없나요? 직접 입력하기</string>
+    <string name="entry_correct_search_instead">도감에서 찾기</string>
+    <string name="entry_correct_manual_name">식물 이름 (예: 민들레)</string>
+    <string name="entry_correct_manual_scientific">학명 (예: Taraxacum officinale)</string>
+    <string name="entry_correct_save">고치기</string>
+    <string name="entry_correct_saving">고치는 중…</string>
+    <string name="entry_correct_done">식물 정보를 고쳤어요. 이제 다시 공개할 수 있어요.</string>
 </resources>

@@ -67,6 +67,7 @@ fun CommentsSection(
     val social = container.socialRepository
     val me by container.authRepository.currentUser.collectAsStateWithLifecycle()
     val blockedIds by container.moderationRepository.blockedIds.collectAsStateWithLifecycle()
+    val suspension by container.moderationRepository.suspension.collectAsStateWithLifecycle()
     val commentsFlow = remember(entryId) { social.observeComments(entryId).catch { emit(emptyList()) } }
     val comments by commentsFlow.collectAsStateWithLifecycle(initialValue = emptyList())
     val visible = comments.filter { it.authorId !in blockedIds }
@@ -133,7 +134,13 @@ fun CommentsSection(
                 }
             }
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        if (suspension.isSuspended) {
+            Text(
+                stringResource(R.string.moderation_suspended_comment, Formatters.dateTime(suspension.untilMillis ?: 0L)),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+            )
+        } else Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it.take(SocialRepository.MAX_COMMENT_LENGTH) },
@@ -186,14 +193,16 @@ fun CommentsSection(
     reporting?.let { comment ->
         ReportDialog(
             title = stringResource(R.string.entry_comments_report_title),
+            target = ReportTarget.Comment,
             onDismiss = { reporting = null },
-            onReport = { reason ->
+            onReport = { reason, detail ->
                 reporting = null
                 run(reportedMessage) {
                     container.moderationRepository.report(
                         ReportTarget.Comment,
                         targetId = comment.id,
                         reason = reason,
+                        detail = detail,
                         entryId = comment.entryId,
                         targetOwnerId = comment.authorId,
                     )

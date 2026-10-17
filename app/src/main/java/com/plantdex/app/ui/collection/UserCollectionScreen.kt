@@ -125,6 +125,10 @@ fun UserCollectionScreen(
                         isMe = isMe,
                         isFollowing = followingIds?.let { userId in it },
                         onFollowChange = { follow ->
+                            if (follow && container.moderationRepository.suspension.value.isSuspended) {
+                                Toast.makeText(context, context.getString(R.string.moderation_suspended_action), Toast.LENGTH_SHORT).show()
+                                return@ProfileHeader
+                            }
                             run(if (follow) context.getString(R.string.collection_follow_success, p.displayName) else null) {
                                 container.socialRepository.setFollowing(userId, follow)
                             }
@@ -171,11 +175,18 @@ fun UserCollectionScreen(
     if (reporting) {
         ReportDialog(
             title = stringResource(R.string.collection_report_user_title),
+            target = ReportTarget.User,
             onDismiss = { reporting = false },
-            onReport = { reason ->
+            onReport = { reason, detail ->
                 reporting = false
                 run(reportSuccessMessage) {
-                    container.moderationRepository.report(ReportTarget.User, targetId = userId, reason = reason, targetOwnerId = userId)
+                    container.moderationRepository.report(
+                        ReportTarget.User,
+                        targetId = userId,
+                        reason = reason,
+                        detail = detail,
+                        targetOwnerId = userId,
+                    )
                 }
             },
         )

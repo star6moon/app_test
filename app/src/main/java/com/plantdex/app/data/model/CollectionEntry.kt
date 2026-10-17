@@ -27,8 +27,10 @@ data class CollectionEntry(
     /** 목록용 작은 사진 (예전 기록에는 없음) */
     val thumbUrl: String? = null,
     val commentCount: Int = 0,
-    /** 신고가 쌓여 숨겨진 기록 */
+    /** 신고가 쌓여 숨겨진 기록 (다시 공개할 수 없음) */
     val isHidden: Boolean = false,
+    /** '식물 정보가 일치하지 않음' 신고가 쌓여 정보를 고쳐야 다시 공개할 수 있는 기록 */
+    val needsCorrection: Boolean = false,
     /** 지도 영역 검색용 지오해시 (예전 기록에는 없음) */
     val geohash: String? = null,
 ) {

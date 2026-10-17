@@ -1,7 +1,9 @@
 package com.plantdex.app.ui.navigation
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -58,6 +60,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.plantdex.app.R
+import com.plantdex.app.util.Formatters
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.achievements.BadgesScreen
@@ -186,10 +189,13 @@ fun PlantDexNavHost(user: UserProfile) {
             )
         },
     ) { padding ->
+      val suspension by container.moderationRepository.suspension.collectAsStateWithLifecycle()
+      Column(Modifier.padding(padding).consumeWindowInsets(padding)) {
+        if (suspension.isSuspended) SuspensionBanner(suspension.untilMillis ?: 0L)
         NavHost(
             navController = navController,
             startDestination = FeedRoute,
-            modifier = Modifier.padding(padding).consumeWindowInsets(padding),
+            modifier = Modifier.weight(1f),
         ) {
             composable<FeedRoute> {
                 FeedScreen(
@@ -294,6 +300,19 @@ fun PlantDexNavHost(user: UserProfile) {
                 )
             }
         }
+      }
+    }
+}
+
+/** 신고 누적으로 활동이 정지됐을 때 모든 화면 위에 띄우는 안내 */
+@Composable
+private fun SuspensionBanner(untilMillis: Long) {
+    Surface(color = MaterialTheme.colorScheme.errorContainer, contentColor = MaterialTheme.colorScheme.onErrorContainer) {
+        Text(
+            stringResource(R.string.moderation_suspended_banner, Formatters.dateTime(untilMillis)),
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
+        )
     }
 }
 

@@ -18,6 +18,7 @@ import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.model.PlantCandidate
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.data.plantnet.CloudPlantIdentifier
+import com.plantdex.app.util.Formatters
 import com.plantdex.app.util.ImageUtils
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
@@ -115,6 +116,11 @@ class CollectionRepository(
                 distanceMeters = (details?.get("distance") as? Number)?.toDouble() ?: 0.0,
             )
             message == "LOCATION_REQUIRED" -> EntrySaveException("위치 정보가 있어야 등록할 수 있어요.")
+            message == "SUSPENDED" -> EntrySaveException(
+                "신고 누적으로 활동이 정지되어 ${
+                    (details?.get("until") as? Number)?.let { Formatters.dateTime(it.toLong()) } ?: "정지 기간"
+                }까지 기록을 저장할 수 없어요. (사진은 임시저장할 수 있어요)",
+            )
             code == FirebaseFunctionsException.Code.NOT_FOUND ->
                 EntrySaveException("서버 기능이 아직 배포되지 않았어요. (firebase deploy --only functions)")
             code == FirebaseFunctionsException.Code.UNAVAILABLE -> EntrySaveException("네트워크 연결을 확인해 주세요.")
@@ -208,6 +214,31 @@ class CollectionRepository(
         awaitClose { registration.remove() }
     }
 
+    /**
+     * 정보 정정이 필요한 기록의 식물을 고칩니다 (서버 함수 correctEntry).
+     * 고친 뒤 다시 공개하려면 주인이 공개 스위치를 켭니다.
+     */
+    suspend fun correctEntry(entryId: String, scientificName: String, commonName: String?, family: String?) {
+        try {
+            functions.getHttpsCallable("correctEntry").call(
+                mapOf(
+                    "entryId" to entryId,
+                    "scientificName" to scientificName,
+                    "commonName" to commonName,
+                    "family" to family,
+                ),
+            ).await()
+        } catch (e: FirebaseFunctionsException) {
+            throw EntrySaveException(
+                when (e.message) {
+                    "SAME_SPECIES" -> "지금과 같은 식물이에요. 다른 식물로 골라 주세요."
+                    "NOT_NEEDED" -> "이미 정보가 고쳐진 기록이에요."
+                    else -> "정보를 고치지 못했어요: ${e.message.orEmpty()}"
+                },
+            )
+        }
+    }
+
     suspend fun setPublic(id: String, isPublic: Boolean) {
         entries.document(id).update("isPublic", isPublic).await()
     }
@@ -260,6 +291,7 @@ class CollectionRepository(
             thumbUrl = getString("thumbUrl"),
             commentCount = getLong("commentCount")?.toInt()?.coerceAtLeast(0) ?: 0,
             isHidden = getString("moderation") == "hidden",
+            needsCorrection = getString("moderation") == "needs_correction",
             geohash = getString("geohash"),
         )
     }

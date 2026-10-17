@@ -17,7 +17,7 @@
 | 동기 부여 | **배지** 20여 개, **주간 미션** (매주 월요일 바뀜, 계절 식물 포함) |
 | 알림 | 좋아요·댓글·팔로우 → 앱 안 알림 목록 + 휴대폰 푸시(FCM). 알림을 누르면 해당 기록으로 이동 |
 | 계정 | 이메일 / **Google 로그인**, 비밀번호 재설정 메일, 닉네임 변경, **회원 탈퇴**(내 데이터 모두 삭제) |
-| 안전 | 기록·댓글·사용자 **신고**(3명 이상 신고하면 자동 숨김), **차단**(서로의 기록·댓글·알림 숨김) |
+| 안전 | 사유별 **신고**(아래 '신고와 제재'), **차단**(서로의 기록·댓글·알림 숨김) |
 | 운영 | API 키는 서버에만, App Check, 사용자별 하루 식별 한도, Crashlytics, R8 축소 릴리스 빌드, GitHub Actions CI |
 
 ## 기술 스택
@@ -189,6 +189,20 @@ Actions 탭 → Deploy → **Run workflow** 로 직접 실행할 수도 있고, 
 GitHub 저장소 → **Actions** → 실행 기록 → 아래 *Artifacts* 에서 `app-debug-apk` 를 내려받을 수 있습니다.
 (CI 는 가짜 `google-services.json` 으로 빌드하므로 이 APK 는 로그인 등 서버 기능이 동작하지 않습니다. 실제 사용할 APK 는 직접 빌드하세요.)
 
+## 신고와 제재
+
+신고 사유마다 처리가 다릅니다. 같은 사람이 여러 번 신고해도 한 명으로 세고, 주인 본인의 신고는 세지 않습니다.
+기준 숫자는 `functions/src/moderationPolicy.ts` 의 `POLICY` 에서 바꿀 수 있습니다.
+
+| 사유 | 대상 | 처리 |
+|------|------|------|
+| 식물 정보가 일치하지 않음 | 기록 | 2명 → 비공개, 주인이 **식물 정보를 고칠 때까지** 다시 공개 불가 |
+| 부적절한 사진 · 욕설/비하 · 상업적 광고 및 판매 | 기록·댓글·사용자 | 3명 → 기록 숨김 / 댓글 삭제 + 주인에게 **경고 1회** |
+| 실제 식물을 촬영한 사진이 아님 · 기타 | 기록·댓글 | 3명 → 숨김 (경고 없음) |
+
+경고는 90일 안에 3회 모이면 **활동 정지**(첫 번째 3일, 두 번째 7일, 그 뒤 30일): 기록 저장·댓글·좋아요·팔로우가 막히고 앱 위에 안내가 보입니다.
+처리될 때마다 당사자에게 알림이 갑니다. 잘못된 신고로 처리된 경우에는 Firebase 콘솔에서 해당 문서의 `moderation` 이나 `private/moderation` 을 지우면 됩니다.
+
 ## 데이터 모델
 
 **`users/{uid}`** — `displayName`, `bio`, `photoUrl`, `createdAt` + 서버가 쓰는 `stats { records, species, catalogSpecies }`, `followerCount`, `followingCount`
@@ -203,7 +217,9 @@ GitHub 저장소 → **Actions** → 실행 기록 → 아래 *Artifacts* 에서
 
 **`entries/{entryId}/comments/{id}`** — `authorId`, `authorName`, `text`, `createdAt`
 
-**`reports/{id}`** — 신고 (관리자만 Firebase 콘솔에서 확인)
+**`reports/{id}`** — 신고 (`reasonCode` 사유 코드 + `reason` 설명, 관리자만 Firebase 콘솔에서 확인)
+
+**`users/{uid}/private/moderation`** — 활동 정지 (`suspendedUntil`, `suspensionCount`, `activeStrikes`) · **`users/{uid}/strikes/{대상}`** — 받은 경고 (모두 서버 전용)
 
 **`entries/{entryId}`**
 
@@ -224,10 +240,10 @@ GitHub 저장소 → **Actions** → 실행 기록 → 아래 *Artifacts* 에서
 | `geohash` | string | 지도 영역 검색용 지오해시 (서버가 계산) |
 | `likeCount` | number | 좋아요 수. 좋아요 문서와 같은 요청에서만 ±1 (보안 규칙으로 강제) |
 | `commentCount` | number | 댓글 수 (서버가 계산) |
-| `moderation` | string? | 신고 누적으로 숨겨지면 `hidden` |
+| `moderation` | string? | 신고 누적으로 숨겨지면 `hidden`, 정보 정정이 필요하면 `needs_correction` |
 | `createdAt` | timestamp | 등록 시각 (서버 시각) |
 
-보안 규칙(`firebase/firestore.rules`): 기록은 **서버 함수(`createEntry`)만 만들 수 있고**, 공개 기록은 로그인한 모든 사용자가, 비공개 기록은 본인만 읽습니다. 등록 후에는 공개 여부와 메모만 수정할 수 있고, 신고로 숨겨진 기록은 다시 공개할 수 없습니다.
+보안 규칙(`firebase/firestore.rules`): 기록은 **서버 함수(`createEntry`)만 만들 수 있고**, 공개 기록은 로그인한 모든 사용자가, 비공개 기록은 본인만 읽습니다. 등록 후에는 공개 여부와 메모만 수정할 수 있고, 신고로 숨겨진 기록은 다시 공개할 수 없고, 정보 정정이 필요한 기록은 `correctEntry` 로 고친 뒤에 공개할 수 있습니다. 활동 정지 중에는 댓글·좋아요·팔로우를 쓸 수 없습니다.
 기록을 지우면 서버가 사진·썸네일·댓글·좋아요·책갈피를 함께 정리하고 통계를 다시 계산합니다.
 
 ## 주제별 도감

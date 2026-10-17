@@ -46,6 +46,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -115,6 +116,8 @@ fun EntryDetailScreen(
     var menuOpen by remember { mutableStateOf(false) }
     var reporting by remember { mutableStateOf(false) }
     var confirmBlock by remember { mutableStateOf(false) }
+    var correcting by remember { mutableStateOf(false) }
+    var savingCorrection by remember { mutableStateOf(false) }
     val moderation = container.moderationRepository
     val scope = rememberCoroutineScope()
 
@@ -200,6 +203,7 @@ fun EntryDetailScreen(
                         name = name,
                         isOwner = isOwner,
                         onPublicChange = { viewModel.setPublic(data, it) },
+                        onCorrectClick = { correcting = true },
                         onOpenMap = { openMap(context, data, name) },
                         onUserClick = { onUserClick(data.ownerId, data.ownerName) },
                         onSpeciesClick = { onSpeciesClick(data.scientificName, name, data.family) },
@@ -215,11 +219,44 @@ fun EntryDetailScreen(
         val reportDoneMessage = stringResource(R.string.entry_detail_report_done)
         ReportDialog(
             title = stringResource(R.string.entry_detail_report_title),
+            target = ReportTarget.Entry,
             onDismiss = { reporting = false },
-            onReport = { reason ->
+            onReport = { reason, detail ->
                 reporting = false
                 moderate(reportDoneMessage) {
-                    moderation.report(ReportTarget.Entry, entry.id, reason, entryId = entry.id, targetOwnerId = entry.ownerId)
+                    moderation.report(
+                        ReportTarget.Entry,
+                        entry.id,
+                        reason,
+                        detail = detail,
+                        entryId = entry.id,
+                        targetOwnerId = entry.ownerId,
+                    )
+                }
+            },
+        )
+    }
+
+    if (correcting && entry != null) {
+        val correctedMessage = stringResource(R.string.entry_correct_done)
+        CorrectEntryDialog(
+            entry = entry,
+            saving = savingCorrection,
+            onDismiss = { correcting = false },
+            onSubmit = { scientificName, commonName ->
+                savingCorrection = true
+                scope.launch {
+                    try {
+                        container.collectionRepository.correctEntry(entry.id, scientificName, commonName, family = null)
+                        correcting = false
+                        Toast.makeText(context, correctedMessage, Toast.LENGTH_LONG).show()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                    } finally {
+                        savingCorrection = false
+                    }
                 }
             },
         )
@@ -265,6 +302,7 @@ private fun EntryDetailContent(
     name: String,
     isOwner: Boolean,
     onPublicChange: (Boolean) -> Unit,
+    onCorrectClick: () -> Unit,
     onOpenMap: () -> Unit,
     onUserClick: () -> Unit,
     onSpeciesClick: () -> Unit,
@@ -380,7 +418,11 @@ private fun EntryDetailContent(
                 Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.entry_detail_public_toggle), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                        Switch(checked = entry.isPublic, onCheckedChange = onPublicChange, enabled = !entry.isHidden)
+                        Switch(
+                            checked = entry.isPublic,
+                            onCheckedChange = onPublicChange,
+                            enabled = !entry.isHidden && !entry.needsCorrection,
+                        )
                     }
                     if (entry.isHidden) {
                         Text(
@@ -389,6 +431,17 @@ private fun EntryDetailContent(
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(bottom = 8.dp),
                         )
+                    }
+                    if (entry.needsCorrection) {
+                        Text(
+                            stringResource(R.string.entry_detail_needs_correction_notice),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                        FilledTonalButton(
+                            onClick = onCorrectClick,
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        ) { Text(stringResource(R.string.entry_detail_correct_button)) }
                     }
                 }
             }

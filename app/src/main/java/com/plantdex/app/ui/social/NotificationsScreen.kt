@@ -84,7 +84,10 @@ fun NotificationsScreen(
                         n,
                         onClick = {
                             val entryId = n.entryId
-                            if (entryId != null) onEntryClick(entryId) else onUserClick(n.actorUid, n.actorName)
+                            when {
+                                entryId != null -> onEntryClick(entryId)
+                                n.actorUid.isNotBlank() -> onUserClick(n.actorUid, n.actorName)
+                            }
                         },
                         onDelete = { scope.launch { runCatching { social.deleteNotification(n.id) } } },
                     )
@@ -100,6 +103,7 @@ private fun NotificationRow(n: AppNotification, onClick: () -> Unit, onDelete: (
         "like" -> "❤️"
         "comment" -> "💬"
         "follow" -> "👋"
+        "moderation" -> "🛡️"
         else -> "🔔"
     }
     // 알림 한 줄을 종이 카드 한 장에. 읽지 않은 알림은 연한 크라프트색 바탕.

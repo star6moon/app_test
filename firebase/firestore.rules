@@ -24,6 +24,12 @@ service cloud.firestore {
       return request.resource.data.createdAt == request.time;
     }
 
+    // 신고 누적으로 활동 정지 중이 아닌지 (정지 정보는 서버만 씁니다)
+    function notSuspended() {
+      let m = /databases/$(database)/documents/users/$(request.auth.uid)/private/moderation;
+      return !exists(m) || get(m).data.get('suspendedUntil', request.time) <= request.time;
+    }
+
     // ── 사용자 ───────────────────────────────────────────────
     // 통계(stats)·팔로워 수는 서버(Cloud Functions)만 바꿉니다.
     match /users/{uid} {
@@ -50,6 +56,7 @@ service cloud.firestore {
           && request.resource.data.keys().hasOnly(['createdAt', 'entryId'])
           && request.resource.data.entryId == entryId
           && createdNow()
+          && notSuspended()
           && getAfter(entryPath(entryId)).data.get('likeCount', 0) == get(entryPath(entryId)).data.get('likeCount', 0) + 1;
         allow delete: if isUser(uid)
           && (!exists(entryPath(entryId))
@@ -70,7 +77,8 @@ service cloud.firestore {
         allow read: if signedIn();
         allow create: if isUser(uid) && target != uid
           && request.resource.data.keys().hasOnly(['createdAt'])
-          && createdNow();
+          && createdNow()
+          && notSuspended();
         allow delete: if isUser(uid);
       }
       match /followers/{follower} {
@@ -94,7 +102,12 @@ service cloud.firestore {
         allow create: if false;
       }
 
-      // 비공개 설정: 푸시 토큰(fcm)은 본인이, 사용량(quota)은 서버만
+      // 신고 경고 기록: 서버만
+      match /strikes/{strikeId} {
+        allow read, write: if false;
+      }
+
+      // 비공개 설정: 푸시 토큰(fcm)은 본인이, 사용량(quota)·활동 정지(moderation)는 서버만
       match /private/{doc} {
         allow read: if isUser(uid);
         allow write: if isUser(uid) && doc == 'fcm'
@@ -117,12 +130,13 @@ service cloud.firestore {
         || resource.data.ownerId == request.auth.uid
       );
       allow create: if false;
-      // 주인: 공개 여부와 메모만 변경. 신고로 숨겨진 기록은 다시 공개할 수 없음
+      // 주인: 공개 여부와 메모만 변경. 신고로 숨겨진 기록과 정보 정정이 필요한 기록은 공개할 수 없음
+      // (정보 정정은 서버 함수 correctEntry 로)
       allow update: if isUser(resource.data.ownerId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isPublic', 'memo'])
         && request.resource.data.isPublic is bool
         && request.resource.data.memo is string && request.resource.data.memo.size() <= 1000
-        && !(resource.data.get('moderation', '') == 'hidden' && request.resource.data.isPublic == true);
+        && !(resource.data.get('moderation', '') in ['hidden', 'needs_correction'] && request.resource.data.isPublic == true);
       // 좋아요 수: 내 좋아요 문서를 만들거나 지우는 요청에서만 ±1.
       // 좋아요는 볼 수 있는 기록에만, 취소는 그 뒤 비공개로 바뀐 기록에도 할 수 있습니다.
       allow update: if signedIn()
@@ -144,7 +158,8 @@ service cloud.firestore {
           && request.resource.data.authorId == request.auth.uid
           && request.resource.data.text is string
           && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 500
-          && createdNow();
+          && createdNow()
+          && notSuspended();
         // 댓글 작성자 또는 기록 주인이 지울 수 있음
         allow delete: if signedIn() && (
           resource.data.authorId == request.auth.uid
@@ -155,10 +170,12 @@ service cloud.firestore {
 
     // ── 신고 ─────────────────────────────────────────────────
     // 누구나 신고할 수 있고, 내용은 관리자(Firebase 콘솔)만 봅니다.
+    // 사유 코드(reasonCode)에 따라 서버가 숨김·정보 정정 요청·경고를 처리합니다 (functions/src/moderation.ts).
     match /reports/{reportId} {
       allow read, update, delete: if false;
       allow create: if signedIn()
-        && request.resource.data.keys().hasOnly(['reporterId', 'targetType', 'targetId', 'entryId', 'targetOwnerId', 'reason', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['reporterId', 'targetType', 'targetId', 'entryId', 'targetOwnerId', 'reason', 'reasonCode', 'createdAt'])
+        && request.resource.data.get('reasonCode', 'other') in ['not_real_photo', 'wrong_info', 'inappropriate_photo', 'abuse', 'spam', 'other']
         && request.resource.data.reporterId == request.auth.uid
         && request.resource.data.targetType in ['entry', 'comment', 'user']
         && request.resource.data.targetId is string

@@ -1,5 +1,7 @@
 package com.plantdex.app.data.repository
 
+import androidx.annotation.StringRes
+import com.plantdex.app.R
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -23,8 +25,36 @@ data class BlockedUser(val uid: String, val displayName: String)
 enum class ReportTarget(val value: String) { Entry("entry"), Comment("comment"), User("user") }
 
 /**
+ * 신고 사유. [code] 는 서버(functions/src/moderationPolicy.ts)와 같고, 사유마다 처리가 다릅니다.
+ * - 정보 불일치: 2명 → 주인이 정보를 고칠 때까지 비공개
+ * - 부적절한 사진·욕설·광고: 3명 → 숨김(댓글은 삭제) + 주인에게 경고. 경고 3회면 활동 정지
+ * - 실제 사진 아님·기타: 3명 → 숨김
+ */
+enum class ReportReason(val code: String, @StringRes val labelRes: Int, val targets: Set<ReportTarget>) {
+    NotRealPhoto("not_real_photo", R.string.report_reason_not_real_photo, setOf(ReportTarget.Entry)),
+    WrongInfo("wrong_info", R.string.report_reason_wrong_info, setOf(ReportTarget.Entry)),
+    InappropriatePhoto("inappropriate_photo", R.string.report_reason_inappropriate_photo, setOf(ReportTarget.Entry, ReportTarget.User)),
+    Abuse("abuse", R.string.report_reason_abuse, ReportTarget.entries.toSet()),
+    Spam("spam", R.string.report_reason_spam, ReportTarget.entries.toSet()),
+    Other("other", R.string.report_reason_other, ReportTarget.entries.toSet());
+
+    companion object {
+        fun forTarget(target: ReportTarget) = entries.filter { target in it.targets }
+    }
+}
+
+/** 신고 누적 제재 상태 (서버만 씀): 정지가 끝나는 시각과 지금까지 받은 경고 수 */
+data class Suspension(val untilMillis: Long?, val activeStrikes: Int) {
+    val isSuspended: Boolean get() = untilMillis != null && untilMillis > System.currentTimeMillis()
+
+    companion object {
+        val NONE = Suspension(null, 0)
+    }
+}
+
+/**
  * 신고와 차단.
- * - 신고: `reports` 에 남기고, 같은 대상에 3명 이상 신고하면 서버가 자동으로 숨깁니다.
+ * - 신고: `reports` 에 사유 코드와 함께 남기면 서버가 사유별 기준에 따라 숨김·정보 정정 요청·경고를 처리합니다.
  * - 차단: `users/{uid}/blocked/{target}`. 차단한 사용자의 기록·댓글은 내 화면에서 보이지 않고 알림도 오지 않습니다.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,13 +90,39 @@ class ModerationRepository(
         blocked(requireUid()).document(targetUid).delete().await()
     }
 
+    /** 내 제재 상태. 정지가 끝나는 시각이 지나면 화면이 다시 그려질 때 자동으로 풀린 것으로 보입니다. */
+    val suspension: StateFlow<Suspension> = authRepository.currentUser
+        .flatMapLatest { user ->
+            if (user == null) {
+                flowOf(Suspension.NONE)
+            } else {
+                callbackFlow {
+                    val registration = firestore.collection(AuthRepository.USERS).document(user.uid)
+                        .collection("private").document("moderation")
+                        .addSnapshotListener { snapshot, _ ->
+                            trySend(
+                                Suspension(
+                                    untilMillis = snapshot?.getTimestamp("suspendedUntil")?.toDate()?.time,
+                                    activeStrikes = snapshot?.getLong("activeStrikes")?.toInt() ?: 0,
+                                ),
+                            )
+                        }
+                    awaitClose { registration.remove() }
+                }
+            }
+        }
+        .catch { emit(Suspension.NONE) }
+        .stateIn(scope, SharingStarted.Eagerly, Suspension.NONE)
+
     suspend fun report(
         target: ReportTarget,
         targetId: String,
-        reason: String,
+        reason: ReportReason,
+        detail: String = "",
         entryId: String? = null,
         targetOwnerId: String? = null,
     ) {
+        val label = reasonLabels[reason] ?: reason.code
         firestore.collection("reports").add(
             mapOf(
                 "reporterId" to requireUid(),
@@ -74,7 +130,8 @@ class ModerationRepository(
                 "targetId" to targetId,
                 "entryId" to entryId,
                 "targetOwnerId" to targetOwnerId,
-                "reason" to reason.take(300),
+                "reasonCode" to reason.code,
+                "reason" to (if (detail.isBlank()) label else "$label (${detail.trim()})").take(300),
                 "createdAt" to FieldValue.serverTimestamp(),
             ),
         ).await()
@@ -94,12 +151,14 @@ class ModerationRepository(
     }.catch { emit(emptyList()) }
 
     companion object {
-        val REPORT_REASONS = listOf(
-            "부적절하거나 불쾌한 사진",
-            "스팸·광고",
-            "식물과 관계없는 내용",
-            "개인정보 노출",
-            "괴롭힘·혐오 표현",
+        /** 관리자가 Firebase 콘솔에서 읽기 쉽도록 신고 문서에 함께 남기는 사유 이름 */
+        private val reasonLabels = mapOf(
+            ReportReason.NotRealPhoto to "실제 식물을 찍은 사진이 아님",
+            ReportReason.WrongInfo to "식물 정보가 일치하지 않음",
+            ReportReason.InappropriatePhoto to "부적절한 사진",
+            ReportReason.Abuse to "욕설/비하",
+            ReportReason.Spam to "상업적 광고 및 판매",
+            ReportReason.Other to "기타",
         )
     }
 }

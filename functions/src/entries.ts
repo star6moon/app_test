@@ -6,6 +6,7 @@ import { db, bucket } from "./admin";
 import { requireAppCheck } from "./identify";
 import { speciesKey, isCatalogSpecies } from "./catalog/species";
 import { distanceMeters, geohash, MIN_DISTANCE_METERS } from "./geo";
+import { suspendedUntil } from "./moderation";
 
 const str = (v: unknown, max: number): string | null =>
   typeof v === "string" && v.length <= max ? v : null;
@@ -24,6 +25,8 @@ export const createEntry = onCall(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "LOGIN_REQUIRED");
   requireAppCheck(request.app);
+  const until = await suspendedUntil(uid);
+  if (until) throw new HttpsError("failed-precondition", "SUSPENDED", { until });
   const d = (request.data ?? {}) as Record<string, unknown>;
 
   const entryId = str(d.entryId, 40);
@@ -134,25 +137,6 @@ export const onEntryDeleted = onDocumentDeleted("entries/{entryId}", async (even
       bucket().file(entryPhotoPath(ownerId, entryId, true)).delete({ ignoreNotFound: true }),
     ]);
     await recomputeStats(ownerId);
-  }
-});
-
-/** 신고가 3명 이상 쌓인 기록은 자동으로 비공개(숨김) 처리합니다. */
-export const REPORT_HIDE_THRESHOLD = 3;
-
-export const onReportCreated = onDocumentCreated("reports/{reportId}", async (event) => {
-  const type = event.data?.get("targetType");
-  const targetId = event.data?.get("targetId");
-  if (typeof targetId !== "string") return;
-  const reports = await db.collection("reports").where("targetType", "==", type).where("targetId", "==", targetId).get();
-  const reporters = new Set(reports.docs.map((d) => d.get("reporterId")));
-  if (reporters.size < REPORT_HIDE_THRESHOLD) return;
-
-  if (type === "entry") {
-    await db.doc(`entries/${targetId}`).update({ isPublic: false, moderation: "hidden" }).catch(() => undefined);
-  } else if (type === "comment") {
-    const entryId = event.data?.get("entryId");
-    if (typeof entryId === "string") await db.doc(`entries/${entryId}/comments/${targetId}`).delete().catch(() => undefined);
   }
 });
 

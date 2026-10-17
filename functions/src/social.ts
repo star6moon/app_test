@@ -29,13 +29,20 @@ export async function notify(input: NotificationInput) {
     type === "like" ? `${actorName}님이 내 기록을 좋아해요`
     : type === "comment" ? `${actorName}님의 댓글: ${(input.text ?? "").slice(0, 80)}`
     : `${actorName}님이 나를 팔로우하기 시작했어요`;
+  await deliver(targetUid, { type, actorUid, actorName, entryId: input.entryId ?? null, body });
+}
 
+/** 신고 처리·경고·활동 정지처럼 서비스가 보내는 알림 (보낸 사람 없음) */
+export async function notifySystem(targetUid: string, body: string, entryId?: string) {
+  await deliver(targetUid, { type: "moderation", actorUid: "", actorName: "PlantDex", entryId: entryId ?? null, body });
+}
+
+async function deliver(
+  targetUid: string,
+  n: { type: string; actorUid: string; actorName: string; entryId: string | null; body: string },
+) {
   await db.collection(`users/${targetUid}/notifications`).add({
-    type,
-    actorUid,
-    actorName,
-    entryId: input.entryId ?? null,
-    body,
+    ...n,
     read: false,
     createdAt: FieldValue.serverTimestamp(),
   });
@@ -45,8 +52,8 @@ export async function notify(input: NotificationInput) {
   if (tokens.length === 0) return;
   const res = await messaging.sendEachForMulticast({
     tokens,
-    notification: { title: "PlantDex", body },
-    data: { type, entryId: input.entryId ?? "", actorUid },
+    notification: { title: "PlantDex", body: n.body },
+    data: { type: n.type, entryId: n.entryId ?? "", actorUid: n.actorUid },
     android: { notification: { channelId: "social" } },
   });
   // 더 이상 쓰이지 않는 토큰은 지웁니다.
