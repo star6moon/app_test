@@ -16,9 +16,9 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: "무엇을 할까요 (all: 서버+앱, server, app, logs: 서버 로그 보기, identify-test: 식물 식별 시험)"
+        description: "무엇을 할까요 (all: 서버+앱, server, app, logs: 서버 로그 보기, identify-test: 식물 식별 시험, names: 식물 이름 목록 만들기)"
         type: choice
-        options: [all, server, app, logs, identify-test]
+        options: [all, server, app, logs, identify-test, names]
         default: all
       log_filter:
         description: "logs 일 때 추가 조건 (예: resource.labels.service_name=\"identifyplant\")"
@@ -40,6 +40,7 @@ jobs:
       app: ${{ steps.decide.outputs.app }}
       logs: ${{ steps.decide.outputs.logs }}
       test: ${{ steps.decide.outputs.test }}
+      names: ${{ steps.decide.outputs.names }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -66,7 +67,7 @@ jobs:
           SERVER_CHANGED: ${{ steps.changes.outputs.server }}
           APP_CHANGED: ${{ steps.changes.outputs.app }}
         run: |
-          server=false; app=false; logs=false; test=false
+          server=false; app=false; logs=false; test=false; names=false
           if [ "$EVENT" = "workflow_dispatch" ]; then
             case "$TARGET" in
               all) server=true; app=true ;;
@@ -74,13 +75,14 @@ jobs:
               app) app=true ;;
               logs) logs=true ;;
               identify-test) test=true ;;
+              names) names=true ;;
             esac
           else
             server=$SERVER_CHANGED; app=$APP_CHANGED
           fi
           if [ "$HAS_SA" != "true" ]; then
             echo "::notice::FIREBASE_SERVICE_ACCOUNT 비밀이 없어 자동 배포를 건너뜁니다 (README '자동 배포' 참고)"
-            server=false; app=false; logs=false; test=false
+            server=false; app=false; logs=false; test=false; names=false
           fi
           if [ "$app" = "true" ] && [ "$HAS_APP" != "true" ]; then
             echo "::notice::GOOGLE_SERVICES_JSON 비밀이 없어 앱 보내기를 건너뜁니다"
@@ -90,6 +92,7 @@ jobs:
           echo "app=$app" >> "$GITHUB_OUTPUT"
           echo "logs=$logs" >> "$GITHUB_OUTPUT"
           echo "test=$test" >> "$GITHUB_OUTPUT"
+          echo "names=$names" >> "$GITHUB_OUTPUT"
           echo "서버 배포: $server / 앱 보내기: $app / 로그: $logs / 식별 시험: $test"
 
   server:
@@ -259,3 +262,37 @@ jobs:
           # 개발용 서명 키(app/keystore/plantdex-dev.jks)의 SHA-1
           export ANDROID_CERT_SHA1=378E5F6E7240164D602440A1A03AE84E917EE0E7
           node functions/scripts/identify-test.mjs test-photos/*.jpg
+
+  # 식물 이름 목록(한국어·영어)을 새로 만들어 같은 브랜치에 커밋합니다 (tools/plant_names/build.py).
+  # Pl@ntNet 이 아는 모든 종의 학명·영어 이름 + Wikidata 의 한국어 이름 → app/src/main/assets/plant_names.json
+  names:
+    needs: plan
+    if: needs.plan.outputs.names == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Build the name list
+        run: |
+          key=$(gcloud secrets versions access latest --secret=PLANTNET_API_KEY --project "$FIREBASE_PROJECT")
+          echo "::add-mask::$key"
+          PLANTNET_API_KEY="$key" python3 tools/plant_names/build.py app/src/main/assets/plant_names.json
+          ls -la app/src/main/assets/plant_names.json
+      - name: Commit
+        run: |
+          rm -f gha-creds-*.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/src/main/assets/plant_names.json
+          if git diff --cached --quiet; then echo "바뀐 것 없음"; exit 0; fi
+          git commit -m "Update the plant name list (Korean and English)"
+          git push
