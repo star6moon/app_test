@@ -28,6 +28,15 @@ USER_AGENT = "PlantDexNameBuilder/1.0 (https://github.com/star6moon/app_test)"
 HANGUL = re.compile(r"[가-힣]")
 HYBRID_MARKS = {"×", "x", "X"}
 
+# 데이터베이스에서 잘 안 잡히는 흔한 식물 (학명 표기가 여러 가지인 원예종 등). 키는 binomial key.
+OVERRIDES = {
+    "chrysanthemum morifolium": "국화",
+    "chrysanthemum grandiflorum": "국화",
+    "dendranthema grandiflorum": "국화",
+    "dendranthema morifolium": "국화",
+    "bellis perennis": "데이지",
+}
+
 
 def binomial_key(name: str):
     words = [w for w in name.replace("×", " × ").split() if w not in HYBRID_MARKS]
@@ -126,17 +135,26 @@ def plantnet_species(key: str):
 
 
 def wikidata_korean(names):
-    """학명 → 한국어 이름. 한국어 라벨(한글일 때)을 먼저, 없으면 한국어 일반명(P1843)."""
-    found = {}
-    batch_size = 200
+    """학명 → 한국어 이름 {binomial key: 이름}. 한국어 라벨(한글일 때)을 먼저, 없으면 한국어 일반명(P1843).
+    - 교잡종은 Wikidata 에 'Chrysanthemum × morifolium' 처럼 적혀 있어 '×' 를 넣은 이름도 함께 찾습니다.
+    - 옛 학명(이명)이면 그 이명을 가진 현재 학명 항목(P1420)의 이름을 씁니다."""
+    direct, via_synonym = {}, {}
+    batch_size = 120
     names = sorted(set(names))
     for i in range(0, len(names), batch_size):
         batch = names[i:i + batch_size]
-        values = " ".join(json.dumps(n, ensure_ascii=False) for n in batch)
+        variants = set(batch)
+        for n in batch:
+            w = n.split()
+            if len(w) >= 2 and "×" not in n:
+                variants.add(f"{w[0]} × {' '.join(w[1:])}")
+        values = " ".join(json.dumps(n, ensure_ascii=False) for n in sorted(variants))
         query = f"""
-SELECT ?name ?label ?common WHERE {{
+SELECT ?name ?via ?label ?common WHERE {{
   VALUES ?name {{ {values} }}
-  ?item wdt:P225 ?name .
+  {{ ?item wdt:P225 ?name . BIND("direct" AS ?via) }}
+  UNION
+  {{ ?syn wdt:P225 ?name . ?item wdt:P1420 ?syn . BIND("synonym" AS ?via) }}
   OPTIONAL {{ ?item rdfs:label ?label FILTER(LANG(?label) = "ko") }}
   OPTIONAL {{ ?item wdt:P1843 ?common FILTER(LANG(?common) = "ko") }}
 }}"""
@@ -146,16 +164,20 @@ SELECT ?name ?label ?common WHERE {{
             headers={"Accept": "application/sparql-results+json", "Content-Type": "application/x-www-form-urlencoded"},
         )
         for row in data["results"]["bindings"]:
-            name = row["name"]["value"]
+            key = binomial_key(row["name"]["value"])
+            if not key:
+                continue
             label = row.get("label", {}).get("value", "")
             common = row.get("common", {}).get("value", "")
             ko = label if HANGUL.search(label) else (common if HANGUL.search(common) else "")
-            if ko and name not in found:
-                found[name] = ko.strip()
-        if (i // batch_size) % 20 == 0:
-            print(f"  Wikidata {i + len(batch)}/{len(names)} (한국어 {len(found)})", flush=True)
+            if not ko:
+                continue
+            target = direct if row["via"]["value"] == "direct" else via_synonym
+            target.setdefault(key, ko.strip())
+        if (i // batch_size) % 40 == 0:
+            print(f"  Wikidata {i + len(batch)}/{len(names)} (한국어 {len(direct)}, 이명으로 {len(via_synonym)})", flush=True)
         time.sleep(1)
-    return found
+    return {**via_synonym, **direct}
 
 
 def gbif_korea_names():
@@ -223,11 +245,11 @@ def main():
 
     names = {}
     for k, (name, english) in sorted(species.items()):
-        ko = korean.get(name, "") or gbif_by_key.get(k, "")
+        ko = OVERRIDES.get(k) or korean.get(k, "") or gbif_by_key.get(k, "")
         if ko or english:
             names[k] = [ko, english]
     # Pl@ntNet 목록에 이름이 다르게 올라 있어도 찾을 수 있도록 GBIF 의 한국 식물도 넣습니다.
-    for k, ko in gbif_by_key.items():
+    for k, ko in {**gbif_by_key, **OVERRIDES}.items():
         names.setdefault(k, [ko, ""])
     with open(out, "w", encoding="utf-8") as f:
         json.dump({"v": 1, "names": names}, f, ensure_ascii=False, separators=(",", ":"))

@@ -269,7 +269,7 @@ jobs:
     needs: plan
     if: needs.plan.outputs.names == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 170
     permissions:
       contents: write
     steps:

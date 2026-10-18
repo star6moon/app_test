@@ -27,6 +27,7 @@ class GbifWikidataNameLocalizerTest {
                 val key = when {
                     url.encodedPath == "/v1/species/match" -> "match"
                     url.encodedPath.endsWith("/vernacularNames") -> "gbif:" + url.pathSegments[2]
+                    url.pathSegments.size == 3 && url.pathSegments[1] == "species" -> "species:" + url.pathSegments[2]
                     url.queryParameter("action") == "query" -> "search:" + url.queryParameter("srsearch")
                     url.queryParameter("action") == "wbgetentities" ->
                         "entity:" + url.queryParameter("ids") + ":" + url.queryParameter("languages")
@@ -87,6 +88,16 @@ class GbifWikidataNameLocalizerTest {
         routes["gbif:5394"] = json("""{"results":[{"vernacularName":"서양민들레","language":"kor"}]}""")
 
         assertEquals("서양민들레", localizer().localName("Taraxacum officinale", null, Locale.KOREAN))
+    }
+
+    @Test
+    fun `follows a synonym to the accepted name`() = runTest {
+        // Pl@ntNet 이 옛 학명(Dendranthema grandiflorum)의 GBIF 키를 주는 경우
+        routes["gbif:3117424"] = json("""{"results":[{"vernacularName":"Florists' chrysanthemum","language":"eng"}]}""")
+        routes["species:3117424"] = json("""{"key":3117424,"taxonomicStatus":"SYNONYM","acceptedKey":3117418}""")
+        routes["gbif:3117418"] = json("""{"results":[{"vernacularName":"국화","language":"kor"}]}""")
+
+        assertEquals("국화", localizer().localName("Dendranthema grandiflorum", "3117424", Locale.KOREAN))
     }
 
     @Test

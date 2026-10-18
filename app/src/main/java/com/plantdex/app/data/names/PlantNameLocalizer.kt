@@ -57,8 +57,11 @@ class GbifWikidataNameLocalizer(
             val taxonKey = gbifId?.takeIf { it.isNotBlank() }
                 ?: attempt { matchGbifKey(scientificName) }
                 ?: return@withContext null
-            attempt { gbifVernacularName(taxonKey, locale, language, scientificName) }
-                ?: attempt { wikidataLabel(taxonKey, language, scientificName) }
+            fun lookUp(key: String) = attempt { gbifVernacularName(key, locale, language, scientificName) }
+                ?: attempt { wikidataLabel(key, language, scientificName) }
+            // 옛 학명(이명)이면 이름은 보통 현재 학명 쪽에 있으므로 따라가서 한 번 더 찾습니다.
+            // (예: Dendranthema grandiflorum → Chrysanthemum × morifolium = 국화)
+            lookUp(taxonKey) ?: attempt { acceptedKey(taxonKey) }?.let { lookUp(it) }
         }
         // 네트워크 오류로 못 찾은 경우는 캐시하지 않아 다음에 다시 시도합니다.
         if (name != null || !failed) cache[key] = CachedName(name)
@@ -73,6 +76,16 @@ class GbifWikidataNameLocalizer(
             .build()
         val match = json.decodeFromString<GbifMatch>(get(url) ?: return null)
         return match.usageKey?.takeIf { match.matchType != "NONE" }?.toString()
+    }
+
+    /** 이명이면 현재 학명의 GBIF 키, 아니면 null */
+    private fun acceptedKey(taxonKey: String): String? {
+        val url = gbifBaseUrl.newBuilder()
+            .addPathSegments("v1/species")
+            .addPathSegment(taxonKey)
+            .build()
+        val species = json.decodeFromString<GbifSpecies>(get(url) ?: return null)
+        return species.acceptedKey?.toString()?.takeIf { it != taxonKey }
     }
 
     private fun gbifVernacularName(taxonKey: String, locale: Locale, language: String, scientificName: String): String? {
@@ -146,6 +159,9 @@ class GbifWikidataNameLocalizer(
 
 @Serializable
 private data class GbifMatch(val usageKey: Long? = null, val matchType: String? = null)
+
+@Serializable
+private data class GbifSpecies(val acceptedKey: Long? = null)
 
 @Serializable
 private data class GbifPage<T>(val results: List<T> = emptyList())
