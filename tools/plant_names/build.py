@@ -3,7 +3,8 @@
 식물 이름 목록 만들기 (GitHub Actions 의 'Plant names' 워크플로가 실행).
 
 1. Pl@ntNet 이 알아보는 모든 종의 학명과 영어 일반명을 받습니다.
-2. 각 학명의 한국어 이름을 Wikidata 에서 찾습니다 (한국어 라벨 / 한국어 일반명 P1843).
+2. 각 학명의 한국어 이름을 국립수목원 국가표준식물목록(공공데이터포털 KpniService, 비밀 KPNI_SERVICE_KEY)에서 가장 먼저 찾고,
+   없으면 Wikidata 에서 찾습니다 (한국어 라벨 / 한국어 일반명 P1843).
    Wikidata 에 없으면 GBIF 에서 찾습니다: 한국에서 관찰된 식물 종 목록을 받아 각 종의 한국어 일반명을 모읍니다.
 3. app/src/main/assets/plant_names.json 으로 저장합니다.
    {"v": 1, "names": {"taraxacum officinale": ["서양민들레", "Common dandelion"], ...}}
@@ -24,6 +25,7 @@ import urllib.request
 PLANTNET = "https://my-api.plantnet.org/v2"
 WIKIDATA_SPARQL = "https://query.wikidata.org/sparql"
 GBIF = "https://api.gbif.org/v1"
+KPNI = "https://apis.data.go.kr/1400119/KpniService/scnmSearch"
 USER_AGENT = "PlantDexNameBuilder/1.0 (https://github.com/star6moon/app_test)"
 HANGUL = re.compile(r"[가-힣]")
 HYBRID_MARKS = {"×", "x", "X"}
@@ -180,6 +182,49 @@ SELECT ?name ?via ?label ?common WHERE {{
     return {**via_synonym, **direct}
 
 
+def kpni_names(service_key: str):
+    """국가표준식물목록의 학명(정명·이명) → 추천 국명. {binomial key: 국명}
+    같은 종에 변종·품종 이름이 여럿이면 종 수준 학명의 국명을, 정명을 이명보다 먼저 씁니다."""
+    import xml.etree.ElementTree as ET
+
+    rank_of = lambda n: 1 if re.search(r"\s(var|subsp|ssp|f|forma)\.\s", n) else 0
+    best = {}  # key → (우선순위, 국명)
+    page, size, total = 1, 1000, None
+    while total is None or (page - 1) * size < total:
+        url = f"{KPNI}?serviceKey={urllib.parse.quote(service_key, safe='')}&pageNo={page}&numOfRows={size}"
+        for attempt in range(5):
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+                with urllib.request.urlopen(req, timeout=180) as res:
+                    root = ET.fromstring(res.read())
+                break
+            except Exception as e:
+                if attempt == 4:
+                    raise
+                print(f"  국가표준식물목록 {page}쪽 재시도 ({e})", flush=True)
+                time.sleep(10 * (attempt + 1))
+        code = root.findtext("header/resultCode")
+        if code not in ("00", None):
+            raise RuntimeError(f"국가표준식물목록 오류 {code}: {root.findtext('header/resultMsg')}")
+        total = int(root.findtext("body/totalCount") or 0)
+        for item in root.iter("item"):
+            name = (item.findtext("plantSpecsScnm") or "").strip()
+            ko = (item.findtext("plantGnrlNm") or "").strip()
+            key = binomial_key(name)
+            if not key or not HANGUL.search(ko):
+                continue
+            accepted = (item.findtext("stpltScnmRltnCdNm") or "").strip() == "정명"
+            priority = (rank_of(name), 0 if accepted else 1)
+            if key not in best or priority < best[key][0]:
+                best[key] = (priority, ko)
+        if page == 1 or page % 10 == 0:
+            print(f"  국가표준식물목록 {min(page * size, total)}/{total} (종 {len(best)})", flush=True)
+        page += 1
+        time.sleep(0.5)
+    print(f"국가표준식물목록 국명 {len(best)}종", flush=True)
+    return {k: ko for k, (_, ko) in best.items()}
+
+
 def gbif_korea_names():
     """한국에서 관찰 기록이 있는 식물 종 → 한국어 일반명 (GBIF). {학명: 한국어 이름}"""
     from collections import Counter
@@ -235,6 +280,12 @@ def main():
     print(f"학명 {len(species)}종", flush=True)
     if not species:
         sys.exit("Pl@ntNet 종 목록을 받지 못했습니다")
+    kpni = {}
+    if os.environ.get("KPNI_SERVICE_KEY"):
+        try:
+            kpni = kpni_names(os.environ["KPNI_SERVICE_KEY"])
+        except Exception as e:
+            print(f"국가표준식물목록 단계 실패: {e}", flush=True)
     korean = wikidata_korean([name for name, _ in species.values()])
     try:
         gbif = gbif_korea_names()
@@ -245,12 +296,14 @@ def main():
 
     names = {}
     for k, (name, english) in sorted(species.items()):
-        ko = OVERRIDES.get(k) or korean.get(k, "") or gbif_by_key.get(k, "")
+        ko = OVERRIDES.get(k) or kpni.get(k) or korean.get(k, "") or gbif_by_key.get(k, "")
         if ko or english:
             names[k] = [ko, english]
     # Pl@ntNet 목록에 이름이 다르게 올라 있어도 찾을 수 있도록 GBIF 의 한국 식물도 넣습니다.
-    for k, ko in {**gbif_by_key, **OVERRIDES}.items():
-        names.setdefault(k, [ko, ""])
+    for k, ko in {**gbif_by_key, **kpni, **OVERRIDES}.items():
+        if k in names:
+            continue
+        names[k] = [ko, ""]
     with open(out, "w", encoding="utf-8") as f:
         json.dump({"v": 1, "names": names}, f, ensure_ascii=False, separators=(",", ":"))
     with_ko = sum(1 for v in names.values() if v[0])

@@ -196,7 +196,7 @@ GitHub 저장소 → **Actions** → 실행 기록 → 아래 *Artifacts* 에서
 (④는 `LatinHangul`: Helianthus annuus → 헬리안투스 안누우스. 이 경우 GBIF·Wikidata 에서 한 번 더 찾아봅니다).
 
 이름 목록 `app/src/main/assets/plant_names.json` 은 Actions → Deploy → Run workflow → **`names`** 로 새로 만듭니다 (약 1시간, `tools/plant_names/build.py`).
-Pl@ntNet 이 아는 모든 종(약 8.6만)의 학명·영어 이름에 Wikidata 한국어 이름과 GBIF 의 한국 식물 한국어 일반명을 붙여 같은 브랜치에 커밋합니다.
+Pl@ntNet 이 아는 모든 종(약 8.6만)의 학명·영어 이름에 한국어 이름을 붙여 같은 브랜치에 커밋합니다. 한국어 이름은 **국립수목원 국가표준식물목록**(공공데이터포털 '국가표준식물목록 조회 서비스', GitHub 비밀 `KPNI_SERVICE_KEY`) → Wikidata → GBIF(한국에서 관찰된 식물) 순서로 고릅니다.
 봇 커밋은 자동 배포를 일으키지 않으므로, 만든 뒤 Deploy → `app` 을 한 번 실행하세요.
 
 ## 신고와 제재

@@ -285,6 +285,8 @@ jobs:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
       - uses: google-github-actions/setup-gcloud@v2
       - name: Build the name list
+        env:
+          KPNI_SERVICE_KEY: ${{ secrets.KPNI_SERVICE_KEY }}
         run: |
           key=$(gcloud secrets versions access latest --secret=PLANTNET_API_KEY --project "$FIREBASE_PROJECT")
           echo "::add-mask::$key"
