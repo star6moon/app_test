@@ -12,21 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.plantdex.app.R
-import com.plantdex.app.data.filter.PeriodFilter
 import com.plantdex.app.data.model.UserProfile
-import com.plantdex.app.ui.components.LoadState
-import com.plantdex.app.ui.components.PeriodFilterBar
 import com.plantdex.app.ui.components.appContainer
 
 /** 내 기록 전체 (도감 밖 식물 포함). */
@@ -44,13 +37,6 @@ fun MyRecordsScreen(
         },
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var period by remember { mutableStateOf<PeriodFilter>(PeriodFilter.All) }
-    val filtered = remember(state, period) {
-        when (val s = state) {
-            is LoadState.Success -> LoadState.Success(s.data.filter { period.matches(it.capturedAt) })
-            else -> s
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -65,12 +51,11 @@ fun MyRecordsScreen(
         },
     ) { padding ->
         Column(Modifier.padding(padding)) {
-            PeriodFilterBar(selected = period, onSelect = { period = it }, modifier = Modifier.padding(vertical = 4.dp))
             EntryCollectionContent(
-                state = filtered,
-                emptyTitle = if (period == PeriodFilter.All) stringResource(R.string.collection_records_empty_title) else stringResource(R.string.collection_records_period_empty_title),
-                emptyBody = if (period == PeriodFilter.All) stringResource(R.string.collection_records_empty_body) else stringResource(R.string.collection_records_period_empty_body),
-                emptyEmoji = if (period == PeriodFilter.All) "🌱" else "🗓️",
+                state = state,
+                emptyTitle = stringResource(R.string.collection_records_empty_title),
+                emptyBody = stringResource(R.string.collection_records_empty_body),
+                emptyEmoji = "🌱",
                 onEntryClick = { onEntryClick(it.id) },
             )
         }

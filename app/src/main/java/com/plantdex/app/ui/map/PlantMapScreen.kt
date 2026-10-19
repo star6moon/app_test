@@ -89,7 +89,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.plantdex.app.BuildConfig
 import com.plantdex.app.R
 import com.plantdex.app.data.geo.GeoBounds
-import com.plantdex.app.data.filter.PeriodFilter
 import com.plantdex.app.ui.components.PeriodFilterBar
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.LoadState
@@ -148,28 +147,30 @@ fun PlantMapScreen(
     Scaffold(
         topBar = {
             Column {
-                TopAppBar(title = { Text(stringResource(R.string.map_title)) })
-                // 내 도감 / 모두의 기록: 제목 옆에 끼워 두면 좁은 화면에서 글자가 잘려, 한 줄을 통째로 씁니다.
-                SingleChoiceSegmentedButtonRow(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                ) {
-                    MapScope.entries.forEachIndexed { index, option ->
-                        SegmentedButton(
-                            selected = scope == option,
-                            onClick = { viewModel.setScope(option) },
-                            shape = SegmentedButtonDefaults.itemShape(index, MapScope.entries.size),
-                        ) { Text(stringResource(option.labelRes), maxLines = 1) }
-                    }
-                }
-                PeriodFilterBar(
-                    selected = period,
-                    onSelect = viewModel::setPeriod,
-                    presets = PeriodFilter.recentPresets,
-                    extras = PeriodFilter.extraPresets,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                TopAppBar(
+                    title = { Text(stringResource(R.string.map_title)) },
+                    actions = {
+                        SingleChoiceSegmentedButtonRow(Modifier.padding(end = 8.dp)) {
+                            MapScope.entries.forEachIndexed { index, option ->
+                                SegmentedButton(
+                                    selected = scope == option,
+                                    onClick = { viewModel.setScope(option) },
+                                    shape = SegmentedButtonDefaults.itemShape(index, MapScope.entries.size),
+                                    icon = {},
+                                ) {
+                                    // 버튼 줄은 가장 긴 '단어' 너비로 재므로, 줄바꿈을 막아야 '모두의 기록' 이 잘리지 않습니다.
+                                    Text(
+                                        stringResource(option.labelRes),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                    )
+                                }
+                            }
+                        }
+                    },
                 )
+                PeriodFilterBar(selected = period, onSelect = viewModel::setPeriod, modifier = Modifier.padding(bottom = 4.dp))
             }
         },
     ) { padding ->

@@ -40,9 +40,7 @@ import com.plantdex.app.R
 import com.plantdex.app.data.filter.PeriodFilter
 
 /**
- * 촬영 시기 필터 칩.
- * - 기본: 전체 / 이번 주 / 이번 달 / 올해 / 직접 선택
- * - [extras] 를 주면 [presets] 칩 뒤에 '기타' 칩을 두고, 누르면 직접 선택과 [extras] 를 메뉴로 보여줍니다.
+ * 촬영 시기 필터 칩: [presets] 칩 뒤에 '기타' 칩을 두고, 누르면 직접 선택과 [extras] 를 메뉴로 보여줍니다.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,8 +48,8 @@ fun PeriodFilterBar(
     selected: PeriodFilter,
     onSelect: (PeriodFilter) -> Unit,
     modifier: Modifier = Modifier,
-    presets: List<PeriodFilter> = PeriodFilter.presets,
-    extras: List<PeriodFilter>? = null,
+    presets: List<PeriodFilter> = PeriodFilter.recentPresets,
+    extras: List<PeriodFilter> = PeriodFilter.extraPresets,
     contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp),
 ) {
     var picking by remember { mutableStateOf(false) }
@@ -73,41 +71,29 @@ fun PeriodFilterBar(
                 border = softFilterChipBorder(selected == preset),
             )
         }
-        if (extras == null) {
+        val isOther = selected is PeriodFilter.Custom || selected in extras
+        Box {
             FilterChip(
-                selected = selected is PeriodFilter.Custom,
-                onClick = { picking = true },
-                label = { Text(if (selected is PeriodFilter.Custom) selected.label else stringResource(R.string.common_period_custom)) },
-                leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) },
+                selected = isOther,
+                onClick = { menuOpen = true },
+                label = { Text(if (isOther) selected.label else stringResource(R.string.common_period_other)) },
+                trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) },
                 shape = CircleShape,
                 colors = softFilterChipColors(),
-                border = softFilterChipBorder(selected is PeriodFilter.Custom),
+                border = softFilterChipBorder(isOther),
             )
-        } else {
-            val isOther = selected is PeriodFilter.Custom || selected in extras
-            Box {
-                FilterChip(
-                    selected = isOther,
-                    onClick = { menuOpen = true },
-                    label = { Text(if (isOther) selected.label else stringResource(R.string.common_period_other)) },
-                    trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) },
-                    shape = CircleShape,
-                    colors = softFilterChipColors(),
-                    border = softFilterChipBorder(isOther),
+            DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.common_period_custom)) },
+                    leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
+                    onClick = { menuOpen = false; picking = true },
                 )
-                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                extras.forEach { extra ->
                     DropdownMenuItem(
-                        text = { Text(stringResource(R.string.common_period_custom)) },
-                        leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
-                        onClick = { menuOpen = false; picking = true },
+                        text = { Text(extra.label) },
+                        leadingIcon = { Icon(Icons.Outlined.History, contentDescription = null) },
+                        onClick = { menuOpen = false; onSelect(extra) },
                     )
-                    extras.forEach { extra ->
-                        DropdownMenuItem(
-                            text = { Text(extra.label) },
-                            leadingIcon = { Icon(Icons.Outlined.History, contentDescription = null) },
-                            onClick = { menuOpen = false; onSelect(extra) },
-                        )
-                    }
                 }
             }
         }

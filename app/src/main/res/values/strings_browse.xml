@@ -61,8 +61,6 @@
     <string name="collection_all_records">모든 기록</string>
     <string name="collection_records_empty_title">아직 수집한 식물이 없어요</string>
     <string name="collection_records_empty_body">촬영 탭에서 주변 식물을 찍어 첫 기록을 남겨보세요.</string>
-    <string name="collection_records_period_empty_title">이 기간에 찍은 기록이 없어요</string>
-    <string name="collection_records_period_empty_body">다른 기간을 골라 보세요.</string>
     <string name="collection_bookmarks_empty_title">책갈피한 기록이 없어요</string>
     <string name="collection_bookmarks_empty_body">피드나 기록 상세에서 🔖 버튼을 눌러 마음에 드는 기록을 모아 보세요.</string>
 
