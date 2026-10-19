@@ -30,16 +30,13 @@ if m:
     spec = json.loads(m.group(1))
     print("host:", spec.get("host"))
     for path, ops in spec.get("paths", {}).items():
-        for method, op in ops.items():
-            print("PATH", method.upper(), path, op.get("summary"))
-            print("  params:", json.dumps(op.get("parameters"), ensure_ascii=False)[:1500])
-            ok = (op.get("responses") or {}).get("200")
-            print("  200:", json.dumps(ok, ensure_ascii=False)[:1500])
+        print("PATH", path, json.dumps(ops, ensure_ascii=False)[:4000])
     print("definitions:", json.dumps(spec.get("definitions"), ensure_ascii=False)[:3000])
 # 실제 서비스 주소 (페이지 본문의 End Point 등)
 for mm in re.finditer(r"KpniService", page):
     print("[KpniService]", re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", page[max(0, mm.start() - 200): mm.start() + 60])))
-urls = sorted(set(urls) | set(re.findall(r"https?://apis\.data\.go\.kr/\d+/KpniService", page)))
+urls = sorted(set(urls) | set(re.findall(r"https?://apis\.data\.go\.kr/\d+/KpniService", page))
+              | {"https://apis.data.go.kr/1400119/KpniService"})
 print("후보 주소:", urls)
 
 if not KEY:
