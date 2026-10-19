@@ -10,8 +10,8 @@
     <string name="map_load_failed_reason">불러오지 못했어요: %1$s</string>
     <string name="map_banner_loading">이 지역의 기록을 불러오는 중…</string>
     <string name="map_banner_truncated">기록이 많아 일부만 보여요. 확대하면 더 보여요</string>
-    <string name="map_banner_area_empty">이 지역에는 공개된 기록이 없어요. 지도를 옮겨 보세요</string>
-    <string name="map_banner_empty">지도에 표시할 기록이 아직 없어요</string>
+    <string name="map_banner_area_empty">이 기간에 이 지역의 공개 기록이 없어요. 기간을 바꾸거나 지도를 옮겨 보세요</string>
+    <string name="map_banner_empty">이 기간에 지도에 표시할 기록이 없어요</string>
     <string name="map_banner_without_location">위치 정보가 없는 기록 %1$d개는 표시되지 않아요</string>
     <string name="map_entry_owner_details">%1$s · 자세히 보기 ›</string>
     <string name="map_cluster_summary">기록 %1$d개 · %2$d종</string>

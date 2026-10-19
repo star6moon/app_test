@@ -3,6 +3,7 @@ package com.plantdex.app.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -10,8 +11,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -34,16 +39,23 @@ import androidx.compose.ui.unit.dp
 import com.plantdex.app.R
 import com.plantdex.app.data.filter.PeriodFilter
 
-/** 촬영 시기 필터 칩: 전체 / 이번 주 / 이번 달 / 올해 / 직접 선택 */
+/**
+ * 촬영 시기 필터 칩.
+ * - 기본: 전체 / 이번 주 / 이번 달 / 올해 / 직접 선택
+ * - [extras] 를 주면 [presets] 칩 뒤에 '기타' 칩을 두고, 누르면 직접 선택과 [extras] 를 메뉴로 보여줍니다.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeriodFilterBar(
     selected: PeriodFilter,
     onSelect: (PeriodFilter) -> Unit,
     modifier: Modifier = Modifier,
+    presets: List<PeriodFilter> = PeriodFilter.presets,
+    extras: List<PeriodFilter>? = null,
     contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp),
 ) {
     var picking by remember { mutableStateOf(false) }
+    var menuOpen by remember { mutableStateOf(false) }
     Row(
         modifier
             .horizontalScroll(rememberScrollState())
@@ -51,7 +63,7 @@ fun PeriodFilterBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PeriodFilter.presets.forEach { preset ->
+        presets.forEach { preset ->
             FilterChip(
                 selected = selected == preset,
                 onClick = { onSelect(preset) },
@@ -61,15 +73,44 @@ fun PeriodFilterBar(
                 border = softFilterChipBorder(selected == preset),
             )
         }
-        FilterChip(
-            selected = selected is PeriodFilter.Custom,
-            onClick = { picking = true },
-            label = { Text(if (selected is PeriodFilter.Custom) selected.label else stringResource(R.string.common_period_custom)) },
-            leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) },
-            shape = CircleShape,
-            colors = softFilterChipColors(),
-            border = softFilterChipBorder(selected is PeriodFilter.Custom),
-        )
+        if (extras == null) {
+            FilterChip(
+                selected = selected is PeriodFilter.Custom,
+                onClick = { picking = true },
+                label = { Text(if (selected is PeriodFilter.Custom) selected.label else stringResource(R.string.common_period_custom)) },
+                leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) },
+                shape = CircleShape,
+                colors = softFilterChipColors(),
+                border = softFilterChipBorder(selected is PeriodFilter.Custom),
+            )
+        } else {
+            val isOther = selected is PeriodFilter.Custom || selected in extras
+            Box {
+                FilterChip(
+                    selected = isOther,
+                    onClick = { menuOpen = true },
+                    label = { Text(if (isOther) selected.label else stringResource(R.string.common_period_other)) },
+                    trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) },
+                    shape = CircleShape,
+                    colors = softFilterChipColors(),
+                    border = softFilterChipBorder(isOther),
+                )
+                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.common_period_custom)) },
+                        leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
+                        onClick = { menuOpen = false; picking = true },
+                    )
+                    extras.forEach { extra ->
+                        DropdownMenuItem(
+                            text = { Text(extra.label) },
+                            leadingIcon = { Icon(Icons.Outlined.History, contentDescription = null) },
+                            onClick = { menuOpen = false; onSelect(extra) },
+                        )
+                    }
+                }
+            }
+        }
     }
 
     if (picking) {

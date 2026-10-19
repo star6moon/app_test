@@ -60,4 +60,35 @@ class PeriodFilterTest {
         assertTrue(f.matches(at(2026, 5, 3, 23), today, zone))
         assertFalse(f.matches(at(2026, 5, 4, 0), today, zone))
     }
+
+    @Test
+    fun todayOnly() {
+        assertTrue(PeriodFilter.Today.matches(at(2026, 10, 14, 0), today, zone))
+        assertTrue(PeriodFilter.Today.matches(at(2026, 10, 14, 23), today, zone))
+        assertFalse(PeriodFilter.Today.matches(at(2026, 10, 13, 23), today, zone))
+    }
+
+    @Test
+    fun recentMonthsIncludeToday() {
+        assertTrue(PeriodFilter.LastMonth.matches(at(2026, 9, 14, 0), today, zone))
+        assertTrue(PeriodFilter.LastMonth.matches(at(2026, 10, 14, 23), today, zone))
+        assertFalse(PeriodFilter.LastMonth.matches(at(2026, 9, 13, 23), today, zone))
+        assertTrue(PeriodFilter.Last3Months.matches(at(2026, 7, 14, 0), today, zone))
+        assertFalse(PeriodFilter.Last3Months.matches(at(2026, 7, 13, 23), today, zone))
+    }
+
+    @Test
+    fun yearAgoMonthIsLastYearsRecentMonth() {
+        val f = PeriodFilter.YearAgoMonth
+        assertTrue(f.matches(at(2025, 9, 14, 0), today, zone))
+        assertTrue(f.matches(at(2025, 10, 14, 23), today, zone))
+        assertFalse(f.matches(at(2025, 10, 15, 0), today, zone))
+        assertFalse(f.matches(at(2025, 9, 13, 23), today, zone))
+        assertFalse(f.matches(at(2026, 10, 14, 12), today, zone))
+    }
+
+    @Test
+    fun mapPresetsHaveNoNull() {
+        assertTrue((PeriodFilter.recentPresets + PeriodFilter.extraPresets).none { it == null })
+    }
 }

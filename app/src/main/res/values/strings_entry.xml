@@ -120,6 +120,7 @@
 
     <!-- ui/components/PeriodFilterBar.kt -->
     <string name="common_period_custom">직접 선택</string>
+    <string name="common_period_other">기타</string>
     <string name="common_period_apply">적용</string>
     <string name="common_period_cancel">취소</string>
     <string name="common_period_picker_title">기간 선택</string>

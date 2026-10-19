@@ -102,7 +102,7 @@ class PlantMapViewModel(
     private val _scope = MutableStateFlow(MapScope.Mine)
     val scope: StateFlow<MapScope> = _scope.asStateFlow()
 
-    private val _period = MutableStateFlow<PeriodFilter>(PeriodFilter.All)
+    private val _period = MutableStateFlow<PeriodFilter>(PeriodFilter.LastMonth)
     val period: StateFlow<PeriodFilter> = _period.asStateFlow()
 
     /** 지금 지도에 보이는 영역. 지도가 멈출 때마다 화면이 알려 줍니다. */
