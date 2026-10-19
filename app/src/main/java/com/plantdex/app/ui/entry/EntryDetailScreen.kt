@@ -21,6 +21,7 @@ import com.plantdex.app.ui.components.plantName
 import com.plantdex.app.ui.components.InfoPill
 import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.ScientificName
+import com.plantdex.app.ui.components.TaxonomySection
 import com.plantdex.app.ui.components.UserAvatar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -364,6 +365,16 @@ private fun EntryDetailContent(
         OutlinedButton(onClick = onSpeciesClick, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.entry_detail_view_species))
         }
+
+        // 분류 체계 그래프 (계 → 종)
+        TaxonomySection(
+            scientificName = entry.scientificName,
+            species = plantName(entry),
+            gbifId = entry.gbifId,
+            family = entry.family,
+            genus = entry.genus,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         // 관찰 정보 카드
         PaperCard(Modifier.fillMaxWidth()) {

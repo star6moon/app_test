@@ -39,6 +39,7 @@ app/src/main/java/com/plantdex/app/
 │   ├── model/        # PlantCandidate, CollectionEntry, CaptureLocation, ...
 │   ├── plantnet/     # PlantIdentifier + 서버 함수(CloudPlantIdentifier) 구현
 │   ├── names/        # 학명 → 사용자 언어 이름 (GBIF, Wikidata)
+│   ├── taxonomy/     # 분류 체계 (계·문·강·목·과·속, GBIF)
 │   ├── catalog/      # 주제별 도감 목록과 기록 매칭
 │   ├── achievements/ # 배지, 주간 미션 (순수 Kotlin)
 │   ├── geo/          # 지오해시 (지도 영역 검색)
@@ -198,6 +199,12 @@ GitHub 저장소 → **Actions** → 실행 기록 → 아래 *Artifacts* 에서
 이름 목록 `app/src/main/assets/plant_names.json` 은 Actions → Deploy → Run workflow → **`names`** 로 새로 만듭니다 (약 1시간, `tools/plant_names/build.py`).
 Pl@ntNet 이 아는 모든 종(약 8.6만)의 학명·영어 이름에 한국어 이름을 붙여 같은 브랜치에 커밋합니다. 한국어 이름은 **국립수목원 국가표준식물목록**(공공데이터포털 '국가표준식물목록 조회 서비스', GitHub 비밀 `KPNI_SERVICE_KEY`) → Wikidata → GBIF(한국에서 관찰된 식물) 순서로 고릅니다.
 봇 커밋은 자동 배포를 일으키지 않으므로, 만든 뒤 Deploy → `app` 을 한 번 실행하세요.
+
+## 분류 체계 그래프
+
+기록 상세와 식물 정보 화면에는 **식물계 → 문 → 강 → 목 → 과 → 속 → 종**을 계단처럼 이어 그린 그래프가 있습니다.
+기록에 저장된 과·속을 먼저 그리고, [GBIF](https://www.gbif.org/) 분류 체계에서 나머지 단계를 받아 채웁니다 (옛 학명이어도 현재 분류로).
+단계 이름은 앱에 넣어 둔 한국어 이름(`data/taxonomy/TaxonKoreanNames.kt`) → GBIF·Wikidata → 학명 발음 + 목·과·속 순서로 고릅니다.
 
 ## 신고와 제재
 

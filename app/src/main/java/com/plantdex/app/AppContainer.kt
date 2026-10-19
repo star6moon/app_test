@@ -24,6 +24,8 @@ import com.plantdex.app.data.repository.ModerationRepository
 import com.plantdex.app.data.repository.ReactionRepository
 import com.plantdex.app.data.repository.SocialRepository
 import com.plantdex.app.data.settings.ThemeSettings
+import com.plantdex.app.data.taxonomy.GbifTaxonomyClient
+import com.plantdex.app.data.taxonomy.TaxonomyRepository
 import com.plantdex.app.push.DeepLink
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,6 +87,9 @@ class AppContainer(context: Context) {
 
     /** 식물 정보 페이지의 위키백과 설명 */
     val wikipediaClient = WikipediaClient(httpClient)
+
+    /** 식물 분류 체계 (계·문·강·목·과·속, GBIF) */
+    val taxonomyRepository = TaxonomyRepository(GbifTaxonomyClient(httpClient), plantNameLocalizer)
 
     /** 직접 누른 임시저장 (기기에만 보관) */
     val draftRepository = DraftRepository(context.applicationContext.filesDir)

@@ -95,4 +95,16 @@
     <string name="feed_following_empty_body">전체 피드에서 마음에 드는 사람의 이름을 눌러 팔로우해 보세요.</string>
     <string name="feed_empty_title">아직 공유된 기록이 없어요</string>
     <string name="feed_empty_body">첫 번째로 식물을 기록해 공유해 보세요!</string>
+
+    <!-- 분류 체계 그래프 -->
+    <string name="taxonomy_title">분류 체계</string>
+    <string name="taxonomy_caption">식물계에서 아래로 내려갈수록 범위가 좁아져요. 같은 과·속에 있을수록 가까운 친척이에요.</string>
+    <string name="taxonomy_source">분류: GBIF</string>
+    <string name="taxonomy_rank_kingdom">계</string>
+    <string name="taxonomy_rank_phylum">문</string>
+    <string name="taxonomy_rank_class">강</string>
+    <string name="taxonomy_rank_order">목</string>
+    <string name="taxonomy_rank_family">과</string>
+    <string name="taxonomy_rank_genus">속</string>
+    <string name="taxonomy_rank_species">종</string>
 </resources>

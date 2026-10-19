@@ -60,6 +60,7 @@ import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.PlantArtImage
 import com.plantdex.app.ui.components.ScientificName
 import com.plantdex.app.ui.components.SectionHeader
+import com.plantdex.app.ui.components.TaxonomySection
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.rememberPlantArt
 import kotlinx.coroutines.flow.catch
@@ -248,6 +249,13 @@ fun SpeciesScreen(
                             }
                         }
                     }
+                    // 분류 체계 그래프 (계 → 종)
+                    TaxonomySection(
+                        scientificName = scientificName,
+                        species = plant,
+                        family = family,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                     val mine = myEntries
                     when {
                         mine == null -> Unit
