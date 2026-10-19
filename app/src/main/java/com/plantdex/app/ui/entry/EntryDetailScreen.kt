@@ -340,7 +340,7 @@ private fun EntryDetailContent(
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(name, style = MaterialTheme.typography.headlineSmall)
                 EnglishName(englishName, style = MaterialTheme.typography.bodyMedium)
-                ScientificName(entry.scientificName, style = MaterialTheme.typography.titleMedium, maxLines = 2)
+                ScientificName(entry.scientificName, style = MaterialTheme.typography.bodyMedium, maxLines = 2)
             }
         }
         val family = entry.family

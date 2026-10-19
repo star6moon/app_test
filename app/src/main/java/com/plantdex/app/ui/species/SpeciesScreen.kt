@@ -149,7 +149,7 @@ fun SpeciesScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(title, style = MaterialTheme.typography.headlineMedium)
                         EnglishName(plant.english, style = MaterialTheme.typography.bodyMedium)
-                        ScientificName(scientificName, style = MaterialTheme.typography.bodyLarge, maxLines = 2)
+                        ScientificName(scientificName, style = MaterialTheme.typography.bodyMedium, maxLines = 2)
                     }
                     val familyText = family?.takeIf { it.isNotBlank() }
                     if (familyText != null || seasons.isNotEmpty() || catalogs.isNotEmpty()) {
