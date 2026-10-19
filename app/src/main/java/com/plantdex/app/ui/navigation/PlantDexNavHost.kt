@@ -133,10 +133,15 @@ fun PlantDexNavHost(user: UserProfile) {
     }
     val coroutineScope = rememberCoroutineScope()
 
-    fun openTab(route: Any) = navController.navigate(route) {
-        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-        launchSingleTop = true
-        restoreState = true
+    fun openTab(route: Any) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+        // 지도 탭은 그 탭에서 열어 둔 기록·식물 화면이 아니라 마지막으로 보던 지도로 돌아갑니다.
+        // (지도의 위치·확대는 저장된 화면 상태로 남고, 앱을 새로 켜면 내 위치에서 시작합니다)
+        if (route == MapRoute) navController.popBackStack<MapRoute>(inclusive = false)
     }
     fun openEntry(entryId: String) = navController.navigate(EntryDetailRoute(entryId))
     fun openSpecies(scientificName: String, name: String, family: String?) =
