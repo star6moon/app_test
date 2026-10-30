@@ -47,7 +47,8 @@ import com.plantdex.app.ui.components.appContainer
 @Composable
 fun BadgeCelebrationHost(uid: String) {
     val achievements = rememberAchievements(uid)
-    val ledger = remember { BadgeLedger(appContainer().appContext) }
+    val container = appContainer()
+    val ledger = remember { BadgeLedger(container.appContext) }
     val queue = remember { mutableStateListOf<Badge>() }
     LaunchedEffect(achievements?.badges) {
         val badges = achievements?.badges ?: return@LaunchedEffect

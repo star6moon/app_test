@@ -30,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -142,7 +143,7 @@ private fun ProfileEditDialog(profile: PublicProfile, onDismiss: () -> Unit) {
                 UserAvatar(
                     profile.displayName,
                     avatarUri?.toString() ?: profile.photoUrl,
-                    Modifier.clickable {
+                    Modifier.clickable(role = Role.Button) {
                         picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     },
                     size = 80.dp,

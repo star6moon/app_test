@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -219,7 +220,7 @@ private fun CameraPermissionGate(content: @Composable () -> Unit) {
             Spacer(Modifier.height(8.dp))
             Button(
                 onClick = { launcher.launch(permissions) },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
             ) {
                 Icon(Icons.Outlined.CameraAlt, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
@@ -232,7 +233,7 @@ private fun CameraPermissionGate(content: @Composable () -> Unit) {
                             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
                         )
                     },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
                 ) { Text(stringResource(R.string.capture_grant_in_settings)) }
             }
         }
@@ -350,7 +351,7 @@ private fun IdentifyingContent(photoFile: File?) {
         if (photoFile != null) {
             AsyncImage(
                 model = photoFile,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.capture_identifying_photo),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -389,7 +390,7 @@ private fun FailedContent(
             PaperCard(shape = MaterialTheme.shapes.large) {
                 AsyncImage(
                     model = state.photo.file,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.capture_taken_photo),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .padding(8.dp)
@@ -404,13 +405,13 @@ private fun FailedContent(
         Spacer(Modifier.height(4.dp))
         Text(state.message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
         Spacer(Modifier.height(4.dp))
-        Button(onClick = onRetake, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+        Button(onClick = onRetake, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
             Icon(Icons.Outlined.CameraAlt, contentDescription = null, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.capture_retake))
         }
         if (state.photo != null) {
-            OutlinedButton(onClick = onRetry, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+            OutlinedButton(onClick = onRetry, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
                 Text(stringResource(R.string.capture_retry_identify))
             }
             TextButton(onClick = onSaveDraft) { Text(stringResource(R.string.capture_save_draft_identify_later)) }

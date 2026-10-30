@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -87,7 +88,7 @@ fun IdentifyResultContent(
             PaperCard(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
                 AsyncImage(
                     model = state.photo.file,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.capture_taken_photo),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .padding(start = 8.dp, top = 8.dp, end = 8.dp)
@@ -105,7 +106,7 @@ fun IdentifyResultContent(
                             state.photo.extraFiles.forEach { file ->
                                 AsyncImage(
                                     model = file,
-                                    contentDescription = null,
+                                    contentDescription = stringResource(R.string.capture_extra_photo),
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .size(56.dp)
@@ -238,12 +239,12 @@ fun IdentifyResultContent(
                 OutlinedButton(
                     onClick = onRetake,
                     enabled = !state.isSaving,
-                    modifier = Modifier.weight(1f).height(52.dp),
+                    modifier = Modifier.weight(1f).heightIn(min = 52.dp),
                 ) { Text(stringResource(R.string.capture_retake)) }
                 Button(
                     onClick = onSave,
                     enabled = state.canSave,
-                    modifier = Modifier.weight(1f).height(52.dp),
+                    modifier = Modifier.weight(1f).heightIn(min = 52.dp),
                 ) {
                     if (state.isSaving) {
                         CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)

@@ -91,6 +91,11 @@ android {
         compose = true
         buildConfig = true
     }
+    testOptions {
+        // 화면(Compose) 테스트를 에뮬레이터 없이 JVM(Robolectric)에서 돌립니다. 리소스(문자열)도 함께 읽습니다.
+        unitTests.isIncludeAndroidResources = true
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 kotlin {
@@ -145,6 +150,9 @@ dependencies {
     implementation(libs.maps.compose.utils)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
 }

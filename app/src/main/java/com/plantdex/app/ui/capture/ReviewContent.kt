@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -96,7 +98,7 @@ fun ReviewContent(
                 state.photos.getOrNull(index)?.let { file ->
                     AsyncImage(
                         model = file,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.capture_photo_description, index + 1),
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.fillMaxSize(),
                     )
@@ -133,7 +135,7 @@ fun ReviewContent(
                             color = if (i == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
                             shape = MaterialTheme.shapes.medium,
                         )
-                        .clickable { selected = i },
+                        .clickable(role = Role.Button) { selected = i },
                 )
             }
             if (state.canAddMore && state.photos.isNotEmpty()) {
@@ -176,13 +178,13 @@ fun ReviewContent(
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedButton(onClick = onReset, enabled = !state.isBusy, modifier = Modifier.weight(1f).height(52.dp)) {
+            OutlinedButton(onClick = onReset, enabled = !state.isBusy, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) {
                 Text(stringResource(R.string.capture_start_over))
             }
             Button(
                 onClick = onIdentify,
                 enabled = !state.isBusy && state.photos.isNotEmpty(),
-                modifier = Modifier.weight(1f).height(52.dp),
+                modifier = Modifier.weight(1f).heightIn(min = 52.dp),
             ) { Text(stringResource(R.string.capture_identify_photos, state.photos.size)) }
         }
     }

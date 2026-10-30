@@ -10,17 +10,29 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import com.plantdex.app.data.art.CircleOp
 import com.plantdex.app.data.art.PathCmd
 import com.plantdex.app.data.art.PathOp
 import com.plantdex.app.data.art.PlantArt
 import com.plantdex.app.data.art.PlantArtRenderer
 
-/** [PlantArt] 사양으로 그린 식물 그림. 크기는 modifier 로 정합니다 (정사각형 권장). */
+/**
+ * [PlantArt] 사양으로 그린 식물 그림. 크기는 modifier 로 정합니다 (정사각형 권장).
+ * 이름이 옆에 없는 자리에서는 [contentDescription] 을 주어 화면 읽기(TalkBack)가 식물을 알 수 있게 합니다.
+ */
 @Composable
-fun PlantArtImage(art: PlantArt, modifier: Modifier = Modifier) {
+fun PlantArtImage(art: PlantArt, modifier: Modifier = Modifier, contentDescription: String? = null) {
     val ops = remember(art) { PlantArtRenderer.render(art) }
-    Canvas(modifier) {
+    val described = if (contentDescription != null) {
+        modifier.semantics { role = Role.Image; this.contentDescription = contentDescription }
+    } else {
+        modifier
+    }
+    Canvas(described) {
         val scale = size.minDimension / 100f
         val dx = (size.width - 100f * scale) / 2f
         val dy = (size.height - 100f * scale) / 2f

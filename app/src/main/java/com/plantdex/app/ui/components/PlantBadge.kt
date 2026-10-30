@@ -15,9 +15,10 @@ import com.plantdex.app.data.art.PlantArts
 
 /** 동그란 식물 그림 아이콘 (지도 마커, 카드, 목록에 사용) */
 @Composable
-fun PlantBadge(art: PlantArt, modifier: Modifier = Modifier, size: Dp = 28.dp) {
+fun PlantBadge(art: PlantArt, modifier: Modifier = Modifier, size: Dp = 28.dp, contentDescription: String? = null) {
     PlantArtImage(
         art = art,
+        contentDescription = contentDescription,
         modifier = modifier
             .size(size)
             .clip(CircleShape)

@@ -168,7 +168,7 @@ fun SpeciesScreen(
                             .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
                         contentAlignment = Alignment.Center,
                     ) {
-                        PlantArtImage(art, Modifier.fillMaxHeight(0.8f).aspectRatio(1f))
+                        PlantArtImage(art, Modifier.fillMaxHeight(0.8f).aspectRatio(1f), contentDescription = stringResource(R.string.species_art_description, title))
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(title, style = MaterialTheme.typography.headlineMedium)

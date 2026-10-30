@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -126,7 +127,7 @@ fun AuthScreen() {
                     Button(
                         onClick = viewModel::submit,
                         enabled = state.canSubmit,
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                     ) {
                         if (state.isLoading) {
                             CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
@@ -161,7 +162,7 @@ fun AuthScreen() {
                     }
                 },
                 enabled = !state.isLoading,
-                modifier = Modifier.fillMaxWidth().height(48.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
             ) { Text(stringResource(R.string.auth_screen_continue_with_google)) }
             TextButton(onClick = viewModel::toggleMode, enabled = !state.isLoading) {
                 Text(stringResource(if (state.isSignUp) R.string.auth_screen_switch_to_sign_in else R.string.auth_screen_switch_to_sign_up))

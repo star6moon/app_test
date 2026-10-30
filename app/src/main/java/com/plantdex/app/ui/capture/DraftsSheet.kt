@@ -78,7 +78,7 @@ fun DraftsSheet(
                         ) {
                             AsyncImage(
                                 model = photoOf(draft),
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.capture_draft_photo),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(56.dp)

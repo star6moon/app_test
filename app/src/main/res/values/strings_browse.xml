@@ -71,6 +71,7 @@
     <string name="species_season_autumn">가을</string>
     <string name="species_season_winter">겨울</string>
     <string name="species_back">뒤로</string>
+    <string name="species_art_description">%1$s 그림</string>
     <string name="species_family">%1$s (과)</string>
     <string name="species_seasons">관찰하기 좋은 때: %1$s</string>
     <string name="species_flower_language">💐 꽃말: %1$s</string>

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -85,7 +85,7 @@ fun CropScreen(file: File, onCancel: () -> Unit, onConfirm: (CropRect) -> Unit) 
             Box(Modifier.size(shownWdp, shownHdp)) {
                 AsyncImage(
                     model = file,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.capture_crop_photo),
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -148,13 +148,13 @@ fun CropScreen(file: File, onCancel: () -> Unit, onConfirm: (CropRect) -> Unit) 
         ) {
             OutlinedButton(
                 onClick = onCancel,
-                modifier = Modifier.weight(1f).height(52.dp),
+                modifier = Modifier.weight(1f).heightIn(min = 52.dp),
                 border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
             ) { Text(stringResource(R.string.capture_cancel), color = Color.White) }
-            TextButton(onClick = { rect = CropRect.Full }, modifier = Modifier.weight(1f).height(52.dp)) {
+            TextButton(onClick = { rect = CropRect.Full }, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) {
                 Text(stringResource(R.string.capture_crop_full), color = Color.White)
             }
-            Button(onClick = { onConfirm(rect) }, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.capture_crop)) }
+            Button(onClick = { onConfirm(rect) }, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text(stringResource(R.string.capture_crop)) }
         }
     }
 }

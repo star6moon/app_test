@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.plantdex.app.R
@@ -106,7 +107,7 @@ fun CorrectEntryDialog(
                                 Column(
                                     Modifier
                                         .fillMaxWidth()
-                                        .clickable { picked = species }
+                                        .clickable(role = Role.Button) { picked = species }
                                         .padding(vertical = 8.dp),
                                 ) {
                                     Text(species.name, style = MaterialTheme.typography.bodyLarge)

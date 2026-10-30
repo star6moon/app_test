@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -95,7 +96,7 @@ fun CommunityPhotosSection(
                         Modifier
                             .width(120.dp)
                             .clip(MaterialTheme.shapes.medium)
-                            .clickable { onEntryClick(entry.id) },
+                            .clickable(role = Role.Button) { onEntryClick(entry.id) },
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         AsyncImage(

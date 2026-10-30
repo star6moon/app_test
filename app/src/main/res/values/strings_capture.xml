@@ -49,6 +49,11 @@
     <!-- ReviewContent -->
     <string name="capture_main_photo">대표 사진</string>
     <string name="capture_photo_description">사진 %1$d</string>
+    <string name="capture_draft_photo">임시저장한 사진</string>
+    <string name="capture_identifying_photo">식별 중인 사진</string>
+    <string name="capture_taken_photo">찍은 사진</string>
+    <string name="capture_crop_photo">자를 사진</string>
+    <string name="capture_extra_photo">함께 보낸 사진</string>
     <string name="capture_add_other_part">\u0020다른 부위</string>
     <string name="capture_review_hint">꽃·잎·줄기처럼 다른 부위를 함께 찍으면 더 정확해요 (최대 %1$d장). 멀리서 찍었다면 \'자르기\' 로 식물만 남겨 주세요. 도감에는 첫 번째 사진이 올라가요.</string>
     <string name="capture_crop_with_space">\u0020자르기</string>

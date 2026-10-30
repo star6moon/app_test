@@ -214,7 +214,7 @@ fun PlantMapScreen(
  * 글자 크기(휴대폰 글꼴 크기 포함)에 맞춰 늘어나는 알약 모양으로 직접 그립니다.
  */
 @Composable
-private fun ScopeToggle(selected: MapScope, onSelect: (MapScope) -> Unit, modifier: Modifier = Modifier) {
+internal fun ScopeToggle(selected: MapScope, onSelect: (MapScope) -> Unit, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     Surface(
         modifier = modifier.selectableGroup(),
@@ -677,7 +677,7 @@ private fun SpeciesGroupRow(group: SpeciesGroup<PlantMapItem>, onEntryClick: (en
         ) {
             items(group.items, key = { it.entry.id }) { item ->
                 Column(
-                    Modifier.width(76.dp).clickable { onEntryClick(item.entry.id) },
+                    Modifier.width(76.dp).clickable(role = Role.Button) { onEntryClick(item.entry.id) },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     AsyncImage(
