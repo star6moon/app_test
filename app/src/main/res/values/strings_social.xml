@@ -40,6 +40,8 @@
     <string name="badges_summary_count">배지 %1$d / %2$d</string>
     <string name="badges_summary_empty">첫 기록을 남기고 배지를 모아 보세요</string>
     <string name="badges_title">배지</string>
+    <string name="badges_earned_title">새 배지를 얻었어요!</string>
+    <string name="badges_earned_ok">멋져요</string>
     <string name="badges_back">뒤로</string>
 
     <!-- ui/navigation -->

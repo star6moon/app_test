@@ -63,6 +63,7 @@ import com.plantdex.app.R
 import com.plantdex.app.util.Formatters
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.appContainer
+import com.plantdex.app.ui.achievements.BadgeCelebrationHost
 import com.plantdex.app.ui.achievements.BadgesScreen
 import com.plantdex.app.ui.capture.CaptureScreen
 import com.plantdex.app.ui.collection.BookmarksScreen
@@ -195,6 +196,8 @@ fun PlantDexNavHost(user: UserProfile) {
         },
     ) { padding ->
       val suspension by container.moderationRepository.suspension.collectAsStateWithLifecycle()
+      // 새 배지는 어느 화면에서든 축하합니다.
+      BadgeCelebrationHost(user.uid)
       Column(Modifier.padding(padding).consumeWindowInsets(padding)) {
         if (suspension.isSuspended) SuspensionBanner(suspension.untilMillis ?: 0L)
         NavHost(

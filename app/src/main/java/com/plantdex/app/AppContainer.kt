@@ -39,6 +39,9 @@ import java.util.concurrent.TimeUnit
 /** 간단한 수동 DI 컨테이너. 앱 규모가 커지면 Hilt 로 옮기면 됩니다. */
 class AppContainer(context: Context) {
 
+    /** 앱 전체 Context (화면 밖에서 기기 저장소를 쓸 때) */
+    val appContext: Context = context.applicationContext
+
     private val httpClient: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)

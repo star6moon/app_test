@@ -59,7 +59,7 @@ fun rememberAchievements(uid: String): Achievements? {
     val container = appContainer()
     val viewModel: AchievementsViewModel = viewModel(
         factory = viewModelFactory {
-            initializer { AchievementsViewModel(uid, container.collectionRepository, container.catalogRepository) }
+            initializer { AchievementsViewModel(uid, container.collectionRepository, container.catalogRepository, container.socialRepository) }
         },
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
