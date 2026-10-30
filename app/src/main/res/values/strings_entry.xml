@@ -30,6 +30,7 @@
     <string name="entry_detail_public_toggle">다른 사용자에게 공개</string>
     <string name="entry_detail_hidden_notice">여러 사용자의 신고로 숨겨진 기록이에요. 다시 공개할 수 없어요.</string>
     <string name="entry_detail_share_chooser_title">도감 기록 공유</string>
+    <string name="entry_detail_share_card_failed">카드 이미지를 만들지 못해 글로 공유해요.</string>
 
     <!-- ui/entry/CommentsSection.kt -->
     <string name="entry_comments_action_failed">처리하지 못했어요.</string>

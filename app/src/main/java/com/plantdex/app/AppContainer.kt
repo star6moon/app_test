@@ -28,6 +28,7 @@ import com.plantdex.app.data.settings.ThemeSettings
 import com.plantdex.app.data.taxonomy.GbifTaxonomyClient
 import com.plantdex.app.data.taxonomy.TaxonomyRepository
 import com.plantdex.app.push.DeepLink
+import com.plantdex.app.util.ShareCard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.Dispatchers
@@ -91,6 +92,9 @@ class AppContainer(context: Context) {
 
     /** 식물 정보 페이지의 위키백과 설명 */
     val wikipediaClient = WikipediaClient(httpClient)
+
+    /** 기록 공유용 도감 카드 이미지 */
+    val shareCard = ShareCard(appContext, httpClient)
 
     /** 식물 정보 페이지의 '알고 있나요?' (GBIF 관찰 수·달·다른 언어 이름) */
     val gbifFactsClient = GbifFactsClient(httpClient)

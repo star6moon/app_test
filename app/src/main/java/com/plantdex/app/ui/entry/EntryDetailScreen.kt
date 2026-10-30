@@ -92,7 +92,11 @@ import com.plantdex.app.ui.components.ReactionBar
 import com.plantdex.app.ui.components.appContainer
 import com.plantdex.app.ui.components.localizedName
 import com.plantdex.app.ui.components.rememberPlantArt
+import androidx.compose.material3.CircularProgressIndicator
 import com.plantdex.app.util.Formatters
+import com.plantdex.app.util.ShareCard
+import com.plantdex.app.util.ShareCardText
+import com.plantdex.app.data.names.PlantDisplayName
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -147,6 +151,7 @@ fun EntryDetailScreen(
 
     val entry = (state as? LoadState.Success)?.data
     val plant = entry?.let { plantName(it) }
+    var sharing by remember { mutableStateOf(false) }
     val name = plant?.korean.orEmpty()
     val isOwner = entry != null && viewModel.isOwner(entry)
 
@@ -162,8 +167,30 @@ fun EntryDetailScreen(
                 },
                 actions = {
                     if (entry != null) {
-                        IconButton(onClick = { shareEntry(context, entry, name) }) {
-                            Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.entry_detail_share))
+                        val shareFailed = stringResource(R.string.entry_detail_share_card_failed)
+                        IconButton(
+                            enabled = !sharing,
+                            onClick = {
+                                sharing = true
+                                scope.launch {
+                                    try {
+                                        shareEntry(context, container.shareCard, entry, plant)
+                                    } catch (e: CancellationException) {
+                                        throw e
+                                    } catch (e: Exception) {
+                                        Toast.makeText(context, shareFailed, Toast.LENGTH_SHORT).show()
+                                        shareEntry(context, null, entry, plant)
+                                    } finally {
+                                        sharing = false
+                                    }
+                                }
+                            },
+                        ) {
+                            if (sharing) {
+                                CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                            } else {
+                                Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.entry_detail_share))
+                            }
                         }
                         if (isOwner) {
                             IconButton(onClick = { confirmDelete = true }) {
@@ -500,19 +527,30 @@ private fun InfoRow(icon: ImageVector, label: String, value: String, onClick: ((
     }
 }
 
-private fun shareEntry(context: Context, entry: CollectionEntry, name: String) {
-    val text = buildString {
-        appendLine("🌿 $name (${entry.scientificName})")
-        append(Formatters.dateTime(entry.capturedAt))
-        entry.location?.placeName?.let { append(" · $it") }
-        appendLine()
-        if (entry.memo.isNotBlank()) appendLine(entry.memo)
-        appendLine(entry.photoUrl)
-        append("#PlantDex")
-    }
+/**
+ * 기록을 공유합니다. [shareCard] 가 있으면 사진·이름·학명·날짜가 들어간 도감 카드 이미지를 만들어 함께 보내고,
+ * 없거나(카드 만들기 실패) 사진을 못 받으면 글만 보냅니다.
+ */
+private suspend fun shareEntry(context: Context, shareCard: ShareCard?, entry: CollectionEntry, plant: PlantDisplayName?) {
+    val text = ShareCardText.of(
+        korean = plant?.korean ?: entry.displayName,
+        english = plant?.english,
+        scientificName = entry.scientificName,
+        date = Formatters.date(entry.capturedAt),
+        placeName = entry.location?.placeName,
+        memo = entry.memo,
+    )
+    val image = shareCard?.render(entry.photoUrl, text)
     val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_TEXT, text)
+        if (image != null) {
+            type = "image/jpeg"
+            putExtra(Intent.EXTRA_STREAM, image)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            putExtra(Intent.EXTRA_TEXT, text.caption(photoUrl = null))
+        } else {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, text.caption(entry.photoUrl))
+        }
     }
     context.startActivity(Intent.createChooser(intent, context.getString(R.string.entry_detail_share_chooser_title)))
 }
