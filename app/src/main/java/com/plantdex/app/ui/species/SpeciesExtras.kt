@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -129,12 +130,15 @@ fun FactsSection(
     community: List<CollectionEntry>?,
     modifier: Modifier = Modifier,
 ) {
+    // joinToString 안에서는 stringResource 를 부를 수 없어 리소스를 먼저 꺼내 둡니다.
+    val resources = LocalContext.current.resources
+    fun month(m: Int) = resources.getString(R.string.species_fact_month, m)
     val lines = buildList {
         val number = NumberFormat.getIntegerInstance()
         facts?.worldOccurrences?.let { add(stringResource(R.string.species_fact_world, number.format(it))) }
         facts?.koreaOccurrences?.takeIf { it > 0 }?.let { add(stringResource(R.string.species_fact_korea, number.format(it))) }
         facts?.topMonths?.takeIf { it.isNotEmpty() }?.let { months ->
-            add(stringResource(R.string.species_fact_months, months.joinToString("·") { stringResource(R.string.species_fact_month, it) }))
+            add(stringResource(R.string.species_fact_months, months.joinToString("·") { month(it) }))
         }
         if (!community.isNullOrEmpty()) {
             val people = community.map { it.ownerId }.toSet().size
@@ -143,7 +147,7 @@ fun FactsSection(
             val zone = ZoneId.systemDefault()
             val months = community.groupingBy { Instant.ofEpochMilli(it.capturedAt).atZone(zone).monthValue }.eachCount()
                 .entries.sortedByDescending { it.value }.take(2).map { it.key }
-            if (community.size >= 3) add(stringResource(R.string.species_fact_community_months, months.joinToString("·") { stringResource(R.string.species_fact_month, it) }))
+            if (community.size >= 3) add(stringResource(R.string.species_fact_community_months, months.joinToString("·") { month(it) }))
         }
         facts?.foreignNames?.takeIf { it.isNotEmpty() }?.let { names ->
             add(stringResource(R.string.species_fact_names, names.joinToString(" · ") { "${it.languageLabel} ${it.name}" }))

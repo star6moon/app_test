@@ -41,7 +41,7 @@ class AchievementsViewModel(
     private val friendsEntries: Flow<List<CollectionEntry>> = socialRepository.followingIds
         .map { it.orEmpty() }
         .distinctUntilChanged()
-        .flatMapLatest { ids -> if (ids.isEmpty()) flowOf(emptyList()) else collectionRepository.observeFeedOf(ids, limit = 50) }
+        .flatMapLatest { ids -> if (ids.isEmpty()) flowOf(emptyList()) else collectionRepository.observeFeedOf(ids, limit = 50L) }
         .catch { emit(emptyList()) }
 
     val state: StateFlow<Achievements?> = combine(collectionRepository.observeMyEntries(uid), friendsEntries) { entries, friends ->
