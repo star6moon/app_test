@@ -46,9 +46,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -63,6 +60,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -155,24 +158,7 @@ fun PlantMapScreen(
                 TopAppBar(
                     title = { Text(stringResource(R.string.map_title)) },
                     actions = {
-                        SingleChoiceSegmentedButtonRow(Modifier.padding(end = 8.dp)) {
-                            MapScope.entries.forEachIndexed { index, option ->
-                                SegmentedButton(
-                                    selected = scope == option,
-                                    onClick = { viewModel.setScope(option) },
-                                    shape = SegmentedButtonDefaults.itemShape(index, MapScope.entries.size),
-                                    icon = {},
-                                ) {
-                                    // 버튼 줄은 가장 긴 '단어' 너비로 재므로, 줄바꿈을 막아야 '모두의 기록' 이 잘리지 않습니다.
-                                    Text(
-                                        stringResource(option.labelRes),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        maxLines = 1,
-                                        softWrap = false,
-                                    )
-                                }
-                            }
-                        }
+                        ScopeToggle(scope, onSelect = viewModel::setScope, modifier = Modifier.padding(end = 8.dp))
                     },
                 )
                 PeriodFilterBar(
@@ -218,6 +204,46 @@ fun PlantMapScreen(
                     myLocation = (startPoint as? StartPoint.Known)?.latLng,
                     modifier = modifier,
                 )
+            }
+        }
+    }
+}
+
+/**
+ * 내 도감 / 모두의 기록 전환. 기본 SegmentedButton 은 높이·너비를 고정해 재서 글자가 잘리던 탓에,
+ * 글자 크기(휴대폰 글꼴 크기 포함)에 맞춰 늘어나는 알약 모양으로 직접 그립니다.
+ */
+@Composable
+private fun ScopeToggle(selected: MapScope, onSelect: (MapScope) -> Unit, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    Surface(
+        modifier = modifier.selectableGroup(),
+        shape = CircleShape,
+        color = colors.surfaceContainerLowest,
+        border = BorderStroke(1.dp, colors.outline),
+    ) {
+        Row(Modifier.padding(3.dp), verticalAlignment = Alignment.CenterVertically) {
+            MapScope.entries.forEach { option ->
+                val isSelected = option == selected
+                Surface(
+                    shape = CircleShape,
+                    color = if (isSelected) colors.primaryContainer else Color.Transparent,
+                    contentColor = if (isSelected) colors.onPrimaryContainer else colors.onSurfaceVariant,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(option) }),
+                ) {
+                    Text(
+                        stringResource(option.labelRes),
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                        softWrap = false,
+                        modifier = Modifier
+                            .defaultMinSize(minHeight = 32.dp)
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                    )
+                }
             }
         }
     }
