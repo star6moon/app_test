@@ -5,7 +5,11 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.functions
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.firestoreSettings
+import com.google.firebase.firestore.persistentCacheSettings
+import com.plantdex.app.data.network.NetworkMonitor
 import com.google.firebase.storage.storage
 import com.plantdex.app.data.catalog.CatalogRepository
 import com.plantdex.app.data.location.LocationProvider
@@ -53,21 +57,34 @@ class AppContainer(context: Context) {
     /** 서버 함수 (Firestore 와 같은 서울 지역) */
     val functions: FirebaseFunctions = Firebase.functions(FUNCTIONS_REGION)
 
-    val authRepository = AuthRepository(Firebase.auth, Firebase.firestore, functions)
+    /**
+     * Firestore 는 기본으로 기기 캐시를 쓰지만, 크기를 넉넉히(100MB) 잡아 두어 산이나 시골처럼 신호가 약한 곳에서도
+     * 내 도감·둘러보기가 마지막으로 본 상태로 열리게 합니다. 좋아요·댓글 같은 쓰기는 연결되면 자동으로 보내집니다.
+     */
+    private val firestore: FirebaseFirestore = Firebase.firestore.apply {
+        firestoreSettings = firestoreSettings {
+            setLocalCacheSettings(persistentCacheSettings { setSizeBytes(FIRESTORE_CACHE_BYTES) })
+        }
+    }
 
-    val collectionRepository = CollectionRepository(Firebase.firestore, Firebase.storage, functions)
+    /** 인터넷 연결 여부 (오프라인 띠) */
+    val networkMonitor = NetworkMonitor(appContext)
+
+    val authRepository = AuthRepository(Firebase.auth, firestore, functions)
+
+    val collectionRepository = CollectionRepository(firestore, Firebase.storage, functions)
 
     /** 앱이 살아 있는 동안 유지되는 작업 범위 (공유 상태 구독용) */
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     /** 좋아요·책갈피 */
-    val reactionRepository = ReactionRepository(Firebase.firestore, authRepository, appScope)
+    val reactionRepository = ReactionRepository(firestore, authRepository, appScope)
 
     /** 댓글·팔로우·프로필·알림 */
-    val socialRepository = SocialRepository(Firebase.firestore, Firebase.storage, authRepository, appScope)
+    val socialRepository = SocialRepository(firestore, Firebase.storage, authRepository, appScope)
 
     /** 신고·차단 */
-    val moderationRepository = ModerationRepository(Firebase.firestore, authRepository, appScope)
+    val moderationRepository = ModerationRepository(firestore, authRepository, appScope)
 
     /** 학명 → 사용자 언어 이름 (GBIF, Wikidata). */
     val plantNameLocalizer: PlantNameLocalizer = GbifWikidataNameLocalizer(httpClient)
@@ -118,5 +135,6 @@ class AppContainer(context: Context) {
 
     companion object {
         const val FUNCTIONS_REGION = "asia-northeast3"
+        const val FIRESTORE_CACHE_BYTES = 100L * 1024 * 1024
     }
 }

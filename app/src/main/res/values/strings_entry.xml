@@ -129,6 +129,7 @@
     <!-- ui/components/PeriodFilterBar.kt -->
     <string name="common_period_custom">직접 선택</string>
     <string name="common_period_other">기타</string>
+    <string name="common_offline_banner">오프라인이에요. 저장해 둔 기록만 볼 수 있고, 좋아요·댓글은 연결되면 보내져요.</string>
     <string name="common_period_apply">적용</string>
     <string name="common_period_cancel">취소</string>
     <string name="common_period_picker_title">기간 선택</string>

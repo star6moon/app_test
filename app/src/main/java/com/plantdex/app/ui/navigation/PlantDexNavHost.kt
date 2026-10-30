@@ -48,6 +48,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -198,7 +202,9 @@ fun PlantDexNavHost(user: UserProfile) {
       val suspension by container.moderationRepository.suspension.collectAsStateWithLifecycle()
       // 새 배지는 어느 화면에서든 축하합니다.
       BadgeCelebrationHost(user.uid)
+      val online by container.networkMonitor.online.collectAsStateWithLifecycle()
       Column(Modifier.padding(padding).consumeWindowInsets(padding)) {
+        if (!online) OfflineBanner()
         if (suspension.isSuspended) SuspensionBanner(suspension.untilMillis ?: 0L)
         NavHost(
             navController = navController,
@@ -310,6 +316,21 @@ fun PlantDexNavHost(user: UserProfile) {
             }
         }
       }
+    }
+}
+
+/** 인터넷이 끊겼을 때 모든 화면 위에 띄우는 안내. 저장된 기록은 계속 볼 수 있습니다. */
+@Composable
+private fun OfflineBanner() {
+    Surface(color = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer) {
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Outlined.CloudOff, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.common_offline_banner), style = MaterialTheme.typography.bodySmall)
+        }
     }
 }
 
