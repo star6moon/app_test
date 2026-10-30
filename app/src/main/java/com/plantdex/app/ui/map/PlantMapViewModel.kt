@@ -69,13 +69,16 @@ data class PlantMapItem(
     val speciesKey: String,
     /** 종의 외형 그림 */
     val art: PlantArt,
+    /** 내가 책갈피한 기록이면 지도에서 강조합니다 */
+    val bookmarked: Boolean = false,
 ) : ClusterItem {
     val latLng: LatLng get() = LatLng(latitude, longitude)
 
     override fun getPosition() = latLng
     override fun getTitle() = name
     override fun getSnippet() = entry.scientificName
-    override fun getZIndex(): Float? = null
+    // 책갈피한 기록을 다른 마커 위에 그립니다.
+    override fun getZIndex(): Float? = if (bookmarked) 1f else null
 }
 
 data class PlantMapData(
@@ -102,8 +105,13 @@ class PlantMapViewModel(
     private val _scope = MutableStateFlow(MapScope.Mine)
     val scope: StateFlow<MapScope> = _scope.asStateFlow()
 
-    private val _period = MutableStateFlow<PeriodFilter>(PeriodFilter.LastMonth)
-    val period: StateFlow<PeriodFilter> = _period.asStateFlow()
+    /** 범위마다 고른 기간 (내 도감은 처음에 전체, 모두의 기록은 최근 1개월) */
+    private val periods = MutableStateFlow(
+        mapOf<MapScope, PeriodFilter>(MapScope.Mine to PeriodFilter.All, MapScope.Everyone to PeriodFilter.LastMonth),
+    )
+    private fun periodOf(scope: MapScope) = periods.value.getValue(scope)
+    val period: StateFlow<PeriodFilter> = combine(_scope, periods) { scope, map -> map.getValue(scope) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, periodOf(MapScope.Mine))
 
     /** 지금 지도에 보이는 영역. 지도가 멈출 때마다 화면이 알려 줍니다. */
     private val viewport = MutableStateFlow<GeoBounds?>(null)
@@ -145,7 +153,7 @@ class PlantMapViewModel(
 
     val state: StateFlow<LoadState<PlantMapData>> = _scope
         .flatMapLatest { scope ->
-            combine(source(scope), _period) { src, period -> src to period }
+            combine(source(scope), periods.map { it.getValue(scope) }.distinctUntilChanged()) { src, period -> src to period }
                 .transformLatest<Pair<Source, PeriodFilter>, LoadState<PlantMapData>> { (src, period) ->
                     val today = LocalDate.now()
                     val zone = ZoneId.systemDefault()
@@ -200,7 +208,7 @@ class PlantMapViewModel(
     }
 
     fun setPeriod(period: PeriodFilter) {
-        _period.value = period
+        periods.value = periods.value + (_scope.value to period)
     }
 
     fun onViewportChanged(bounds: GeoBounds) {

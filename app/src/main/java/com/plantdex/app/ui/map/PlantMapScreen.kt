@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.HorizontalDivider
@@ -35,6 +36,7 @@ import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.PlantBadge
 import com.plantdex.app.ui.components.ScientificName
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -61,6 +63,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -89,6 +92,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.plantdex.app.BuildConfig
 import com.plantdex.app.R
 import com.plantdex.app.data.geo.GeoBounds
+import com.plantdex.app.data.filter.PeriodFilter
 import com.plantdex.app.ui.components.PeriodFilterBar
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.LoadState
@@ -134,6 +138,7 @@ fun PlantMapScreen(
     val scope by viewModel.scope.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val blockedIds by container.moderationRepository.blockedIds.collectAsStateWithLifecycle()
+    val bookmarkIds by container.reactionRepository.myBookmarkIds.collectAsStateWithLifecycle()
     val period by viewModel.period.collectAsStateWithLifecycle()
     val isFetching by viewModel.isFetching.collectAsStateWithLifecycle()
     val fetchError by viewModel.fetchError.collectAsStateWithLifecycle()
@@ -170,7 +175,13 @@ fun PlantMapScreen(
                         }
                     },
                 )
-                PeriodFilterBar(selected = period, onSelect = viewModel::setPeriod, modifier = Modifier.padding(bottom = 4.dp))
+                PeriodFilterBar(
+                    selected = period,
+                    onSelect = viewModel::setPeriod,
+                    // 내 도감은 전체 기간도 볼 수 있습니다.
+                    presets = if (scope == MapScope.Mine) PeriodFilter.myPresets else PeriodFilter.recentPresets,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                )
             }
         },
     ) { padding ->
@@ -190,10 +201,16 @@ fun PlantMapScreen(
                 is LoadState.Error -> MessageBox(stringResource(R.string.map_load_failed), modifier, body = s.message)
                 is LoadState.Success -> PlantMap(
                     // 차단한 사용자의 기록은 지도에서도 숨깁니다.
-                    data = remember(s.data, blockedIds) {
-                        if (blockedIds.isEmpty()) s.data
-                        else s.data.copy(items = s.data.items.filter { it.entry.ownerId !in blockedIds })
+                    // 책갈피한 기록은 강조합니다.
+                    data = remember(s.data, blockedIds, bookmarkIds) {
+                        val bookmarked = bookmarkIds.orEmpty().toSet()
+                        s.data.copy(
+                            items = s.data.items
+                                .filter { it.entry.ownerId !in blockedIds }
+                                .map { if (it.entry.id in bookmarked) it.copy(bookmarked = true) else it },
+                        )
                     },
+                    allTime = period == PeriodFilter.All,
                     isFetching = isFetching && scope == MapScope.Everyone,
                     notice = fetchErrorNotice,
                     onViewportChanged = viewModel::onViewportChanged,
@@ -234,6 +251,8 @@ private fun PlantMap(
     onEntryClick: (entryId: String) -> Unit,
     /** 알면 지도를 여기서 시작합니다 */
     myLocation: LatLng?,
+    /** 기간을 '전체' 로 골랐는지 (빈 지도 안내 문구용) */
+    allTime: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -363,6 +382,7 @@ private fun PlantMap(
             isFetching -> stringResource(R.string.map_banner_loading)
             data.viewportDriven && data.truncated -> stringResource(R.string.map_banner_truncated)
             data.viewportDriven && data.items.isEmpty() -> stringResource(R.string.map_banner_area_empty)
+            data.items.isEmpty() && allTime -> stringResource(R.string.map_banner_empty_all)
             data.items.isEmpty() -> stringResource(R.string.map_banner_empty)
             data.withoutLocation > 0 -> stringResource(R.string.map_banner_without_location, data.withoutLocation)
             else -> null
@@ -419,16 +439,48 @@ private suspend fun animateSafely(state: CameraPositionState, update: CameraUpda
     }
 }
 
-/** 개별 기록 마커: 식물 그림만 (이름은 누르면 아래 카드로 보여줍니다) */
+/** 개별 기록 마커: 식물 그림만 (이름은 누르면 아래 카드로 보여줍니다). 책갈피한 기록은 테두리를 한 겹 더 두릅니다. */
 @Composable
 private fun PlantMarker(item: PlantMapItem) {
-    Surface(
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.surface,
-        // 마커는 비트맵으로 그려져 그림자가 보이지 않으므로 테두리로 구분합니다.
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-    ) {
-        PlantBadge(item.art, modifier = Modifier.padding(2.dp), size = 34.dp)
+    BookmarkRing(item.bookmarked, CircleShape) {
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surface,
+            // 마커는 비트맵으로 그려져 그림자가 보이지 않으므로 테두리로 구분합니다.
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        ) {
+            PlantBadge(item.art, modifier = Modifier.padding(2.dp), size = 34.dp)
+        }
+    }
+}
+
+/**
+ * 책갈피 강조: 테라코타색 바깥 테두리 + 오른쪽 아래 작은 책갈피 표시.
+ * 강조하지 않을 때도 같은 크기를 차지해, 책갈피를 켜고 꺼도 마커 위치가 흔들리지 않습니다.
+ */
+@Composable
+private fun BookmarkRing(highlighted: Boolean, shape: Shape, content: @Composable () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Box {
+        Box(
+            Modifier
+                .padding(4.dp)
+                .then(
+                    if (highlighted) Modifier.border(2.5.dp, colors.tertiary, shape) else Modifier,
+                )
+                .padding(3.5.dp),
+        ) { content() }
+        if (highlighted) {
+            Surface(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                shape = CircleShape,
+                color = colors.tertiary,
+                contentColor = colors.onTertiary,
+                border = BorderStroke(1.dp, colors.surface),
+            ) {
+                Icon(Icons.Filled.Bookmark, contentDescription = null, modifier = Modifier.padding(2.dp).size(10.dp))
+            }
+        }
     }
 }
 
@@ -450,13 +502,18 @@ private fun StackedBadges(summary: ClusterSummary<PlantMapItem>, size: Dp) {
 private fun ClusterMarker(summary: ClusterSummary<PlantMapItem>) {
     // 숫자 배지가 마커 비트맵 밖으로 잘리지 않도록 그림 묶음에 위·오른쪽 여백을 둡니다.
     Box {
-        Surface(
-            modifier = Modifier.padding(top = 8.dp, end = 8.dp),
-            shape = RoundedCornerShape(50),
-            color = MaterialTheme.colorScheme.primaryContainer,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-        ) {
-            Box(Modifier.padding(3.dp)) { StackedBadges(summary, size = 32.dp) }
+        // 책갈피한 기록이 들어 있는 묶음도 같은 테두리로 강조합니다.
+        val hasBookmark = summary.groups.any { group -> group.items.any { it.bookmarked } }
+        Box(Modifier.padding(top = 8.dp, end = 8.dp)) {
+            BookmarkRing(hasBookmark, RoundedCornerShape(50)) {
+                Surface(
+                    shape = RoundedCornerShape(50),
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                ) {
+                    Box(Modifier.padding(3.dp)) { StackedBadges(summary, size = 32.dp) }
+                }
+            }
         }
         Surface(
             modifier = Modifier.align(Alignment.TopEnd),

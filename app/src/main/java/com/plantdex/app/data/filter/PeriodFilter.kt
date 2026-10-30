@@ -61,6 +61,9 @@ sealed interface PeriodFilter {
         /** 지도에서 바로 고르는 기간 */
         val recentPresets: List<PeriodFilter> get() = listOf(Today, LastMonth, Last3Months)
 
+        /** 지도의 내 도감에서 고르는 기간 (전체 포함) */
+        val myPresets: List<PeriodFilter> get() = listOf(All, Today, LastMonth, Last3Months)
+
         /** 지도의 '기타' 메뉴에 넣는 기간 (직접 선택과 함께, 추후 유료 기능 후보) */
         val extraPresets: List<PeriodFilter> get() = listOf(YearAgoMonth)
 
