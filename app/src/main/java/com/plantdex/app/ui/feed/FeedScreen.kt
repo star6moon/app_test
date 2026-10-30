@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -75,6 +76,7 @@ fun FeedScreen(
     onEntryClick: (entryId: String) -> Unit,
     onUserClick: (userId: String, userName: String) -> Unit,
     onNotificationsClick: () -> Unit,
+    onSearchClick: () -> Unit = {},
 ) {
     val container = appContainer()
     var followingOnly by rememberSaveable { mutableStateOf(false) }
@@ -116,6 +118,9 @@ fun FeedScreen(
                                 icon = {},
                             ) { Text(stringResource(labelRes), style = MaterialTheme.typography.labelMedium) }
                         }
+                    }
+                    IconButton(onClick = onSearchClick) {
+                        Icon(Icons.Outlined.Search, contentDescription = stringResource(R.string.feed_search))
                     }
                     IconButton(onClick = onNotificationsClick) {
                         BadgedBox(badge = { if (unread > 0) Badge { Text(if (unread > 99) "99+" else "$unread") } }) {

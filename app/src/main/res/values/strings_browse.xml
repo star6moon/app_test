@@ -119,4 +119,33 @@
     <string name="taxonomy_rank_family">과</string>
     <string name="taxonomy_rank_genus">속</string>
     <string name="taxonomy_rank_species">종</string>
+
+    <!-- ui/search/SearchScreen.kt -->
+    <string name="search_title">검색</string>
+    <string name="search_back">뒤로</string>
+    <string name="search_hint">식물 이름, 학명, 메모, 장소</string>
+    <string name="search_clear">지우기</string>
+    <string name="search_start_title">무엇을 찾을까요?</string>
+    <string name="search_start_body">한국어 이름, 영어 이름, 학명으로 식물을 찾고, 메모나 장소로 내 기록을 찾아요.</string>
+    <string name="search_empty_title">찾지 못했어요</string>
+    <string name="search_empty_body">다른 이름이나 학명으로 다시 찾아보세요.</string>
+    <string name="search_plants_count">식물 %1$d</string>
+    <string name="search_records_count">내 기록 %1$d</string>
+    <string name="search_records_empty">조건에 맞는 내 기록이 없어요.</string>
+    <string name="search_filter_catalog">도감</string>
+    <string name="search_filter_any_catalog">모든 도감</string>
+    <string name="search_filter_family">과(科)</string>
+    <string name="search_filter_any_family">모든 과</string>
+    <string name="search_filter_period">기간</string>
+    <string name="search_filter_visibility">공개</string>
+    <string name="search_filter_visibility_all">공개·비공개 모두</string>
+    <string name="search_filter_public">공개만</string>
+    <string name="search_filter_private">비공개만</string>
+    <string name="search_filter_with_location">위치 있음</string>
+    <string name="search_filter_reset">초기화</string>
+    <string name="collection_search">검색</string>
+    <string name="feed_search">검색</string>
+    <string name="premium_pill">PRO</string>
+    <string name="premium_locked_title">%1$s 은(는) 준비 중인 유료 기능이에요</string>
+    <string name="premium_locked_body">곧 열릴 예정이에요.</string>
 </resources>

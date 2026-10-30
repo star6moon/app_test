@@ -3,6 +3,8 @@ package com.plantdex.app.data.names
 import android.content.Context
 import android.util.JsonReader
 import com.plantdex.app.data.catalog.ScientificName
+import com.plantdex.app.data.search.NameHit
+import com.plantdex.app.data.search.NameSearch
 
 /**
  * 앱에 들어 있는 식물 이름 목록 (assets/plant_names.json).
@@ -22,6 +24,9 @@ class PlantNameBook(private val context: Context) {
     fun korean(scientificName: String): String? = entry(scientificName)?.get(0)?.takeIf { it.isNotBlank() }
 
     fun english(scientificName: String): String? = entry(scientificName)?.get(1)?.takeIf { it.isNotBlank() }
+
+    /** 이름이나 학명에 [query] 가 들어 있는 식물 (검색 화면용). */
+    fun search(query: String, limit: Int = 30): List<NameHit> = NameSearch.search(names, query, limit)
 
     private fun entry(scientificName: String): Array<String>? =
         ScientificName.binomialKey(scientificName)?.let { names[it] }

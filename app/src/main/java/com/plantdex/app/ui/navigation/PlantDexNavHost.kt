@@ -79,6 +79,7 @@ import com.plantdex.app.ui.entry.EntryDetailScreen
 import com.plantdex.app.ui.feed.FeedScreen
 import com.plantdex.app.ui.map.PlantMapScreen
 import com.plantdex.app.ui.settings.BlockedUsersScreen
+import com.plantdex.app.ui.search.SearchScreen
 import com.plantdex.app.ui.settings.SettingsScreen
 import com.plantdex.app.ui.social.NotificationsScreen
 import com.plantdex.app.ui.social.RankingScreen
@@ -102,6 +103,7 @@ import kotlin.reflect.KClass
 @Serializable data object RankingRoute
 @Serializable data object SettingsRoute
 @Serializable data object BlockedUsersRoute
+@Serializable data object SearchRoute
 
 private enum class TopLevelDestination(
     val route: Any,
@@ -216,6 +218,7 @@ fun PlantDexNavHost(user: UserProfile) {
                     onEntryClick = ::openEntry,
                     onUserClick = ::openUser,
                     onNotificationsClick = { navController.navigate(NotificationsRoute) },
+                    onSearchClick = { navController.navigate(SearchRoute) },
                 )
             }
             composable<MapRoute> {
@@ -245,6 +248,7 @@ fun PlantDexNavHost(user: UserProfile) {
                     onSettingsClick = { navController.navigate(SettingsRoute) },
                     onBadgesClick = { navController.navigate(BadgesRoute) },
                     onRankingClick = { navController.navigate(RankingRoute) },
+                    onSearchClick = { navController.navigate(SearchRoute) },
                 )
             }
             composable<NotificationsRoute> {
@@ -263,6 +267,14 @@ fun PlantDexNavHost(user: UserProfile) {
             composable<SettingsRoute> {
                 SettingsScreen(
                     onBlockedUsersClick = { navController.navigate(BlockedUsersRoute) },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable<SearchRoute> {
+                SearchScreen(
+                    user = user,
+                    onEntryClick = ::openEntry,
+                    onSpeciesClick = ::openSpecies,
                     onBack = { navController.popBackStack() },
                 )
             }

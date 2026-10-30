@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.PhotoLibrary
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -73,6 +74,7 @@ fun MyCollectionScreen(
     onSettingsClick: () -> Unit,
     onBadgesClick: () -> Unit,
     onRankingClick: () -> Unit,
+    onSearchClick: () -> Unit = {},
 ) {
     val container = appContainer()
     val viewModel: CatalogProgressViewModel = viewModel(
@@ -93,6 +95,9 @@ fun MyCollectionScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.collection_owner_title, user.displayName)) },
                 actions = {
+                    IconButton(onClick = onSearchClick) {
+                        Icon(Icons.Outlined.Search, contentDescription = stringResource(R.string.collection_search))
+                    }
                     IconButton(onClick = onSettingsClick) {
                         Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.collection_settings))
                     }
