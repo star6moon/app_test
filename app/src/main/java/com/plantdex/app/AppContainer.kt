@@ -17,6 +17,7 @@ import com.plantdex.app.data.plantnet.LocalizingPlantIdentifier
 import com.plantdex.app.data.plantnet.PlantIdentifier
 import com.plantdex.app.data.plantnet.CloudPlantIdentifier
 import com.plantdex.app.data.repository.AuthRepository
+import com.plantdex.app.data.info.GbifFactsClient
 import com.plantdex.app.data.info.WikipediaClient
 import com.plantdex.app.data.repository.CollectionRepository
 import com.plantdex.app.data.repository.DraftRepository
@@ -90,6 +91,9 @@ class AppContainer(context: Context) {
 
     /** 식물 정보 페이지의 위키백과 설명 */
     val wikipediaClient = WikipediaClient(httpClient)
+
+    /** 식물 정보 페이지의 '알고 있나요?' (GBIF 관찰 수·달·다른 언어 이름) */
+    val gbifFactsClient = GbifFactsClient(httpClient)
 
     /** 식물 분류 체계 (계·문·강·목·과·속, GBIF) */
     val taxonomyRepository = TaxonomyRepository(GbifTaxonomyClient(httpClient), plantNameLocalizer)

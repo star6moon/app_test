@@ -284,6 +284,7 @@ fun PlantDexNavHost(user: UserProfile) {
                     onEntryClick = ::openEntry,
                     onCaptureClick = { openTab(CaptureRoute) },
                     onBack = { navController.popBackStack() },
+                    onSpeciesClick = ::openSpecies,
                 )
             }
             composable<MyRecordsRoute> {

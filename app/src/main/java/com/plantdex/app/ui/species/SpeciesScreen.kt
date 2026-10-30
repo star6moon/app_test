@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plantdex.app.R
 import com.plantdex.app.data.catalog.SpeciesKey
+import com.plantdex.app.data.catalog.SpeciesRelations
 import com.plantdex.app.data.info.WikiSummary
 import com.plantdex.app.ui.components.EnglishName
 import com.plantdex.app.ui.components.plantName
@@ -87,6 +88,7 @@ fun SpeciesScreen(
     onEntryClick: (entryId: String) -> Unit,
     onCaptureClick: () -> Unit,
     onBack: () -> Unit,
+    onSpeciesClick: (scientificName: String, name: String, family: String?) -> Unit = { _, _, _ -> },
 ) {
     val container = appContainer()
     val catalog = remember { runCatching { container.catalogRepository.catalog }.getOrNull() }
@@ -105,6 +107,27 @@ fun SpeciesScreen(
             .catch { emit(emptyList()) }
     }
     val myEntries by myEntriesFlow.collectAsStateWithLifecycle(initialValue = null)
+
+    // 같은 과의 다른 식물 (내 기록), 다른 사람들의 공개 기록
+    val allMineFlow = remember(uid) { container.collectionRepository.observeMyEntries(uid).catch { emit(emptyList()) } }
+    val allMine by allMineFlow.collectAsStateWithLifecycle(initialValue = emptyList())
+    val familyName = family?.takeIf { it.isNotBlank() } ?: allMine.firstOrNull { SpeciesKey.of(it.scientificName, catalog) == key }?.family
+    val sameFamily = remember(allMine, familyName, key) { SpeciesRelations.sameFamily(allMine, familyName, key, catalog) }
+    val communityFlow = remember(scientificName, uid) {
+        container.collectionRepository.observePublicEntriesOfSpecies(scientificName)
+            .map { list -> list.filter { it.ownerId != uid } }
+            .catch { emit(emptyList()) }
+    }
+    val communityRaw by communityFlow.collectAsStateWithLifecycle(initialValue = null)
+    val blockedIds by container.moderationRepository.blockedIds.collectAsStateWithLifecycle()
+    val community = communityRaw?.filter { it.ownerId !in blockedIds }
+    var facts by remember { mutableStateOf<com.plantdex.app.data.info.SpeciesFacts?>(null) }
+    var factsLoading by remember { mutableStateOf(true) }
+    LaunchedEffect(scientificName) {
+        factsLoading = true
+        facts = container.gbifFactsClient.facts(scientificName)
+        factsLoading = false
+    }
 
     val language = LocalConfiguration.current.locales[0].language
     var wiki by remember { mutableStateOf<WikiSummary?>(null) }
@@ -249,13 +272,17 @@ fun SpeciesScreen(
                             }
                         }
                     }
+                    // 알고 있나요?
+                    FactsSection(facts, factsLoading, community, Modifier.fillMaxWidth())
                     // 분류 체계 그래프 (계 → 종)
                     TaxonomySection(
                         scientificName = scientificName,
                         species = plant,
-                        family = family,
+                        family = familyName,
                         modifier = Modifier.fillMaxWidth(),
                     )
+                    familyName?.let { SameFamilySection(it, sameFamily, onSpeciesClick, Modifier.fillMaxWidth()) }
+                    CommunityPhotosSection(community, title, onEntryClick, Modifier.fillMaxWidth())
                     val mine = myEntries
                     when {
                         mine == null -> Unit

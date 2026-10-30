@@ -154,6 +154,14 @@ class CollectionRepository(
             .orderBy("capturedAt", Query.Direction.DESCENDING)
             .observe()
 
+    /** 이 식물(학명이 같은)의 다른 사용자 공개 기록, 최근 순. 식물 정보 화면의 사진 모음에 씁니다. */
+    fun observePublicEntriesOfSpecies(scientificName: String, limit: Long = 30): Flow<List<CollectionEntry>> =
+        entries.whereEqualTo("isPublic", true)
+            .whereEqualTo("scientificName", scientificName)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .limit(limit)
+            .observe()
+
     /** 모든 사용자의 최근 공개 기록. */
     fun observeFeed(limit: Long = 100): Flow<List<CollectionEntry>> =
         entries.whereEqualTo("isPublic", true)
