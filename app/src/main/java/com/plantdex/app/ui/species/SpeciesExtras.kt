@@ -18,6 +18,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.plantdex.app.R
+import com.plantdex.app.data.info.LatinMeanings
 import com.plantdex.app.data.info.SpeciesFacts
 import com.plantdex.app.data.model.CollectionEntry
 import com.plantdex.app.data.taxonomy.TaxonKoreanNames
@@ -122,9 +124,14 @@ fun CommunityPhotosSection(
     }
 }
 
-/** '알고 있나요?' 카드: GBIF 숫자와 PlantDex 공개 기록으로 만든 짧은 사실들. */
+/**
+ * '알고 있나요?' 카드. 위에서부터 재미있는 순서로:
+ * ① 도감 이야기(앱에 적어 둔 짧은 사실) ② 학명 뜻풀이 ③ 다른 나라 이름 ④ PlantDex 기록 통계 ⑤ GBIF 관찰 수(한 줄).
+ */
 @Composable
 fun FactsSection(
+    scientificName: String,
+    stories: List<String>,
     facts: SpeciesFacts?,
     factsLoading: Boolean,
     community: List<CollectionEntry>?,
@@ -133,12 +140,14 @@ fun FactsSection(
     // joinToString 안에서는 stringResource 를 부를 수 없어 리소스를 먼저 꺼내 둡니다.
     val resources = LocalContext.current.resources
     fun month(m: Int) = resources.getString(R.string.species_fact_month, m)
+    val meanings = remember(scientificName) { LatinMeanings.explain(scientificName) }
     val lines = buildList {
-        val number = NumberFormat.getIntegerInstance()
-        facts?.worldOccurrences?.let { add(stringResource(R.string.species_fact_world, number.format(it))) }
-        facts?.koreaOccurrences?.takeIf { it > 0 }?.let { add(stringResource(R.string.species_fact_korea, number.format(it))) }
-        facts?.topMonths?.takeIf { it.isNotEmpty() }?.let { months ->
-            add(stringResource(R.string.species_fact_months, months.joinToString("·") { month(it) }))
+        stories.forEach { add("📖 $it") }
+        if (meanings.isNotEmpty()) {
+            add(stringResource(R.string.species_fact_name_meaning, meanings.joinToString(", ") { "${it.word} = ${it.meaning}" }))
+        }
+        facts?.foreignNames?.takeIf { it.isNotEmpty() }?.let { names ->
+            add(stringResource(R.string.species_fact_names, names.joinToString(" · ") { "${it.languageLabel} ${it.name}" }))
         }
         if (!community.isNullOrEmpty()) {
             val people = community.map { it.ownerId }.toSet().size
@@ -149,8 +158,12 @@ fun FactsSection(
                 .entries.sortedByDescending { it.value }.take(2).map { it.key }
             if (community.size >= 3) add(stringResource(R.string.species_fact_community_months, months.joinToString("·") { month(it) }))
         }
-        facts?.foreignNames?.takeIf { it.isNotEmpty() }?.let { names ->
-            add(stringResource(R.string.species_fact_names, names.joinToString(" · ") { "${it.languageLabel} ${it.name}" }))
+        val number = NumberFormat.getIntegerInstance()
+        val world = facts?.worldOccurrences
+        if (world != null) {
+            val korea = facts.koreaOccurrences?.takeIf { it > 0 }?.let { stringResource(R.string.species_fact_korea_part, number.format(it)) }.orEmpty()
+            val months = facts.topMonths.takeIf { it.isNotEmpty() }?.let { m -> stringResource(R.string.species_fact_months_part, m.joinToString("·") { month(it) }) }.orEmpty()
+            add(stringResource(R.string.species_fact_world, number.format(world), korea, months))
         }
     }
     if (lines.isEmpty() && !factsLoading) return
@@ -159,7 +172,7 @@ fun FactsSection(
             if (factsLoading) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
         }
         PaperCard(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 lines.forEach { Text(it, style = MaterialTheme.typography.bodyMedium) }
                 if (lines.isNotEmpty()) {
                     Spacer(Modifier.height(2.dp))

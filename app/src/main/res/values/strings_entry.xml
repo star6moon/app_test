@@ -27,6 +27,12 @@
     <string name="entry_detail_no_location">위치 정보 없음</string>
     <string name="entry_detail_ai_confidence">AI 식별 신뢰도</string>
     <string name="entry_detail_recorded_by">기록한 사람</string>
+    <string name="entry_detail_memo_title">메모</string>
+    <string name="entry_detail_memo_empty">눌러서 메모를 남겨 보세요 (500자까지)</string>
+    <string name="entry_detail_memo_edit">메모 고치기</string>
+    <string name="entry_detail_memo_hint">그날의 날씨, 냄새, 함께 본 사람…</string>
+    <string name="entry_detail_memo_counter">%1$d/%2$d</string>
+    <string name="entry_detail_memo_save">저장</string>
     <string name="entry_detail_public_toggle">다른 사용자에게 공개</string>
     <string name="entry_detail_hidden_notice">여러 사용자의 신고로 숨겨진 기록이에요. 다시 공개할 수 없어요.</string>
     <string name="entry_detail_share_chooser_title">도감 기록 공유</string>

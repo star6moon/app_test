@@ -60,11 +60,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.draw.clip
@@ -97,6 +94,7 @@ import com.plantdex.app.R
 import com.plantdex.app.data.geo.GeoBounds
 import com.plantdex.app.data.filter.PeriodFilter
 import com.plantdex.app.ui.components.PeriodFilterBar
+import com.plantdex.app.ui.components.PillToggle
 import com.plantdex.app.data.model.UserProfile
 import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
@@ -209,44 +207,11 @@ fun PlantMapScreen(
     }
 }
 
-/**
- * 내 도감 / 모두의 기록 전환. 기본 SegmentedButton 은 높이·너비를 고정해 재서 글자가 잘리던 탓에,
- * 글자 크기(휴대폰 글꼴 크기 포함)에 맞춰 늘어나는 알약 모양으로 직접 그립니다.
- */
+/** 내 도감 / 모두의 기록 전환 (알약 모양, 글자 크기에 맞춰 늘어남) */
 @Composable
 internal fun ScopeToggle(selected: MapScope, onSelect: (MapScope) -> Unit, modifier: Modifier = Modifier) {
-    val colors = MaterialTheme.colorScheme
-    Surface(
-        modifier = modifier.selectableGroup(),
-        shape = CircleShape,
-        color = colors.surfaceContainerLowest,
-        border = BorderStroke(1.dp, colors.outline),
-    ) {
-        Row(Modifier.padding(3.dp), verticalAlignment = Alignment.CenterVertically) {
-            MapScope.entries.forEach { option ->
-                val isSelected = option == selected
-                Surface(
-                    shape = CircleShape,
-                    color = if (isSelected) colors.primaryContainer else Color.Transparent,
-                    contentColor = if (isSelected) colors.onPrimaryContainer else colors.onSurfaceVariant,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(option) }),
-                ) {
-                    Text(
-                        stringResource(option.labelRes),
-                        style = MaterialTheme.typography.labelLarge,
-                        maxLines = 1,
-                        softWrap = false,
-                        modifier = Modifier
-                            .defaultMinSize(minHeight = 32.dp)
-                            .wrapContentHeight(Alignment.CenterVertically)
-                            .padding(horizontal = 12.dp, vertical = 6.dp),
-                    )
-                }
-            }
-        }
-    }
+    val labels = MapScope.entries.associateWith { stringResource(it.labelRes) }
+    PillToggle(MapScope.entries, selected, label = { labels.getValue(it) }, onSelect = onSelect, modifier = modifier)
 }
 
 /** 지도를 처음 열 때 가운데에서 보이게 할 반경 (m) */

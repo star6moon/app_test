@@ -24,9 +24,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -49,6 +46,8 @@ import com.plantdex.app.ui.components.EmojiBadge
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
 import com.plantdex.app.ui.components.PaperCard
+import com.plantdex.app.ui.components.PillToggle
+import com.plantdex.app.data.achievements.Levels
 import com.plantdex.app.ui.components.UserAvatar
 import com.plantdex.app.ui.components.appContainer
 import kotlinx.coroutines.CancellationException
@@ -104,16 +103,14 @@ fun RankingScreen(uid: String, onUserClick: (uid: String, name: String) -> Unit,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     item {
-                        SingleChoiceSegmentedButtonRow(Modifier.padding(vertical = 8.dp)) {
-                            RankBy.entries.forEachIndexed { i, option ->
-                                SegmentedButton(
-                                    selected = rankBy == option,
-                                    onClick = { rankBy = option },
-                                    shape = SegmentedButtonDefaults.itemShape(i, RankBy.entries.size),
-                                    icon = {},
-                                ) { Text(stringResource(option.labelRes)) }
-                            }
-                        }
+                        val labels = RankBy.entries.associateWith { stringResource(it.labelRes) }
+                        PillToggle(
+                            options = RankBy.entries,
+                            selected = rankBy,
+                            label = { labels.getValue(it) },
+                            onSelect = { rankBy = it },
+                            modifier = Modifier.padding(vertical = 8.dp),
+                        )
                     }
                     if (list.size <= 1) {
                         item {
@@ -151,8 +148,9 @@ fun RankingScreen(uid: String, onUserClick: (uid: String, name: String) -> Unit,
                                     )
                                 },
                                 supportingContent = {
+                                    val level = Levels.of(p.species).level
                                     Text(
-                                        stringResource(R.string.social_ranking_summary, p.records, p.species, p.catalogSpecies),
+                                        "Lv.${level.number} ${level.title} · " + stringResource(R.string.social_ranking_summary, p.records, p.species, p.catalogSpecies),
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )

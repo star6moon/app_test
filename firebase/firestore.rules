@@ -138,7 +138,7 @@ service cloud.firestore {
       allow update: if isUser(resource.data.ownerId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isPublic', 'memo'])
         && request.resource.data.isPublic is bool
-        && request.resource.data.memo is string && request.resource.data.memo.size() <= 1000
+        && request.resource.data.memo is string && request.resource.data.memo.size() <= 500
         && !(resource.data.get('moderation', '') in ['hidden', 'needs_correction'] && request.resource.data.isPublic == true);
       // 좋아요 수: 내 좋아요 문서를 만들거나 지우는 요청에서만 ±1.
       // 좋아요는 볼 수 있는 기록에만, 취소는 그 뒤 비공개로 바뀐 기록에도 할 수 있습니다.

@@ -19,7 +19,7 @@ test("species key uses catalog ids, synonyms and genus-wide species", () => {
   assert.equal(speciesKey("Forsythia ovata"), "forsythia");
   assert.equal(speciesKey("Viola × wittrockiana"), "pansy");
   assert.equal(speciesKey("Linnaea × grandiflora"), "abelia");
-  assert.equal(speciesKey("Quercus acutissima"), "quercus acutissima");
+  assert.equal(speciesKey("Abies holophylla"), "abies holophylla");
 });
 
 test("distance and geohash", () => {

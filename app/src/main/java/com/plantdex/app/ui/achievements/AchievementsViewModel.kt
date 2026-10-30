@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.plantdex.app.data.achievements.Badge
 import com.plantdex.app.data.achievements.Badges
+import com.plantdex.app.data.achievements.LevelProgress
+import com.plantdex.app.data.achievements.Levels
+import com.plantdex.app.data.catalog.ScientificName
 import com.plantdex.app.data.achievements.Mission
 import com.plantdex.app.data.achievements.WeeklyMissions
 import com.plantdex.app.data.catalog.CatalogRepository
@@ -25,8 +28,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 
-data class Achievements(val badges: List<Badge>, val missions: List<Mission>) {
+data class Achievements(val badges: List<Badge>, val missions: List<Mission>, val speciesCount: Int = 0) {
     val earnedCount: Int get() = badges.count { it.earned }
+    val level: LevelProgress get() = Levels.of(speciesCount)
 }
 
 /** 내 기록으로 배지와 이번 주 미션 진행 상황을 계산합니다. */
@@ -49,6 +53,7 @@ class AchievementsViewModel(
             Achievements(
                 badges = Badges.compute(entries, catalog),
                 missions = WeeklyMissions.forWeek(LocalDate.now(), catalog, entries, friendsEntries = friends),
+                speciesCount = entries.map { ScientificName.binomialKey(it.scientificName) ?: it.scientificName.lowercase() }.toSet().size,
             )
         }
         .flowOn(Dispatchers.Default)

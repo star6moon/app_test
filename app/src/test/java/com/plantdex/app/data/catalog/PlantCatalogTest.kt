@@ -116,7 +116,7 @@ class PlantCatalogTest {
         assertEquals("rose", catalog.match("Rosa banksiae")?.id)
         // 같은 속이어도 속 단위 인정이 아니면 매칭하지 않음
         assertNull(catalog.match("Prunus persica"))
-        assertNull(catalog.match("Quercus acutissima"))
+        assertNull(catalog.match("Abies holophylla"))
     }
 
     // ── 수집 현황 ────────────────────────────────────
@@ -128,7 +128,7 @@ class PlantCatalogTest {
                 entry("1", "Taraxacum officinale", capturedAt = 1),
                 entry("2", "Taraxacum officinale F.H.Wigg.", capturedAt = 5),
                 entry("3", "Camellia japonica"),
-                entry("4", "Quercus acutissima"), // 도감 밖
+                entry("4", "Abies holophylla"), // 도감 밖
             ),
         )
 

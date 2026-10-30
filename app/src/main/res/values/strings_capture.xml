@@ -12,6 +12,7 @@
     <string name="capture_results_subtitle">가장 비슷한 식물을 골라 주세요 · 식별: Pl@ntNet · 이름: GBIF, Wikidata</string>
     <string name="capture_low_confidence_message">AI가 확신하지 못하고 있어요 (가장 높은 후보 %1$s). 꽃 한 송이나 잎 몇 장이 화면을 가득 채우도록 가까이서 찍거나, 찍은 뒤 \'자르기\' 로 식물만 남기고, 꽃·잎 등 다른 부위를 함께 찍으면 훨씬 정확해져요.</string>
     <string name="capture_memo_label">메모 (선택)</string>
+    <string name="capture_memo_counter">%1$d/%2$d</string>
     <string name="capture_public_title">다른 사용자에게 공개</string>
     <string name="capture_public_description">공개하면 피드와 내 프로필 도감에 표시돼요</string>
     <string name="capture_no_location_message">위치 정보가 없어 등록할 수 없어요. 같은 식물은 이미 등록한 곳에서 %1$dm 이상 떨어진 곳에서만 등록할 수 있어서 위치가 필요해요.</string>

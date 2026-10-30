@@ -21,7 +21,6 @@ import com.plantdex.app.ui.components.plantName
 import com.plantdex.app.ui.components.InfoPill
 import com.plantdex.app.ui.components.PaperCard
 import com.plantdex.app.ui.components.ScientificName
-import com.plantdex.app.ui.components.TaxonomySection
 import com.plantdex.app.ui.components.UserAvatar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,15 +39,11 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Flag
-import androidx.compose.material.icons.outlined.Place
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,7 +65,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.semantics.Role
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -240,6 +237,7 @@ fun EntryDetailScreen(
                         onUserClick = { onUserClick(data.ownerId, data.ownerName) },
                         onSpeciesClick = { onSpeciesClick(data.scientificName, name, data.family) },
                         onAuthorClick = onUserClick,
+                        onMemoChange = { viewModel.setMemo(data, it) },
                         modifier = modifier,
                     )
                 }
@@ -340,8 +338,13 @@ private fun EntryDetailContent(
     onUserClick: () -> Unit,
     onSpeciesClick: () -> Unit,
     onAuthorClick: (uid: String, name: String) -> Unit,
+    onMemoChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var editingMemo by remember { mutableStateOf(false) }
+    if (editingMemo) {
+        MemoDialog(initial = entry.memo, onDismiss = { editingMemo = false }, onSave = { editingMemo = false; onMemoChange(it) })
+    }
     Column(
         modifier
             .verticalScroll(rememberScrollState())
@@ -385,44 +388,15 @@ private fun EntryDetailContent(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             )
-            if (placeName != null) InfoPill(placeName)
+            // 장소를 누르면 지도 앱에서 촬영 위치를 엽니다.
+            if (placeName != null) {
+                InfoPill(placeName, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onOpenMap))
+            }
             if (familyText != null) InfoPill(familyText)
             if (genusText != null) InfoPill(genusText)
         }
         OutlinedButton(onClick = onSpeciesClick, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.entry_detail_view_species))
-        }
-
-        // 분류 체계 그래프 (계 → 종)
-        TaxonomySection(
-            scientificName = entry.scientificName,
-            species = plantName(entry),
-            gbifId = entry.gbifId,
-            family = entry.family,
-            genus = entry.genus,
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        // 관찰 정보 카드
-        PaperCard(Modifier.fillMaxWidth()) {
-            InfoRow(Icons.Outlined.Schedule, stringResource(R.string.entry_detail_captured_at), Formatters.dateTime(entry.capturedAt))
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
-            val location = entry.location
-            if (location != null) {
-                InfoRow(
-                    Icons.Outlined.Place,
-                    stringResource(R.string.entry_detail_location),
-                    listOfNotNull(
-                        location.placeName,
-                        Formatters.coordinates(location.latitude, location.longitude),
-                    ).joinToString("\n"),
-                    onClick = onOpenMap,
-                )
-            } else {
-                InfoRow(Icons.Outlined.Place, stringResource(R.string.entry_detail_location), stringResource(R.string.entry_detail_no_location))
-            }
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
-            InfoRow(Icons.Outlined.Verified, stringResource(R.string.entry_detail_ai_confidence), "${Formatters.percent(entry.score)} (Pl@ntNet)")
         }
 
         // 기록한 사람
@@ -449,10 +423,35 @@ private fun EntryDetailContent(
             }
         }
 
-        // 메모
-        if (entry.memo.isNotBlank()) {
-            PaperCard(Modifier.fillMaxWidth()) {
-                Text(entry.memo, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
+        // 메모: 작성자는 500자까지 쓰고 고칠 수 있고, 다른 사람에게는 내용이 있을 때만 보입니다.
+        if (isOwner || entry.memo.isNotBlank()) {
+            PaperCard(Modifier.fillMaxWidth(), onClick = if (isOwner) ({ editingMemo = true }) else null) {
+                Row(Modifier.padding(start = 16.dp, top = 12.dp, end = 8.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            stringResource(R.string.entry_detail_memo_title),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        if (entry.memo.isNotBlank()) {
+                            Text(entry.memo, style = MaterialTheme.typography.bodyLarge)
+                        } else {
+                            Text(
+                                stringResource(R.string.entry_detail_memo_empty),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                    if (isOwner) {
+                        Icon(
+                            Icons.Outlined.Edit,
+                            contentDescription = stringResource(R.string.entry_detail_memo_edit),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(8.dp),
+                        )
+                    }
+                }
             }
         }
 
@@ -496,36 +495,31 @@ private fun EntryDetailContent(
     }
 }
 
-/** 관찰 정보 한 줄: 연초록 원 안의 아이콘 + 이름표 + 값. */
+/** 메모 쓰기·고치기 창 (최대 [MAX_MEMO_LENGTH]자) */
 @Composable
-private fun InfoRow(icon: ImageVector, label: String, value: String, onClick: (() -> Unit)? = null) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(20.dp))
-        }
-        Spacer(Modifier.width(12.dp))
-        Column {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(
-                value,
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (onClick != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+private fun MemoDialog(initial: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
+    var text by remember { mutableStateOf(initial) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.entry_detail_memo_title)) },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it.take(MAX_MEMO_LENGTH) },
+                placeholder = { Text(stringResource(R.string.entry_detail_memo_hint)) },
+                minLines = 4,
+                maxLines = 8,
+                supportingText = { Text(stringResource(R.string.entry_detail_memo_counter, text.length, MAX_MEMO_LENGTH)) },
+                modifier = Modifier.fillMaxWidth(),
             )
-        }
-    }
+        },
+        confirmButton = { TextButton(onClick = { onSave(text.trim()) }) { Text(stringResource(R.string.entry_detail_memo_save)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.entry_detail_cancel)) } },
+    )
 }
+
+/** 메모 최대 글자 수 (서버 규칙과 같음) */
+const val MAX_MEMO_LENGTH = 500
 
 /**
  * 기록을 공유합니다. [shareCard] 가 있으면 사진·이름·학명·날짜가 들어간 도감 카드 이미지를 만들어 함께 보내고,

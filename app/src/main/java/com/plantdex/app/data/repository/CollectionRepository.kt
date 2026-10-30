@@ -247,6 +247,11 @@ class CollectionRepository(
         }
     }
 
+    /** 작성자의 메모 (최대 500자, 서버 규칙과 같음) */
+    suspend fun setMemo(id: String, memo: String) {
+        entries.document(id).update("memo", memo.trim().take(500)).await()
+    }
+
     suspend fun setPublic(id: String, isPublic: Boolean) {
         entries.document(id).update("isPublic", isPublic).await()
     }

@@ -30,6 +30,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.LinearProgressIndicator
+import com.plantdex.app.ui.components.InfoPill
+import com.plantdex.app.data.achievements.Levels
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -70,11 +75,13 @@ fun ProfileHeader(
                 Spacer(Modifier.width(16.dp))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(profile.displayName, style = MaterialTheme.typography.titleLarge)
+                    LevelPill(profile.species)
                     if (profile.bio.isNotBlank()) {
                         Text(profile.bio, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
+            LevelProgressRow(profile.species)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Stat(stringResource(R.string.profile_stat_records), profile.records, Modifier.weight(1f))
                 Stat(stringResource(R.string.profile_stat_species), profile.species, Modifier.weight(1f))
@@ -94,6 +101,48 @@ fun ProfileHeader(
         }
     }
     if (editing) ProfileEditDialog(profile, onDismiss = { editing = false })
+}
+
+/** 레벨 꼬리표: "Lv.3 풀꽃 친구 🌼" */
+@Composable
+fun LevelPill(speciesCount: Int, modifier: Modifier = Modifier) {
+    val level = Levels.of(speciesCount).level
+    InfoPill(
+        "Lv.${level.number} ${level.title} ${level.emoji}",
+        modifier,
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    )
+}
+
+/** 다음 레벨까지의 진행 막대와 남은 식물 수 */
+@Composable
+private fun LevelProgressRow(speciesCount: Int) {
+    val progress = Levels.of(speciesCount)
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                progress.next?.let { stringResource(R.string.levels_next, it.title, progress.remaining) }
+                    ?: stringResource(R.string.levels_max),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                stringResource(R.string.levels_species, progress.species),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        LinearProgressIndicator(
+            progress = { progress.fraction },
+            modifier = Modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            gapSize = 0.dp,
+            drawStopIndicator = {},
+        )
+    }
 }
 
 /** 숫자 칸: 카드 안에서 구분되도록 한 단계 진한 베이지 바탕 + 초록 숫자. */

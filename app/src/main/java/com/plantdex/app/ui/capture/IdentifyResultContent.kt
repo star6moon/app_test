@@ -176,6 +176,7 @@ fun IdentifyResultContent(
                         value = state.memo,
                         onValueChange = onMemoChange,
                         label = { Text(stringResource(R.string.capture_memo_label)) },
+                        supportingText = { Text(stringResource(R.string.capture_memo_counter, state.memo.length, MAX_MEMO)) },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 4,
                         shape = MaterialTheme.shapes.small,

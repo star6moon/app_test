@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.plantdex.app.data.achievements.Badge
 import com.plantdex.app.data.achievements.BadgeLedger
+import com.plantdex.app.data.achievements.LevelProgress
 import com.plantdex.app.R
 import com.plantdex.app.ui.components.appContainer
 
@@ -49,21 +50,38 @@ fun BadgeCelebrationHost(uid: String) {
     val achievements = rememberAchievements(uid)
     val container = appContainer()
     val ledger = remember { BadgeLedger(container.appContext) }
-    val queue = remember { mutableStateListOf<Badge>() }
-    LaunchedEffect(achievements?.badges) {
-        val badges = achievements?.badges ?: return@LaunchedEffect
-        queue += ledger.newlyEarned(uid, badges)
+    val queue = remember { mutableStateListOf<Celebration>() }
+    val levelHeadline = stringResource(R.string.levels_up_title)
+    val badgeHeadline = stringResource(R.string.badges_earned_title)
+    LaunchedEffect(achievements?.badges, achievements?.speciesCount) {
+        val current = achievements ?: return@LaunchedEffect
+        ledger.levelUp(uid, current.level.level)?.let { level ->
+            queue += Celebration(level.emoji, levelHeadline, "Lv.${level.number} ${level.title}", levelSubtitle(current.level))
+        }
+        queue += ledger.newlyEarned(uid, current.badges).map { Celebration(it.emoji, badgeHeadline, it.title, it.description) }
     }
-    queue.firstOrNull()?.let { badge ->
-        BadgeEarnedDialog(badge, onDismiss = { queue.removeAt(0) })
+    queue.firstOrNull()?.let { c ->
+        CelebrationDialog(c, onDismiss = { queue.removeAt(0) })
     }
 }
 
-/** 축하 창: 배지 이모지가 통통 튀며 커지고, 뒤의 연초록 원이 은은하게 숨 쉽니다. */
+private fun levelSubtitle(progress: LevelProgress): String =
+    progress.next?.let { "다음 레벨 ${it.title}까지 ${progress.remaining}종 남았어요" } ?: "가장 높은 레벨이에요!"
+
+/** 축하 창에 보여줄 내용 (배지 또는 레벨 업) */
+data class Celebration(val emoji: String, val headline: String, val title: String, val description: String)
+
+/** 새 배지 축하 창 */
 @Composable
 fun BadgeEarnedDialog(badge: Badge, onDismiss: () -> Unit) {
+    CelebrationDialog(Celebration(badge.emoji, stringResource(R.string.badges_earned_title), badge.title, badge.description), onDismiss)
+}
+
+/** 축하 창: 이모지가 통통 튀며 커지고, 뒤의 연초록 원이 은은하게 숨 쉽니다. */
+@Composable
+fun CelebrationDialog(celebration: Celebration, onDismiss: () -> Unit) {
     val scale = remember { Animatable(0f) }
-    LaunchedEffect(badge.id) {
+    LaunchedEffect(celebration) {
         scale.snapTo(0f)
         scale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow))
     }
@@ -83,7 +101,7 @@ fun BadgeEarnedDialog(badge: Badge, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.badges_earned_ok)) } },
         title = {
-            Text(stringResource(R.string.badges_earned_title), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            Text(celebration.headline, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         },
         text = {
             Column(
@@ -100,16 +118,16 @@ fun BadgeEarnedDialog(badge: Badge, onDismiss: () -> Unit) {
                             .background(MaterialTheme.colorScheme.primaryContainer),
                     )
                     Text(
-                        badge.emoji,
+                        celebration.emoji,
                         style = MaterialTheme.typography.displayMedium,
                         modifier = Modifier
                             .graphicsLayer { scaleX = scale.value; scaleY = scale.value }
                             .rotate(wiggle),
                     )
                 }
-                Text(badge.title, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
+                Text(celebration.title, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
                 Text(
-                    badge.description,
+                    celebration.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,

@@ -20,6 +20,8 @@ data class CatalogSpecies(
     val hint: String = "",
     /** 전해지는 꽃말 (없으면 빈 문자열) */
     val flowerLanguage: String = "",
+    /** 식물 정보 화면의 '알고 있나요?' 에 보여줄 짧은 이야기들 */
+    val facts: List<String> = emptyList(),
     /** 이 종의 외형 그림 사양 (지도 마커, 도감, 카드에 사용) */
     val art: PlantArt? = null,
 )

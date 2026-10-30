@@ -22,4 +22,12 @@ class BadgeLedger(context: Context) {
         if (fresh.isNotEmpty()) prefs.edit().putStringSet(key, seen + fresh.map { it.id }).apply()
         return fresh
     }
+
+    /** 레벨이 올랐으면 새 레벨, 아니면 null. 처음 보는 계정이면 지금 레벨을 적어 두고 null. */
+    fun levelUp(uid: String, level: Level): Level? {
+        val key = "level_$uid"
+        val seen = prefs.getInt(key, -1)
+        if (seen == -1 || level.number > seen) prefs.edit().putInt(key, level.number).apply()
+        return if (seen != -1 && level.number > seen) level else null
+    }
 }

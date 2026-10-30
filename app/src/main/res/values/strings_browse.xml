@@ -89,14 +89,15 @@
     <string name="species_community_photo">%1$s님의 %2$s 사진</string>
     <string name="species_community_empty">아직 다른 사람의 공개 기록이 없어요. 첫 번째가 되어 보세요!</string>
     <string name="species_facts">알고 있나요?</string>
-    <string name="species_fact_world">🌍 전 세계 관찰 기록 %1$s건 (GBIF)</string>
-    <string name="species_fact_korea">🇰🇷 그중 한국에서 %1$s건</string>
-    <string name="species_fact_months">📅 세계에서 가장 많이 관찰되는 달: %1$s</string>
+    <string name="species_fact_world">🌍 세계 연구자·시민들의 관찰 기록 %1$s건%2$s%3$s</string>
+    <string name="species_fact_korea_part">" (한국 %1$s건)"</string>
+    <string name="species_fact_months_part">", 주로 %1$s에 보여요"</string>
+    <string name="species_fact_name_meaning">🔤 학명 뜻풀이: %1$s</string>
     <string name="species_fact_community">🌿 PlantDex 에서는 %1$d명이 기록했어요 (첫 기록 %2$s)</string>
     <string name="species_fact_community_months">🗓️ PlantDex 기록이 많은 달: %1$s</string>
     <string name="species_fact_names">🗣️ 다른 나라에서는: %1$s</string>
     <string name="species_fact_month">%1$d월</string>
-    <string name="species_facts_source">출처: GBIF, PlantDex 공개 기록</string>
+    <string name="species_facts_source">출처: PlantDex 도감, GBIF(세계 생물다양성 정보기구), PlantDex 공개 기록</string>
 
     <!-- feed: FeedScreen -->
     <string name="feed_title">둘러보기</string>

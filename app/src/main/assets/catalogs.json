@@ -14,7 +14,11 @@
     "color": "#F7C93C",
     "accent": "#E39B12",
     "petals": 24
-   }
+   },
+   "facts": [
+    "씨앗 하나하나에 낙하산 같은 솜털이 달려 바람을 타고 멀리 날아가요.",
+    "잎은 유럽에서 샐러드로 먹고, 뿌리는 볶아서 커피 대용으로 마시기도 해요."
+   ]
   },
   {
    "id": "dandelion",
@@ -32,7 +36,11 @@
     "color": "#F9DA6A",
     "accent": "#E8B923",
     "petals": 20
-   }
+   },
+   "facts": [
+    "서양민들레와 달리 꽃받침(총포)이 꽃을 꼭 감싸고 있어 구별할 수 있어요.",
+    "도시에서는 서양민들레에 밀려 점점 보기 어려워진 토종 민들레예요."
+   ]
   },
   {
    "id": "white_clover",
@@ -47,7 +55,11 @@
     "color": "#4FA44A",
     "accent": "#FFFFFF",
     "variant": "clover"
-   }
+   },
+   "facts": [
+    "네잎클로버는 세잎 중 약 1만 분의 1 확률로 나타나는 돌연변이예요.",
+    "뿌리의 뿌리혹박테리아가 공기 중 질소를 땅에 넣어 주어 땅을 기름지게 해요."
+   ]
   },
   {
    "id": "forsythia",
@@ -67,7 +79,11 @@
     "accent": "#D99A06",
     "petals": 4,
     "petal": "oblong"
-   }
+   },
+   "facts": [
+    "개나리는 한국 특산 식물이에요. 학명에 koreana가 들어가요.",
+    "꽃이 먼저 피고 잎이 나중에 나서 봄 울타리가 온통 노랗게 보여요."
+   ]
   },
   {
    "id": "cherry",
@@ -90,7 +106,11 @@
     "petals": 5,
     "petal": "notched",
     "variant": "stamen"
-   }
+   },
+   "facts": [
+    "왕벚나무는 잎이 나기 전에 꽃이 한꺼번에 피었다가 일주일 안에 져요.",
+    "열매(버찌)는 새가 먹고 씨앗을 퍼뜨려요."
+   ]
   },
   {
    "id": "magnolia",
@@ -110,7 +130,11 @@
     "color": "#FBF7F0",
     "accent": "#E7B3C6",
     "variant": "open"
-   }
+   },
+   "facts": [
+    "목련은 공룡 시대부터 있던 아주 오래된 꽃나무 무리예요. 벌이 없던 시절 딱정벌레가 꽃가루를 옮겼어요.",
+    "꽃봉오리가 북쪽을 향해 기울어 '북향화'라고도 불러요."
+   ]
   },
   {
    "id": "ginkgo",
@@ -124,7 +148,11 @@
     "form": "leaf",
     "color": "#F2C230",
     "variant": "fan"
-   }
+   },
+   "facts": [
+    "은행나무는 2억 년 전부터 거의 모습이 변하지 않은 '살아있는 화석'이에요.",
+    "암나무와 수나무가 따로 있고, 열매 냄새 때문에 가로수는 주로 수나무를 심어요."
+   ]
   },
   {
    "id": "metasequoia",
@@ -138,7 +166,11 @@
     "color": "#6E9440",
     "accent": "#8D5A2B",
     "variant": "narrow"
-   }
+   },
+   "facts": [
+    "화석으로만 알려졌다가 1940년대 중국에서 살아 있는 나무가 발견됐어요.",
+    "침엽수지만 가을에 잎이 붉게 물들어 떨어지는 낙엽수예요."
+   ]
   },
   {
    "id": "shepherds_purse",
@@ -152,7 +184,11 @@
     "form": "spike",
     "color": "#FFFFFF",
     "variant": "pods"
-   }
+   },
+   "facts": [
+    "하트 모양 열매가 양치기의 지갑을 닮아 학명이 '양치기의 지갑'이에요.",
+    "봄에 뿌리째 캐서 된장국에 넣어 먹는 대표 봄나물이에요."
+   ]
   },
   {
    "id": "violet",
@@ -171,7 +207,11 @@
     "accent": "#F3EDFF",
     "petals": 5,
     "petal": "round"
-   }
+   },
+   "facts": [
+    "제비가 돌아올 무렵에 피어서 제비꽃이라는 이름이 붙었다는 설이 있어요.",
+    "씨앗에 개미가 좋아하는 영양 덩어리가 붙어 있어 개미가 씨앗을 옮겨 줘요."
+   ]
   },
   {
    "id": "trigonotis",
@@ -187,7 +227,11 @@
     "accent": "#F7D046",
     "petals": 5,
     "variant": "spray"
-   }
+   },
+   "facts": [
+    "꽃이 피기 전 꽃대가 태엽처럼 돌돌 말려 있어 '꽃마리'예요.",
+    "꽃 지름이 2mm 정도로 아주 작아 쪼그려 앉아야 보여요."
+   ]
   },
   {
    "id": "fleabane",
@@ -202,7 +246,11 @@
     "color": "#FFFFFF",
     "accent": "#F5C518",
     "petals": 28
-   }
+   },
+   "facts": [
+    "북아메리카에서 들어온 귀화식물로, 나라를 망하게 한 풀이라는 뜻의 '개망초'라는 이름이 붙었어요.",
+    "계란후라이를 닮아 '계란꽃'이라고도 불러요."
+   ]
   },
   {
    "id": "coreopsis",
@@ -221,7 +269,11 @@
     "accent": "#C98A06",
     "petals": 8,
     "petal": "notched"
-   }
+   },
+   "facts": [
+    "북아메리카 원산으로 도로변 녹화용으로 심었다가 전국으로 퍼졌어요.",
+    "번식력이 강해 생태계 교란 생물로 지정되어 있어요."
+   ]
   },
   {
    "id": "cosmos",
@@ -239,7 +291,11 @@
     "accent": "#F2C14E",
     "petals": 8,
     "petal": "notched"
-   }
+   },
+   "facts": [
+    "멕시코 원산으로, 스페인 신부가 질서·조화를 뜻하는 그리스어 kosmos 를 이름으로 붙였어요.",
+    "가을꽃으로 알지만 원래는 해가 짧아지면 피는 성질이라 여름 끝부터 피어요."
+   ]
   },
   {
    "id": "hibiscus",
@@ -256,7 +312,11 @@
     "petals": 5,
     "petal": "wavy",
     "variant": "stamen"
-   }
+   },
+   "facts": [
+    "아침에 피고 저녁에 지는 꽃이 여름 내내 날마다 새로 피어 '무궁(無窮)'이라는 이름이 붙었어요.",
+    "대한민국의 나라꽃이며 애국가 가사에도 나와요."
+   ]
   },
   {
    "id": "fringe_tree",
@@ -273,7 +333,11 @@
     "petals": 4,
     "petal": "narrow",
     "variant": "spray"
-   }
+   },
+   "facts": [
+    "꽃이 핀 모습이 흰 쌀밥(이밥) 같다고 해서 이팝나무예요.",
+    "옛날에는 이팝나무 꽃이 잘 피면 그해 풍년이 든다고 점쳤어요."
+   ]
   },
   {
    "id": "crape_myrtle",
@@ -290,7 +354,11 @@
     "petals": 6,
     "petal": "wavy",
     "variant": "cone"
-   }
+   },
+   "facts": [
+    "꽃이 백 일 동안 핀다고 해서 '백일홍나무', 줄여서 배롱나무예요.",
+    "줄기를 간지럽히면 나무가 움직인다고 '간지럼나무'라고도 불러요."
+   ]
   },
   {
    "id": "trumpet_creeper",
@@ -307,15 +375,17 @@
     "form": "funnel",
     "color": "#F28C28",
     "accent": "#D9480F"
-   }
+   },
+   "facts": [
+    "옛날에는 양반집에만 심을 수 있어 '양반꽃'이라 불렸어요.",
+    "빨판 같은 뿌리로 담장을 타고 10m 넘게 오르기도 해요."
+   ]
   },
   {
    "id": "hydrangea",
    "name": "수국",
    "scientificName": "Hydrangea macrophylla",
-   "synonyms": [
-    "Hydrangea serrata"
-   ],
+   "synonyms": [],
    "acceptGenus": false,
    "hint": "초여름의 커다란 공 모양 꽃송이",
    "flowerLanguage": "진심, 변덕",
@@ -325,7 +395,11 @@
     "accent": "#E6EEFF",
     "petals": 4,
     "variant": "ball"
-   }
+   },
+   "facts": [
+    "흙이 산성이면 파란 꽃, 알칼리성이면 분홍 꽃이 피어요.",
+    "화려한 꽃잎처럼 보이는 것은 사실 꽃받침이고, 진짜 꽃은 아주 작아요."
+   ]
   },
   {
    "id": "petunia",
@@ -343,7 +417,11 @@
     "form": "funnel",
     "color": "#B04AC9",
     "accent": "#6A1B9A"
-   }
+   },
+   "facts": [
+    "담배와 같은 가지과 식물이라 잎을 만지면 끈적해요.",
+    "원래 남아메리카 원산으로 품종 개량을 거쳐 전 세계 화단 꽃이 됐어요."
+   ]
   },
   {
    "id": "pansy",
@@ -363,7 +441,11 @@
     "petals": 5,
     "petal": "round",
     "variant": "face"
-   }
+   },
+   "facts": [
+    "프랑스어로 '생각'을 뜻하는 pensée 에서 이름이 왔어요.",
+    "추위에 강해 서울에서도 겨울을 나고 이른 봄부터 피어요."
+   ]
   },
   {
    "id": "plantain",
@@ -380,7 +462,11 @@
     "color": "#5E9E44",
     "accent": "#B9C47A",
     "variant": "spike"
-   }
+   },
+   "facts": [
+    "길에서 밟혀도 잘 자라 '길경이'에서 질경이가 됐다고 해요.",
+    "씨앗은 '차전자'라는 한약재로 쓰여요."
+   ]
   },
   {
    "id": "woodsorrel",
@@ -398,7 +484,11 @@
     "color": "#7CB342",
     "accent": "#F7D046",
     "variant": "clover"
-   }
+   },
+   "facts": [
+    "잎을 씹으면 신맛이 나서 '시금초'라고도 불러요. 학명도 '신맛'이에요.",
+    "밤이나 비가 오면 잎을 접어요."
+   ]
   },
   {
    "id": "celandine",
@@ -416,7 +506,11 @@
     "accent": "#E0A800",
     "petals": 4,
     "petal": "round"
-   }
+   },
+   "facts": [
+    "줄기를 꺾으면 아기 똥 색의 노란 즙이 나와서 애기똥풀이에요.",
+    "즙에는 독이 있어 먹으면 안 돼요."
+   ]
   },
   {
    "id": "speedwell",
@@ -432,7 +526,11 @@
     "accent": "#FFFFFF",
     "petals": 4,
     "petal": "round"
-   }
+   },
+   "facts": [
+    "학명은 '페르시아의 베로니카'. 유럽·서아시아에서 들어온 귀화식물이에요.",
+    "꽃 하나가 하루 만에 지지만 계속 새로 피어 이른 봄 들판을 하늘색으로 덮어요."
+   ]
   },
   {
    "id": "henbit",
@@ -448,7 +546,11 @@
     "form": "spike",
     "color": "#C75B9B",
     "variant": "whorl"
-   }
+   },
+   "facts": [
+    "잎이 줄기를 감싸 광대의 옷깃 같아 광대나물이에요.",
+    "꽃을 피우지 않고 꽃봉오리 안에서 스스로 씨를 맺는 '폐쇄화'도 만들어요."
+   ]
   },
   {
    "id": "cornus_officinalis",
@@ -465,7 +567,11 @@
     "petals": 4,
     "petal": "narrow",
     "variant": "spray"
-   }
+   },
+   "facts": [
+    "잎보다 먼저 피는 노란 꽃으로 봄소식을 전해요.",
+    "빨간 열매는 '산수유'라는 한약재로, 구례·이천이 유명해요."
+   ]
   },
   {
    "id": "plum",
@@ -484,7 +590,11 @@
     "petals": 5,
     "petal": "round",
     "variant": "stamen"
-   }
+   },
+   "facts": [
+    "매화는 추위 속에서 가장 먼저 피어 선비들이 지조의 상징으로 삼았어요.",
+    "꽃을 보면 매화나무, 열매를 보면 매실나무라고 불러요."
+   ]
   },
   {
    "id": "lilac",
@@ -503,7 +613,11 @@
     "accent": "#EDE7F6",
     "petals": 4,
     "variant": "cone"
-   }
+   },
+   "facts": [
+    "우리나라 특산 '털개회나무'가 미국으로 건너가 '미스김 라일락'으로 개량됐어요.",
+    "향기가 진해 향수 원료로도 쓰여요."
+   ]
   },
   {
    "id": "liriope",
@@ -519,7 +633,11 @@
    "art": {
     "form": "spike",
     "color": "#8E6CC9"
-   }
+   },
+   "facts": [
+    "겨울에도 잎이 푸르러 '맥문동(麥門冬)'이라는 이름이 붙었어요.",
+    "그늘에서도 잘 자라 아파트 화단과 나무 밑에 많이 심어요."
+   ]
   },
   {
    "id": "moss_phlox",
@@ -535,7 +653,11 @@
     "accent": "#C2185B",
     "petals": 5,
     "petal": "notched"
-   }
+   },
+   "facts": [
+    "잔디처럼 땅을 덮으며 꽃을 피워 꽃잔디예요. 북아메리카 원산이에요.",
+    "학명 subulata 는 송곳 모양 잎을 뜻해요."
+   ]
   },
   {
    "id": "azalea_city",
@@ -557,7 +679,11 @@
     "petals": 5,
     "variant": "stamen",
     "spots": true
-   }
+   },
+   "facts": [
+    "일본에서 개량된 철쭉 품종으로 아파트 화단에 가장 많이 심는 꽃이에요.",
+    "진달래와 달리 잎에 독이 있어 먹으면 안 돼요."
+   ]
   },
   {
    "id": "rose",
@@ -565,7 +691,6 @@
    "scientificName": "Rosa chinensis",
    "synonyms": [
     "Rosa × odorata",
-    "Rosa multiflora",
     "Rosa × hybrida"
    ],
    "acceptGenus": true,
@@ -578,7 +703,11 @@
     "petals": 5,
     "petal": "round",
     "layers": 3
-   }
+   },
+   "facts": [
+    "5월에 피는 담장 장미는 대부분 중국 장미의 피가 섞인 품종이에요.",
+    "세계에서 가장 많은 품종(수만 종)이 만들어진 꽃이에요."
+   ]
   },
   {
    "id": "tulip",
@@ -591,7 +720,11 @@
    "art": {
     "form": "cup",
     "color": "#E53935"
-   }
+   },
+   "facts": [
+    "17세기 네덜란드에서는 튤립 알뿌리 하나가 집 한 채 값까지 올랐어요(튤립 광풍).",
+    "원산지는 네덜란드가 아니라 중앙아시아·터키예요."
+   ]
   },
   {
    "id": "morning_glory",
@@ -608,7 +741,11 @@
     "form": "funnel",
     "color": "#5C6BC0",
     "accent": "#FFFFFF"
-   }
+   },
+   "facts": [
+    "새벽에 피었다가 한낮이면 오므라들어 '아침의 영광(morning glory)'이에요.",
+    "씨앗은 '견우자'라는 한약재로 쓰였어요."
+   ]
   },
   {
    "id": "sunflower",
@@ -624,7 +761,11 @@
     "accent": "#6B3E1F",
     "petals": 22,
     "variant": "big"
-   }
+   },
+   "facts": [
+    "꽃이 피기 전 어린 해바라기만 해를 따라 고개를 돌리고, 다 핀 꽃은 동쪽을 봐요.",
+    "씨앗이 피보나치 수열의 나선으로 배열돼 있어요."
+   ]
   },
   {
    "id": "marigold",
@@ -643,7 +784,11 @@
     "petals": 10,
     "petal": "wavy",
     "layers": 3
-   }
+   },
+   "facts": [
+    "특유의 냄새로 해충을 쫓아 텃밭 둘레에 심어요.",
+    "멕시코에서는 '죽은 자의 날'에 고인을 맞이하는 꽃으로 써요."
+   ]
   },
   {
    "id": "spirea",
@@ -662,15 +807,18 @@
     "accent": "#F2E7A1",
     "petals": 5,
     "variant": "spray"
-   }
+   },
+   "facts": [
+    "좁쌀 같은 흰 꽃이 튀긴 조처럼 달려 조팝나무예요.",
+    "아스피린의 원료가 된 성분이 처음 이 무리(Spiraea)에서 발견돼 아스피린이라는 이름이 됐어요."
+   ]
   },
   {
    "id": "maple",
    "name": "단풍나무",
    "scientificName": "Acer palmatum",
    "synonyms": [
-    "Acer pictum",
-    "Acer pseudosieboldianum"
+    "Acer pictum"
    ],
    "acceptGenus": true,
    "hint": "손바닥 모양 잎, 가을이면 붉게",
@@ -679,7 +827,11 @@
     "form": "leaf",
     "color": "#E0452B",
     "variant": "maple"
-   }
+   },
+   "facts": [
+    "단풍은 잎의 초록 색소가 사라지면서 숨어 있던 붉은·노란 색소가 드러나는 거예요.",
+    "씨앗에 날개가 있어 프로펠러처럼 빙글빙글 돌며 떨어져요."
+   ]
   },
   {
    "id": "abelia",
@@ -698,7 +850,11 @@
     "accent": "#C9877A",
     "petals": 5,
     "variant": "spray"
-   }
+   },
+   "facts": [
+    "여름부터 서리 내릴 때까지 꽃이 피어 벌·나비가 늦가을까지 찾아와요.",
+    "꽃이 진 뒤에도 꽃받침이 남아 붉은빛을 띠어요."
+   ]
   },
   {
    "id": "euonymus",
@@ -712,7 +868,11 @@
     "form": "tree",
     "color": "#3E7D3A",
     "variant": "shrub"
-   }
+   },
+   "facts": [
+    "사계절 잎이 푸르러 '사철나무'예요. 학명은 '일본의'라는 뜻이에요.",
+    "가을에 주황색 씨앗이 네 갈래로 터지는 열매가 달려요."
+   ]
   },
   {
    "id": "jindallae",
@@ -730,7 +890,11 @@
     "accent": "#B03A7E",
     "petals": 5,
     "variant": "stamen"
-   }
+   },
+   "facts": [
+    "꽃을 먹을 수 있어 '참꽃', 못 먹는 철쭉은 '개꽃'이라 불렀어요.",
+    "삼월삼짇날 진달래꽃으로 화전을 부쳐 먹었어요."
+   ]
   },
   {
    "id": "royal_azalea",
@@ -747,7 +911,11 @@
     "petals": 5,
     "variant": "stamen",
     "spots": true
-   }
+   },
+   "facts": [
+    "연분홍 꽃잎에 자주색 점이 있고, 잎이 다섯 장씩 돌려나요.",
+    "꽃에 독이 있어 양이 먹고 비틀거린다고 '척촉(躑躅)'에서 이름이 왔어요."
+   ]
   },
   {
    "id": "korean_azalea",
@@ -766,7 +934,11 @@
     "petals": 5,
     "variant": "stamen",
     "spots": true
-   }
+   },
+   "facts": [
+    "계곡과 능선에 무리 지어 피어 산을 분홍으로 물들여요.",
+    "꽃이 피고 난 뒤 잎이 나는 진달래와 달리 잎과 꽃이 함께 피어요."
+   ]
   },
   {
    "id": "spicebush",
@@ -783,7 +955,11 @@
     "petals": 6,
     "petal": "narrow",
     "variant": "ball"
-   }
+   },
+   "facts": [
+    "잎과 가지에서 생강 냄새가 나서 생강나무예요. 산수유보다 먼저 피어요.",
+    "김유정 소설 '동백꽃'의 노란 동백꽃이 바로 생강나무 꽃이에요."
+   ]
   },
   {
    "id": "hepatica",
@@ -802,7 +978,11 @@
     "accent": "#FFFFFF",
     "petals": 6,
     "petal": "round"
-   }
+   },
+   "facts": [
+    "꽃이 필 때 돌돌 말린 잎에 난 솜털이 노루의 귀를 닮았어요.",
+    "꽃잎처럼 보이는 것은 꽃받침이고, 색이 흰색·분홍·보라로 다양해요."
+   ]
   },
   {
    "id": "erythronium",
@@ -819,7 +999,11 @@
     "petals": 6,
     "petal": "pointed",
     "spots": true
-   }
+   },
+   "facts": [
+    "씨앗이 싹트고 꽃이 피기까지 7년쯤 걸려요.",
+    "꽃잎 안쪽의 W자 무늬가 특징이고, 햇빛이 들면 꽃잎을 뒤로 활짝 젖혀요."
+   ]
   },
   {
    "id": "adonis",
@@ -839,7 +1023,11 @@
     "petals": 10,
     "petal": "round",
     "layers": 2
-   }
+   },
+   "facts": [
+    "눈 속에서 피어 '얼음새꽃', 복과 장수를 비는 '복수초(福壽草)'예요.",
+    "꽃이 햇빛을 모으는 접시 역할을 해 꽃 속이 바깥보다 따뜻해요."
+   ]
   },
   {
    "id": "iris_rossii",
@@ -852,7 +1040,11 @@
     "form": "iris",
     "color": "#8E6CD9",
     "accent": "#FFFFFF"
-   }
+   },
+   "facts": [
+    "키가 10cm 남짓으로 붓꽃 중에서 가장 작아요.",
+    "꽃봉오리가 먹을 묻힌 붓 같아서 붓꽃이에요."
+   ]
   },
   {
    "id": "lily_of_valley",
@@ -867,7 +1059,11 @@
    "art": {
     "form": "bell",
     "color": "#FFFFFF"
-   }
+   },
+   "facts": [
+    "향기가 좋아 향수에 쓰이지만 꽃·잎·열매 모두 독이 있어요.",
+    "프랑스에서는 5월 1일에 행운을 빌며 은방울꽃을 선물해요."
+   ]
   },
   {
    "id": "solomons_seal",
@@ -882,7 +1078,11 @@
     "color": "#F1F5E6",
     "accent": "#9CCC65",
     "variant": "tube"
-   }
+   },
+   "facts": [
+    "뿌리줄기를 말려 끓인 둥굴레차로 익숙한 식물이에요.",
+    "뿌리줄기에 남은 줄기 자국이 도장 자국 같아 영어로 '솔로몬의 인장'이에요."
+   ]
   },
   {
    "id": "bleeding_heart",
@@ -899,7 +1099,11 @@
     "color": "#E85A8A",
     "accent": "#FFFFFF",
     "variant": "heart"
-   }
+   },
+   "facts": [
+    "하트 모양 꽃이 비단 주머니(금낭) 같아 금낭화예요.",
+    "영어 이름은 '피 흘리는 심장(bleeding heart)'이에요."
+   ]
   },
   {
    "id": "kousa",
@@ -915,7 +1119,11 @@
     "accent": "#9CCC65",
     "petals": 4,
     "petal": "pointed"
-   }
+   },
+   "facts": [
+    "흰 꽃잎처럼 보이는 네 장은 꽃을 감싸는 포이고, 가운데 둥근 덩어리가 진짜 꽃이에요.",
+    "가을의 빨간 열매가 딸기를 닮아 산딸나무예요."
+   ]
   },
   {
    "id": "tiger_lily",
@@ -935,7 +1143,11 @@
     "petal": "pointed",
     "variant": "stamen",
     "spots": true
-   }
+   },
+   "facts": [
+    "잎겨드랑이에 달리는 까만 구슬(주아)이 떨어져 새 식물이 돼요.",
+    "나리 중 으뜸이라 '참'나리예요. 알뿌리는 먹을 수 있어요."
+   ]
   },
   {
    "id": "daylily",
@@ -952,7 +1164,11 @@
     "petals": 6,
     "petal": "pointed",
     "variant": "stamen"
-   }
+   },
+   "facts": [
+    "꽃 하나가 아침에 피어 저녁에 지지만 여러 봉오리가 차례로 피어요.",
+    "어린 순은 나물로 먹고, 근심을 잊게 한다고 '망우초'라고도 불러요."
+   ]
   },
   {
    "id": "gujeolcho",
@@ -969,7 +1185,11 @@
     "color": "#FBEFF4",
     "accent": "#F2C14E",
     "petals": 16
-   }
+   },
+   "facts": [
+    "음력 9월 9일(중양절)에 줄기가 아홉 마디가 된다고 구절초예요.",
+    "꽃을 말려 베개 속에 넣거나 차로 마셨어요."
+   ]
   },
   {
    "id": "yomena",
@@ -990,7 +1210,11 @@
     "color": "#B9A2E8",
     "accent": "#F2C14E",
     "petals": 20
-   }
+   },
+   "facts": [
+    "쑥을 캐던 불쟁이(대장장이) 딸의 전설에서 이름이 왔다고 해요.",
+    "봄에 어린 순을 나물로 먹어 '쑥부쟁이 나물'로 익숙해요."
+   ]
   },
   {
    "id": "sanguk",
@@ -1009,7 +1233,11 @@
     "petals": 10,
     "petal": "oblong",
     "variant": "spray"
-   }
+   },
+   "facts": [
+    "작지만 향이 진해 꽃을 말려 차나 술(국화주)에 넣어요.",
+    "재배 국화의 조상 중 하나로 여겨져요."
+   ]
   },
   {
    "id": "aconite",
@@ -1022,7 +1250,11 @@
     "form": "spike",
     "color": "#5B4BC4",
     "variant": "hood"
-   }
+   },
+   "facts": [
+    "뿌리는 '초오'라는 맹독으로, 옛날 사약의 재료였어요.",
+    "꽃 모양이 로마 병사의 투구를 닮아 투구꽃이에요."
+   ]
   },
   {
    "id": "mongolian_oak",
@@ -1035,7 +1267,11 @@
     "form": "tree",
     "color": "#4E8B3A",
     "accent": "#9C6B30"
-   }
+   },
+   "facts": [
+    "옛날 짚신 바닥에 잎을 깔아 '신갈이'에서 신갈나무가 됐다고 해요.",
+    "도토리는 묵을 만들고, 다람쥐·멧돼지의 중요한 겨울 먹이예요."
+   ]
   },
   {
    "id": "red_pine",
@@ -1050,7 +1286,11 @@
     "color": "#2F6B3A",
     "accent": "#B5532E",
     "variant": "pine"
-   }
+   },
+   "facts": [
+    "줄기 위쪽이 붉어 '적송', 애국가의 '남산 위의 저 소나무'가 이 나무예요.",
+    "솔방울은 건조하면 벌어지고 비가 오면 닫혀 씨앗을 보호해요."
+   ]
   },
   {
    "id": "oyama_magnolia",
@@ -1068,7 +1308,11 @@
     "petals": 6,
     "petal": "round",
     "variant": "stamen"
-   }
+   },
+   "facts": [
+    "북한의 나라꽃(국화)이에요.",
+    "꽃이 옆이나 아래를 향해 피어 숲속에서 올려다보면 더 예뻐요."
+   ]
   },
   {
    "id": "astilbe",
@@ -1087,7 +1331,11 @@
     "petals": 5,
     "petal": "narrow",
     "variant": "cone"
-   }
+   },
+   "facts": [
+    "꽃에서 노루 오줌 비슷한 냄새가 난다고 노루오줌이에요.",
+    "정원용으로 개량된 아스틸베는 이 식물의 친척이에요."
+   ]
   },
   {
    "id": "loosestrife",
@@ -1100,7 +1348,11 @@
     "form": "spike",
     "color": "#FFFFFF",
     "variant": "curved"
-   }
+   },
+   "facts": [
+    "꽃이삭이 한쪽으로 휘어 꼬리처럼 보여 '까치수염'이에요.",
+    "꽃이 아래서부터 차례로 피어 오래 볼 수 있어요."
+   ]
   },
   {
    "id": "impatiens",
@@ -1116,7 +1368,11 @@
     "form": "funnel",
     "color": "#C2479B",
     "accent": "#F4D35E"
-   }
+   },
+   "facts": [
+    "익은 열매를 살짝 건드리면 씨앗이 튀어 나가요. 학명도 '참을성 없는'이에요.",
+    "꽃 뒤쪽의 꿀주머니가 돌돌 말려 있어요."
+   ]
   },
   {
    "id": "balloon_flower",
@@ -1132,7 +1388,11 @@
     "accent": "#EDE7FF",
     "petals": 5,
     "petal": "pointed"
-   }
+   },
+   "facts": [
+    "꽃봉오리가 풍선처럼 부풀어 영어 이름이 '풍선꽃(balloon flower)'이에요.",
+    "뿌리는 반찬·약재로 쓰이고, 민요 '도라지 타령'으로 친숙해요."
+   ]
   },
   {
    "id": "pasque",
@@ -1149,7 +1409,11 @@
     "color": "#7B1E4B",
     "accent": "#F2C14E",
     "variant": "single"
-   }
+   },
+   "facts": [
+    "꽃이 피면 고개를 숙이고 흰 털이 덮여 할머니의 허리와 흰머리를 떠올리게 해요.",
+    "독이 있어 먹으면 안 되지만, 한국 특산 식물이에요."
+   ]
   },
   {
    "id": "silvergrass",
@@ -1162,7 +1426,11 @@
    "art": {
     "form": "plume",
     "color": "#D9CBB0"
-   }
+   },
+   "facts": [
+    "가을에 은빛으로 빛나는 것은 꽃이삭의 긴 털이에요.",
+    "억새는 산에, 갈대는 물가에 자라요. 억새 지붕으로 초가를 이기도 했어요."
+   ]
   },
   {
    "id": "iris_sanguinea",
@@ -1178,7 +1446,11 @@
     "form": "iris",
     "color": "#5E4FC9",
     "accent": "#F6E7A8"
-   }
+   },
+   "facts": [
+    "꽃봉오리가 먹을 머금은 붓을 닮아 붓꽃이에요.",
+    "바깥 꽃잎의 노란 그물 무늬는 벌을 꿀로 안내하는 표시예요."
+   ]
   },
   {
    "id": "rugosa",
@@ -1195,7 +1467,11 @@
     "petals": 5,
     "petal": "wavy",
     "variant": "stamen"
-   }
+   },
+   "facts": [
+    "바닷가 모래땅에서 자라 '바다의 꽃(海棠花)'이에요.",
+    "열매는 비타민C가 풍부해 잼이나 차로 먹어요."
+   ]
   },
   {
    "id": "beach_bindweed",
@@ -1208,7 +1484,11 @@
     "form": "funnel",
     "color": "#F4A6C8",
     "accent": "#FFFFFF"
-   }
+   },
+   "facts": [
+    "잎이 두껍고 윤기가 나서 바닷바람과 소금기를 견뎌요.",
+    "모래 속으로 뿌리를 깊이 뻗어 모래가 날리는 것을 막아요."
+   ]
   },
   {
    "id": "beach_vitex",
@@ -1225,7 +1505,11 @@
     "accent": "#E8E4FF",
     "petals": 5,
     "variant": "cone"
-   }
+   },
+   "facts": [
+    "열매는 '만형자'라는 한약재로, 두통에 썼어요.",
+    "잎과 가지에서 상쾌한 향기가 나요."
+   ]
   },
   {
    "id": "glehnia",
@@ -1239,7 +1523,11 @@
     "color": "#4E8E3E",
     "accent": "#FFFFFF",
     "variant": "umbel"
-   }
+   },
+   "facts": [
+    "뿌리는 '해방풍'이라 불리며 약재와 나물로 쓰여요.",
+    "모래 속 깊이 뿌리를 내려 어른 키만큼 길게 자라기도 해요."
+   ]
   },
   {
    "id": "limonium",
@@ -1254,7 +1542,11 @@
     "accent": "#E0B000",
     "petals": 5,
     "variant": "spray"
-   }
+   },
+   "facts": [
+    "갯벌 가장자리처럼 소금기 있는 땅에서만 자라는 염생식물이에요.",
+    "꽃이 말라도 색이 남아 드라이플라워로 써요."
+   ]
   },
   {
    "id": "ixeris_repens",
@@ -1268,7 +1560,11 @@
     "color": "#F5D02F",
     "accent": "#E0A800",
     "petals": 14
-   }
+   },
+   "facts": [
+    "모래 위를 기며 뿌리를 내려 모래언덕을 붙잡아 줘요.",
+    "잎은 손바닥 모양으로 갈라져 모래 위에 납작하게 펼쳐져요."
+   ]
   },
   {
    "id": "seaside_aster",
@@ -1283,7 +1579,11 @@
     "color": "#A992E6",
     "accent": "#F2C14E",
     "petals": 22
-   }
+   },
+   "facts": [
+    "바닷가 바위틈에서 늦가을까지 피는 '바다의 국화'예요.",
+    "잎에 솜털이 있어 바닷바람의 소금기를 막아요."
+   ]
   },
   {
    "id": "lysimachia_maur",
@@ -1298,7 +1598,11 @@
     "accent": "#F4E3A0",
     "petals": 5,
     "variant": "cone"
-   }
+   },
+   "facts": [
+    "잎이 두껍고 윤기가 나며, 흰 꽃이 탑처럼 달려요.",
+    "바닷가 바위 위에서도 자랄 만큼 소금과 바람에 강해요."
+   ]
   },
   {
    "id": "kobomugi",
@@ -1310,7 +1614,11 @@
    "art": {
     "form": "plume",
     "color": "#A3895B"
-   }
+   },
+   "facts": [
+    "뿌리줄기가 모래 속으로 길게 뻗어 모래언덕을 붙잡는 '해안 지킴이'예요.",
+    "이삭이 보리를 닮아 통보리사초예요."
+   ]
   },
   {
    "id": "beach_pea",
@@ -1326,7 +1634,11 @@
     "petals": 3,
     "petal": "wavy",
     "variant": "spray"
-   }
+   },
+   "facts": [
+    "완두콩의 친척으로 바닷가 모래밭에 자라요.",
+    "씨앗이 바닷물에 떠서 멀리 퍼져 북반구 해안 곳곳에 자라요."
+   ]
   },
   {
    "id": "black_pine",
@@ -1340,7 +1652,11 @@
     "color": "#234D2F",
     "accent": "#4A3B32",
     "variant": "pine"
-   }
+   },
+   "facts": [
+    "줄기가 검어 '곰솔' 또는 '흑송'이라 불러요.",
+    "바닷바람과 소금기에 강해 바닷가 방풍림으로 심어요."
+   ]
   },
   {
    "id": "camellia",
@@ -1357,7 +1673,11 @@
     "petals": 5,
     "variant": "stamen",
     "layers": 2
-   }
+   },
+   "facts": [
+    "꽃가루를 벌 대신 동박새가 옮겨요. 겨울에 피기 때문이에요.",
+    "꽃이 통째로 뚝 떨어져 옛사람들은 불길하게 여기기도 했어요."
+   ]
   },
   {
    "id": "pittosporum",
@@ -1371,7 +1691,11 @@
     "color": "#3F7D3A",
     "accent": "#FFFFFF",
     "variant": "shrub"
-   }
+   },
+   "facts": [
+    "꽃향기가 좋아 돈(錢)처럼 사람을 끌어 돈나무라는 설과, 똥나무가 변했다는 설이 있어요.",
+    "열매가 익으면 끈적한 빨간 씨앗이 드러나요."
+   ]
   },
   {
    "id": "suaeda",
@@ -1386,7 +1710,11 @@
     "form": "sprout",
     "color": "#C2410C",
     "variant": "jointed"
-   }
+   },
+   "facts": [
+    "가을이면 갯벌을 붉게 물들여 '갯벌의 단풍'이라 불려요.",
+    "소금기를 몸에 저장해 짠 땅에서도 살아요."
+   ]
   },
   {
    "id": "salicornia",
@@ -1399,7 +1727,11 @@
     "form": "sprout",
     "color": "#5E9E3A",
     "variant": "jointed"
-   }
+   },
+   "facts": [
+    "짠맛이 나 '함초'라 부르고 소금 대신 음식에 넣어요.",
+    "잎이 없고 마디진 줄기가 통통해 퉁퉁마디예요."
+   ]
   },
   {
    "id": "farfugium",
@@ -1413,7 +1745,11 @@
     "color": "#F5C400",
     "accent": "#D69E00",
     "petals": 12
-   }
+   },
+   "facts": [
+    "잎이 머위를 닮고 솜털이 있어 털머위예요.",
+    "늦가을 꽃이 드물 때 피어 벌·나비에게 귀한 꿀을 줘요."
+   ]
   },
   {
    "id": "hispid_aster",
@@ -1429,7 +1765,11 @@
     "color": "#C1B2EE",
     "accent": "#F2C14E",
     "petals": 18
-   }
+   },
+   "facts": [
+    "바닷가 풀밭에서 가을에 피는 쑥부쟁이의 한 종류예요.",
+    "줄기에 거친 털이 있어 학명이 '거친 털이 있는'이에요."
+   ]
   },
   {
    "id": "lotus",
@@ -1446,7 +1786,11 @@
     "petals": 8,
     "petal": "pointed",
     "layers": 2
-   }
+   },
+   "facts": [
+    "잎에 물방울이 구슬처럼 굴러떨어지는 '연잎 효과'는 방수 소재의 원리가 됐어요.",
+    "천 년 전 씨앗이 싹을 틔운 기록이 있을 만큼 씨앗의 수명이 길어요."
+   ]
   },
   {
    "id": "water_lily",
@@ -1463,7 +1807,11 @@
     "petals": 12,
     "petal": "pointed",
     "layers": 2
-   }
+   },
+   "facts": [
+    "낮에 피고 밤에 오므라들어 '잠자는 연꽃(睡蓮)'이에요.",
+    "모네의 그림 '수련'으로 유명한 꽃이에요."
+   ]
   },
   {
    "id": "cattail",
@@ -1476,7 +1824,11 @@
     "form": "spike",
     "color": "#7B4A26",
     "variant": "sausage"
-   }
+   },
+   "facts": [
+    "핫도그 같은 이삭은 수만 개의 꽃이 모인 것으로, 익으면 솜털 씨앗이 바람에 날려요.",
+    "옛날에는 이 솜털을 베개나 이불 속에 넣었어요."
+   ]
   },
   {
    "id": "yellow_iris",
@@ -1489,7 +1841,11 @@
     "form": "iris",
     "color": "#F5C400",
     "accent": "#8D5A0B"
-   }
+   },
+   "facts": [
+    "유럽 원산으로 물가에 심었다가 퍼진 귀화식물이에요.",
+    "프랑스 왕실 문장 '플뢰르 드 리스'의 모델이라는 설이 있어요."
+   ]
   },
   {
    "id": "reed",
@@ -1504,7 +1860,11 @@
    "art": {
     "form": "plume",
     "color": "#9C7B5B"
-   }
+   },
+   "facts": [
+    "갈대 뿌리가 물속 오염 물질을 빨아들여 물을 깨끗하게 해요.",
+    "세계에서 가장 널리 분포하는 식물 중 하나예요."
+   ]
   },
   {
    "id": "amur_silvergrass",
@@ -1516,7 +1876,11 @@
    "art": {
     "form": "plume",
     "color": "#EDE6D6"
-   }
+   },
+   "facts": [
+    "강가에 자라고 이삭이 억새보다 더 희고 풍성해요.",
+    "억새와 달리 땅속줄기로 번지며 넓은 군락을 만들어요."
+   ]
   },
   {
    "id": "tearthumb",
@@ -1533,7 +1897,11 @@
     "accent": "#FFFFFF",
     "petals": 5,
     "variant": "ball"
-   }
+   },
+   "facts": [
+    "개울가의 물을 맑게 해 '고마운 풀'에서 고마리가 됐다는 설이 있어요.",
+    "줄기에 작은 가시가 있어 만지면 까끌해요."
+   ]
   },
   {
    "id": "pussy_willow",
@@ -1548,7 +1916,11 @@
     "color": "#DCDCDC",
     "accent": "#F2A7B8",
     "variant": "catkin"
-   }
+   },
+   "facts": [
+    "이른 봄 꽃이삭의 보송한 털이 강아지 꼬리 같아 '버들강아지'예요.",
+    "물가에 자라며 가지를 꺾어 꽂으면 뿌리가 내려요."
+   ]
   },
   {
    "id": "water_hyacinth",
@@ -1566,7 +1938,11 @@
     "accent": "#F7D046",
     "petals": 6,
     "variant": "cone"
-   }
+   },
+   "facts": [
+    "부풀어 오른 잎자루 속 공기로 물에 떠요.",
+    "번식이 빨라 외국에서는 강을 덮는 골칫거리지만 우리나라에서는 겨울을 못 나요."
+   ]
   },
   {
    "id": "sweet_flag",
@@ -1580,7 +1956,11 @@
     "form": "spike",
     "color": "#C9B458",
     "variant": "spadix"
-   }
+   },
+   "facts": [
+    "단오에 창포 삶은 물로 머리를 감는 풍습이 있었어요.",
+    "붓꽃과는 다른 식물이에요. 꽃창포와 헷갈리기 쉬워요."
+   ]
   },
   {
    "id": "holly",
@@ -1597,7 +1977,11 @@
     "color": "#2E7D32",
     "accent": "#D32F2F",
     "variant": "holly"
-   }
+   },
+   "facts": [
+    "잎의 가시가 호랑이 발톱 같다고 호랑가시나무예요.",
+    "서양에서 크리스마스 장식에 쓰는 '홀리'의 친척이에요."
+   ]
   },
   {
    "id": "nandina",
@@ -1611,7 +1995,11 @@
     "form": "berries",
     "color": "#C62828",
     "accent": "#B5452F"
-   }
+   },
+   "facts": [
+    "겨울에 잎이 붉게 물들고 빨간 열매가 오래 달려 겨울 정원의 주인공이에요.",
+    "'어려움을 바꾼다(難轉)'는 뜻으로 일본에서는 행운의 나무로 여겨요."
+   ]
   },
   {
    "id": "fatsia",
@@ -1624,7 +2012,11 @@
     "form": "leaf",
     "color": "#2E7D32",
     "variant": "hand"
-   }
+   },
+   "facts": [
+    "잎이 손가락 여덟 개처럼 갈라져 팔손이예요.",
+    "다른 꽃이 다 진 초겨울에 피어 벌에게 마지막 꿀을 줘요."
+   ]
   },
   {
    "id": "narcissus",
@@ -1644,7 +2036,11 @@
     "petals": 6,
     "petal": "round",
     "variant": "corona"
-   }
+   },
+   "facts": [
+    "제주 거문오름 근처 들판에서 한겨울에 야생으로 피어요.",
+    "그리스 신화의 나르키소스가 물에 비친 자신을 보다 변한 꽃이에요."
+   ]
   },
   {
    "id": "yew",
@@ -1659,7 +2055,11 @@
     "color": "#2E5E35",
     "accent": "#C62828",
     "variant": "berry"
-   }
+   },
+   "facts": [
+    "천 년을 살고 죽어서도 천 년을 간다는 '살아 천 년 죽어 천 년' 나무예요.",
+    "빨간 열매살만 먹을 수 있고 씨앗과 잎에는 독이 있어요. 항암제 택솔이 주목에서 나왔어요."
+   ]
   },
   {
    "id": "juniper",
@@ -1672,7 +2072,11 @@
     "form": "conifer",
     "color": "#3E6B4A",
     "variant": "narrow"
-   }
+   },
+   "facts": [
+    "향이 좋아 제사 때 피우는 향의 원료로 썼어요.",
+    "울릉도에는 천연기념물로 지정된 수백 년 된 향나무가 있어요."
+   ]
   },
   {
    "id": "mistletoe",
@@ -1688,7 +2092,1702 @@
     "color": "#F2A33A",
     "accent": "#8DAA3A",
     "variant": "ball"
-   }
+   },
+   "facts": [
+    "다른 나무 가지에 뿌리를 박고 사는 반기생 식물이에요.",
+    "새가 끈적한 열매를 먹고 부리를 가지에 닦으면서 씨앗을 옮겨요."
+   ]
+  },
+  {
+   "id": "boxwood",
+   "name": "회양목",
+   "scientificName": "Buxus sinica",
+   "synonyms": [
+    "Buxus microphylla",
+    "Buxus koreana"
+   ],
+   "acceptGenus": false,
+   "hint": "화단 경계의 작고 둥근 잎 생울타리",
+   "flowerLanguage": "참고 견딤",
+   "art": {
+    "form": "leaf",
+    "color": "#4E8B3A",
+    "variant": "shrub"
+   },
+   "facts": [
+    "이른 봄 작고 노란 꽃이 피는데 향기가 있어 벌이 많이 찾아요.",
+    "나무가 단단해 도장을 새기던 나무예요."
+   ]
+  },
+  {
+   "id": "privet",
+   "name": "쥐똥나무",
+   "scientificName": "Ligustrum obtusifolium",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "생울타리의 흰 꽃, 가을 검은 열매",
+   "flowerLanguage": "강인한 마음",
+   "art": {
+    "form": "cluster",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "variant": "spray"
+   },
+   "facts": [
+    "열매가 쥐똥을 닮아 쥐똥나무예요. 초여름 꽃향기가 진해요."
+   ]
+  },
+  {
+   "id": "flowering_quince",
+   "name": "명자나무",
+   "scientificName": "Chaenomeles speciosa",
+   "synonyms": [
+    "Chaenomeles lagenaria"
+   ],
+   "acceptGenus": false,
+   "hint": "이른 봄 가지에 바짝 붙어 피는 붉은 꽃",
+   "flowerLanguage": "평범, 조숙",
+   "art": {
+    "form": "flower",
+    "color": "#E0452B",
+    "accent": "#F2C14E",
+    "petals": 5,
+    "variant": "stamen"
+   },
+   "facts": [
+    "아가씨들이 꽃을 보면 바람난다고 울 안에 심지 않았다는 이야기가 있어요."
+   ]
+  },
+  {
+   "id": "peony_tree",
+   "name": "모란",
+   "scientificName": "Paeonia × suffruticosa",
+   "synonyms": [
+    "Paeonia suffruticosa"
+   ],
+   "acceptGenus": false,
+   "hint": "5월 커다란 겹꽃, 줄기가 나무",
+   "flowerLanguage": "부귀",
+   "art": {
+    "form": "flower",
+    "color": "#C2185B",
+    "accent": "#F2C14E",
+    "petals": 8,
+    "layers": 2,
+    "petal": "wavy"
+   },
+   "facts": [
+    "'꽃의 왕'이라 불리며 부귀를 상징해 병풍·자수에 자주 그려졌어요.",
+    "선덕여왕이 모란 그림에 나비가 없어 향기가 없음을 알았다는 설화가 있어요."
+   ]
+  },
+  {
+   "id": "peony",
+   "name": "작약",
+   "scientificName": "Paeonia lactiflora",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "5~6월 화단의 큰 꽃, 줄기가 풀",
+   "flowerLanguage": "수줍음",
+   "art": {
+    "form": "flower",
+    "color": "#F48FB1",
+    "accent": "#F2C14E",
+    "petals": 8,
+    "layers": 2,
+    "petal": "wavy"
+   },
+   "facts": [
+    "모란과 닮았지만 모란은 나무, 작약은 풀이에요. 뿌리는 한약재예요."
+   ]
+  },
+  {
+   "id": "scarlet_sage",
+   "name": "사루비아",
+   "scientificName": "Salvia splendens",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "화단의 새빨간 꽃이삭",
+   "flowerLanguage": "정열",
+   "art": {
+    "form": "spike",
+    "color": "#E0452B"
+   },
+   "facts": [
+    "꽃을 뽑아 빨면 단맛이 나서 '꿀꽃'이라 불렀어요."
+   ]
+  },
+  {
+   "id": "moss_rose",
+   "name": "채송화",
+   "scientificName": "Portulaca grandiflora",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "뜨거운 땅의 작은 알록달록 꽃",
+   "flowerLanguage": "가련함",
+   "art": {
+    "form": "flower",
+    "color": "#F06292",
+    "accent": "#F2C14E",
+    "petals": 5
+   },
+   "facts": [
+    "남아메리카 원산으로 해가 나야 꽃이 열리고 흐리면 닫혀요."
+   ]
+  },
+  {
+   "id": "garden_balsam",
+   "name": "봉선화",
+   "scientificName": "Impatiens balsamina",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "장독대 옆 붉은 꽃",
+   "flowerLanguage": "나를 건드리지 마세요",
+   "art": {
+    "form": "flower",
+    "color": "#E53935",
+    "accent": "#F2C14E",
+    "petals": 5,
+    "variant": "hood"
+   },
+   "facts": [
+    "꽃잎을 백반과 찧어 손톱에 물들이던 꽃이에요.",
+    "익은 열매를 건드리면 톡 터지며 씨앗이 튀어요."
+   ]
+  },
+  {
+   "id": "cockscomb",
+   "name": "맨드라미",
+   "scientificName": "Celosia argentea",
+   "synonyms": [
+    "Celosia cristata"
+   ],
+   "acceptGenus": false,
+   "hint": "닭 볏 모양의 붉은 꽃",
+   "flowerLanguage": "시들지 않는 사랑",
+   "art": {
+    "form": "plume",
+    "color": "#C62828"
+   },
+   "facts": [
+    "닭의 볏을 닮아 '계관화'라고도 해요."
+   ]
+  },
+  {
+   "id": "zinnia",
+   "name": "백일홍",
+   "scientificName": "Zinnia elegans",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "백 일 동안 피는 알록달록 꽃",
+   "flowerLanguage": "떠나간 친구를 그리워함",
+   "art": {
+    "form": "daisy",
+    "color": "#E91E63",
+    "accent": "#F2C14E",
+    "petals": 16,
+    "layers": 2
+   },
+   "facts": [
+    "멕시코 원산으로 한 송이가 오래 피어 백일홍이에요. 배롱나무(백일홍나무)와는 다른 식물이에요."
+   ]
+  },
+  {
+   "id": "hollyhock",
+   "name": "접시꽃",
+   "scientificName": "Alcea rosea",
+   "synonyms": [
+    "Althaea rosea"
+   ],
+   "acceptGenus": false,
+   "hint": "키 큰 줄기에 접시 같은 꽃",
+   "flowerLanguage": "풍요, 야망",
+   "art": {
+    "form": "flower",
+    "color": "#D81B60",
+    "accent": "#F2C14E",
+    "petals": 5,
+    "petal": "wavy"
+   },
+   "facts": [
+    "꽃이 접시처럼 납작하고 커서 접시꽃이에요. 아래부터 위로 차례로 피어요."
+   ]
+  },
+  {
+   "id": "calendula",
+   "name": "금잔화",
+   "scientificName": "Calendula officinalis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄·가을 화단의 주황 국화",
+   "flowerLanguage": "이별의 슬픔",
+   "art": {
+    "form": "daisy",
+    "color": "#FF9800",
+    "accent": "#F2C14E",
+    "petals": 18
+   },
+   "facts": [
+    "꽃잎을 샐러드에 넣거나 피부 연고(카렌듈라)에 써요."
+   ]
+  },
+  {
+   "id": "cornflower",
+   "name": "수레국화",
+   "scientificName": "Centaurea cyanus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "파란 별 모양 꽃",
+   "flowerLanguage": "행복감",
+   "art": {
+    "form": "daisy",
+    "color": "#3F51B5",
+    "accent": "#5C6BC0",
+    "petals": 12,
+    "petal": "pointed"
+   },
+   "facts": [
+    "독일의 나라꽃이며, 보리밭에서 자라 영어로 'cornflower'예요."
+   ]
+  },
+  {
+   "id": "daisy",
+   "name": "데이지",
+   "scientificName": "Bellis perennis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "잔디밭의 작은 흰 국화",
+   "flowerLanguage": "순수",
+   "art": {
+    "form": "daisy",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "petals": 20
+   },
+   "facts": [
+    "이름은 '낮의 눈(day's eye)'에서 왔어요. 해가 뜨면 열리고 지면 닫혀요."
+   ]
+  },
+  {
+   "id": "plane_tree",
+   "name": "플라타너스",
+   "scientificName": "Platanus × hispanica",
+   "synonyms": [
+    "Platanus occidentalis",
+    "Platanus orientalis",
+    "Platanus x acerifolia"
+   ],
+   "acceptGenus": false,
+   "hint": "얼룩덜룩 벗겨지는 줄기의 가로수",
+   "flowerLanguage": "천재",
+   "art": {
+    "form": "leaf",
+    "color": "#4E8B3A",
+    "variant": "maple"
+   },
+   "facts": [
+    "껍질이 조각조각 벗겨져 얼룩무늬가 생겨 '버즘나무'라고도 불러요.",
+    "둥근 열매가 겨울 내내 매달려 있어요."
+   ]
+  },
+  {
+   "id": "zelkova",
+   "name": "느티나무",
+   "scientificName": "Zelkova serrata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "마을 어귀의 우산 모양 큰 나무",
+   "flowerLanguage": "운명",
+   "art": {
+    "form": "tree",
+    "color": "#4E8B3A"
+   },
+   "facts": [
+    "마을의 정자나무로 가장 많이 심어, 천연기념물로 지정된 느티나무가 많아요."
+   ]
+  },
+  {
+   "id": "pagoda_tree",
+   "name": "회화나무",
+   "scientificName": "Styphnolobium japonicum",
+   "synonyms": [
+    "Sophora japonica"
+   ],
+   "acceptGenus": false,
+   "hint": "여름 흰 꽃, 염주 같은 열매",
+   "flowerLanguage": "학자",
+   "art": {
+    "form": "spike",
+    "color": "#FFFFFF",
+    "variant": "whorl"
+   },
+   "facts": [
+    "학자나무라 불려 서원과 궁궐에 심었어요. 열매는 염주처럼 잘록해요."
+   ]
+  },
+  {
+   "id": "wisteria",
+   "name": "등나무",
+   "scientificName": "Wisteria floribunda",
+   "synonyms": [
+    "Wisteria sinensis"
+   ],
+   "acceptGenus": false,
+   "hint": "5월 보라색 꽃이 주렁주렁",
+   "flowerLanguage": "환영",
+   "art": {
+    "form": "spike",
+    "color": "#7E57C2",
+    "variant": "whorl"
+   },
+   "facts": [
+    "줄기가 오른쪽으로 감아 오르고, 칡과 얽힌 모습에서 '갈등(葛藤)'이란 말이 나왔어요."
+   ]
+  },
+  {
+   "id": "quince",
+   "name": "모과나무",
+   "scientificName": "Pseudocydonia sinensis",
+   "synonyms": [
+    "Chaenomeles sinensis"
+   ],
+   "acceptGenus": false,
+   "hint": "분홍 꽃, 가을 향기로운 노란 열매",
+   "flowerLanguage": "평범",
+   "art": {
+    "form": "flower",
+    "color": "#F48FB1",
+    "accent": "#F2C14E",
+    "petals": 5
+   },
+   "facts": [
+    "못생겼지만 향이 좋아 '어물전 망신은 꼴뚜기가, 과일전 망신은 모과가'라는 말이 있어요."
+   ]
+  },
+  {
+   "id": "persimmon",
+   "name": "감나무",
+   "scientificName": "Diospyros kaki",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을 주황 열매, 넓은 잎",
+   "flowerLanguage": "자애",
+   "art": {
+    "form": "berries",
+    "color": "#FF7043",
+    "accent": "#4E8B3A"
+   },
+   "facts": [
+    "까치밥으로 열매 몇 개를 남겨 두는 풍습이 있어요. 잎도 단풍이 예뻐요."
+   ]
+  },
+  {
+   "id": "jujube",
+   "name": "대추나무",
+   "scientificName": "Ziziphus jujuba",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가시 있는 가지, 가을 붉은 열매",
+   "flowerLanguage": "처음 만남",
+   "art": {
+    "form": "berries",
+    "color": "#B71C1C",
+    "accent": "#4E8B3A"
+   },
+   "facts": [
+    "꽃이 늦게 피어 '대추나무 꽃 필 때 보리 베기'라는 말이 있어요."
+   ]
+  },
+  {
+   "id": "chestnut",
+   "name": "밤나무",
+   "scientificName": "Castanea crenata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "6월 비릿한 향의 긴 꽃이삭, 가을 밤송이",
+   "flowerLanguage": "정의",
+   "art": {
+    "form": "spike",
+    "color": "#F5F0C8",
+    "variant": "catkin"
+   },
+   "facts": [
+    "꽃 냄새가 독특해 멀리서도 알 수 있어요. 밤송이 가시가 다람쥐를 막아요."
+   ]
+  },
+  {
+   "id": "mulberry",
+   "name": "뽕나무",
+   "scientificName": "Morus alba",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "누에의 먹이, 초여름 검붉은 오디",
+   "flowerLanguage": "지혜",
+   "art": {
+    "form": "berries",
+    "color": "#4A148C",
+    "accent": "#4E8B3A"
+   },
+   "facts": [
+    "누에를 쳐 비단을 짜던 나무라 조선 시대에는 나라에서 심기를 권했어요."
+   ]
+  },
+  {
+   "id": "boston_ivy",
+   "name": "담쟁이덩굴",
+   "scientificName": "Parthenocissus tricuspidata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "벽을 타고 오르는 빨판 덩굴",
+   "flowerLanguage": "우정",
+   "art": {
+    "form": "leaf",
+    "color": "#E0452B",
+    "variant": "maple"
+   },
+   "facts": [
+    "덩굴손 끝의 빨판으로 벽에 붙어 10층 건물도 올라요. 가을 단풍이 붉어요."
+   ]
+  },
+  {
+   "id": "foxtail",
+   "name": "강아지풀",
+   "scientificName": "Setaria viridis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "강아지 꼬리 같은 이삭",
+   "flowerLanguage": "동심",
+   "art": {
+    "form": "plume",
+    "color": "#9CCC65"
+   },
+   "facts": [
+    "이삭이 강아지 꼬리를 닮았어요. 조(곡식)의 조상이에요."
+   ]
+  },
+  {
+   "id": "chickweed",
+   "name": "별꽃",
+   "scientificName": "Stellaria media",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "이른 봄 땅에 깔린 작은 흰 별꽃",
+   "flowerLanguage": "추억",
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "petals": 5,
+    "petal": "notched"
+   },
+   "facts": [
+    "꽃잎이 다섯 장이지만 깊게 갈라져 열 장처럼 보여요."
+   ]
+  },
+  {
+   "id": "horseweed",
+   "name": "망초",
+   "scientificName": "Erigeron canadensis",
+   "synonyms": [
+    "Conyza canadensis"
+   ],
+   "acceptGenus": false,
+   "hint": "빈터에 키 크게 자라는 흰 꽃 무리",
+   "flowerLanguage": "화해",
+   "art": {
+    "form": "daisy",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "petals": 16
+   },
+   "facts": [
+    "개망초의 친척으로, 나라가 망할 때 퍼졌다고 망초라 불렸어요."
+   ]
+  },
+  {
+   "id": "red_clover",
+   "name": "붉은토끼풀",
+   "scientificName": "Trifolium pratense",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "분홍 공 모양 꽃의 클로버",
+   "flowerLanguage": "근면",
+   "art": {
+    "form": "cluster",
+    "color": "#E91E63",
+    "variant": "ball"
+   },
+   "facts": [
+    "덴마크의 나라꽃이에요. 꿀이 많아 벌이 좋아해요."
+   ]
+  },
+  {
+   "id": "milk_vetch",
+   "name": "자운영",
+   "scientificName": "Astragalus sinicus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄 논을 자줏빛으로 덮는 풀",
+   "flowerLanguage": "나의 행복",
+   "art": {
+    "form": "cluster",
+    "color": "#E91E63",
+    "variant": "umbel"
+   },
+   "facts": [
+    "봄 논에 녹비(풋거름)로 길러 땅을 기름지게 했어요."
+   ]
+  },
+  {
+   "id": "rapeseed",
+   "name": "유채",
+   "scientificName": "Brassica napus",
+   "synonyms": [
+    "Brassica rapa"
+   ],
+   "acceptGenus": false,
+   "hint": "봄 들판의 노란 꽃밭",
+   "flowerLanguage": "쾌활",
+   "art": {
+    "form": "flower",
+    "color": "#F2C14E",
+    "accent": "#FBC02D",
+    "petals": 4,
+    "petal": "oblong"
+   },
+   "facts": [
+    "제주 봄의 상징이고, 씨앗에서 카놀라유를 짜요."
+   ]
+  },
+  {
+   "id": "mountain_hydrangea",
+   "name": "산수국",
+   "scientificName": "Hydrangea serrata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "산 계곡의 납작한 수국",
+   "flowerLanguage": "변덕",
+   "art": {
+    "form": "cluster",
+    "color": "#64B5F6",
+    "petals": 4,
+    "variant": "ball"
+   },
+   "facts": [
+    "가장자리 큰 꽃은 벌을 부르는 가짜 꽃, 가운데 작은 것이 진짜 꽃이에요."
+   ]
+  },
+  {
+   "id": "redbud",
+   "name": "박태기나무",
+   "scientificName": "Cercis chinensis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "잎 나기 전 가지에 다닥다닥 자주색 꽃",
+   "flowerLanguage": "우정",
+   "art": {
+    "form": "flower",
+    "color": "#D81B60",
+    "accent": "#AD1457",
+    "petals": 5,
+    "petal": "narrow"
+   },
+   "facts": [
+    "꽃 모양이 밥풀(밥티기) 같아 박태기나무예요."
+   ]
+  },
+  {
+   "id": "snowbell",
+   "name": "때죽나무",
+   "scientificName": "Styrax japonicus",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "초여름 아래를 향해 매달린 흰 종 꽃",
+   "flowerLanguage": "겸손",
+   "art": {
+    "form": "bell",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E"
+   },
+   "facts": [
+    "열매를 찧어 물에 풀면 물고기가 떼로 죽는다고 때죽나무예요."
+   ]
+  },
+  {
+   "id": "horse_chestnut",
+   "name": "칠엽수",
+   "scientificName": "Aesculus turbinata",
+   "synonyms": [
+    "Aesculus hippocastanum"
+   ],
+   "acceptGenus": false,
+   "hint": "잎 일곱 장, 봄 흰 꽃탑",
+   "flowerLanguage": "사치",
+   "art": {
+    "form": "leaf",
+    "color": "#4E8B3A",
+    "variant": "hand"
+   },
+   "facts": [
+    "파리의 마로니에가 이 나무의 친척이에요. 열매는 밤과 닮았지만 못 먹어요."
+   ]
+  },
+  {
+   "id": "giant_dogwood",
+   "name": "층층나무",
+   "scientificName": "Cornus controversa",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가지가 층층이 퍼진 나무",
+   "flowerLanguage": "인내",
+   "art": {
+    "form": "cluster",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "variant": "umbel"
+   },
+   "facts": [
+    "가지가 우산살처럼 층을 이루어 층층나무예요."
+   ]
+  },
+  {
+   "id": "katsura",
+   "name": "계수나무",
+   "scientificName": "Cercidiphyllum japonicum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "하트 잎, 가을에 달콤한 향",
+   "flowerLanguage": "승리",
+   "art": {
+    "form": "leaf",
+    "color": "#F2C230",
+    "variant": "heart"
+   },
+   "facts": [
+    "가을 낙엽에서 솜사탕 같은 달콤한 냄새가 나요."
+   ]
+  },
+  {
+   "id": "birch",
+   "name": "자작나무",
+   "scientificName": "Betula pendula",
+   "synonyms": [
+    "Betula platyphylla"
+   ],
+   "acceptGenus": false,
+   "hint": "흰 줄기의 나무",
+   "flowerLanguage": "당신을 기다립니다",
+   "art": {
+    "form": "tree",
+    "color": "#FFFFFF"
+   },
+   "facts": [
+    "껍질이 종이처럼 벗겨져 옛날에 글을 쓰고, 불에 '자작자작' 타서 자작나무예요."
+   ]
+  },
+  {
+   "id": "paulownia",
+   "name": "오동나무",
+   "scientificName": "Paulownia tomentosa",
+   "synonyms": [
+    "Paulownia coreana"
+   ],
+   "acceptGenus": false,
+   "hint": "5월 보라색 나팔꽃 탑, 커다란 잎",
+   "flowerLanguage": "고상",
+   "art": {
+    "form": "funnel",
+    "color": "#9575CD"
+   },
+   "facts": [
+    "딸을 낳으면 심어 시집갈 때 장롱을 짰다는 나무예요. 가야금도 오동나무로 만들어요."
+   ]
+  },
+  {
+   "id": "black_locust",
+   "name": "아까시나무",
+   "scientificName": "Robinia pseudoacacia",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "5월 향기로운 흰 꽃송이",
+   "flowerLanguage": "우정",
+   "art": {
+    "form": "spike",
+    "color": "#FFFFFF",
+    "variant": "whorl"
+   },
+   "facts": [
+    "'아카시아'로 잘못 불리지만 진짜 아카시아는 다른 나무예요. 우리나라 꿀의 대부분이 이 꽃에서 나와요."
+   ]
+  },
+  {
+   "id": "goldenrain",
+   "name": "모감주나무",
+   "scientificName": "Koelreuteria paniculata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "여름 노란 꽃, 꽈리 같은 열매",
+   "flowerLanguage": "자유로운 마음",
+   "art": {
+    "form": "spike",
+    "color": "#F2C14E",
+    "variant": "spray"
+   },
+   "facts": [
+    "씨앗이 단단해 염주를 만들어 '염주나무'라고도 해요."
+   ]
+  },
+  {
+   "id": "tree_of_heaven",
+   "name": "가죽나무",
+   "scientificName": "Ailanthus altissima",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "빠르게 자라는 키 큰 나무, 날개 열매",
+   "flowerLanguage": "은혜",
+   "art": {
+    "form": "tree",
+    "color": "#4E8B3A"
+   },
+   "facts": [
+    "'하늘의 나무'라는 뜻이지만 번식이 빨라 외국에서는 골칫거리예요."
+   ]
+  },
+  {
+   "id": "yellow_violet",
+   "name": "노랑제비꽃",
+   "scientificName": "Viola orientalis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄 산의 노란 제비꽃",
+   "flowerLanguage": "수줍은 사랑",
+   "art": {
+    "form": "flower",
+    "color": "#F2C14E",
+    "accent": "#E39B12",
+    "petals": 5,
+    "variant": "face"
+   },
+   "facts": [
+    "제비꽃 중 드물게 노란 꽃이 피어요."
+   ]
+  },
+  {
+   "id": "corydalis",
+   "name": "산괴불주머니",
+   "scientificName": "Corydalis speciosa",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄 산 계곡의 노란 꽃 뭉치",
+   "flowerLanguage": "보물주머니",
+   "art": {
+    "form": "spike",
+    "color": "#F2C14E",
+    "variant": "tube"
+   },
+   "facts": [
+    "꽃 모양이 어린이 노리개인 괴불주머니를 닮았어요."
+   ]
+  },
+  {
+   "id": "hylomecon",
+   "name": "피나물",
+   "scientificName": "Hylomecon vernalis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄 숲속의 노란 양귀비 꽃",
+   "flowerLanguage": "봄의 희망",
+   "art": {
+    "form": "flower",
+    "color": "#F2C14E",
+    "accent": "#FBC02D",
+    "petals": 4
+   },
+   "facts": [
+    "줄기를 꺾으면 붉은 즙이 나와 피나물이에요."
+   ]
+  },
+  {
+   "id": "potentilla",
+   "name": "양지꽃",
+   "scientificName": "Potentilla fragarioides",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "양지바른 곳의 노란 다섯 꽃잎",
+   "flowerLanguage": "사랑스러움",
+   "art": {
+    "form": "flower",
+    "color": "#F2C14E",
+    "accent": "#E39B12",
+    "petals": 5
+   },
+   "facts": [
+    "딸기 꽃과 닮았지만 열매는 맺지 않아요."
+   ]
+  },
+  {
+   "id": "wild_ginger",
+   "name": "족도리풀",
+   "scientificName": "Asarum sieboldii",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "잎 아래 숨은 자주색 항아리 꽃",
+   "flowerLanguage": "모녀의 정",
+   "art": {
+    "form": "cup",
+    "color": "#6D4C41"
+   },
+   "facts": [
+    "꽃이 땅에 바짝 붙어 피어 개미가 꽃가루를 옮겨요."
+   ]
+  },
+  {
+   "id": "epimedium",
+   "name": "삼지구엽초",
+   "scientificName": "Epimedium koreanum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가지 셋에 잎 아홉, 노란 꽃",
+   "flowerLanguage": "비밀",
+   "art": {
+    "form": "flower",
+    "color": "#FFF59D",
+    "accent": "#F2C14E",
+    "petals": 4,
+    "petal": "pointed"
+   },
+   "facts": [
+    "줄기가 셋으로 갈라지고 각각 잎이 세 장씩 달려 삼지구엽초예요."
+   ]
+  },
+  {
+   "id": "fairy_bells",
+   "name": "윤판나물",
+   "scientificName": "Disporum uniflorum",
+   "synonyms": [
+    "Disporum sessile"
+   ],
+   "acceptGenus": false,
+   "hint": "노란 종 모양 꽃이 아래로",
+   "flowerLanguage": "당신을 따르겠어요",
+   "art": {
+    "form": "bell",
+    "color": "#F2C14E",
+    "accent": "#FBC02D"
+   },
+   "facts": [
+    "꽃이 피어도 활짝 열리지 않고 종처럼 매달려 있어요."
+   ]
+  },
+  {
+   "id": "hosta",
+   "name": "비비추",
+   "scientificName": "Hosta longipes",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "여름 그늘의 보라색 꽃대",
+   "flowerLanguage": "좋은 소식",
+   "art": {
+    "form": "funnel",
+    "color": "#9575CD"
+   },
+   "facts": [
+    "어린잎을 나물로 먹고, 정원용 호스타로 개량됐어요."
+   ]
+  },
+  {
+   "id": "raspberry",
+   "name": "산딸기",
+   "scientificName": "Rubus crataegifolius",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가시 줄기, 초여름 붉은 열매",
+   "flowerLanguage": "애정",
+   "art": {
+    "form": "berries",
+    "color": "#D32F2F",
+    "accent": "#4E8B3A"
+   },
+   "facts": [
+    "꽃은 흰색, 열매는 6~7월에 익어 산길의 간식이에요."
+   ]
+  },
+  {
+   "id": "multiflora_rose",
+   "name": "찔레꽃",
+   "scientificName": "Rosa multiflora",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "5월 흰 꽃의 들장미",
+   "flowerLanguage": "온화",
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "petals": 5
+   },
+   "facts": [
+    "어린 순을 꺾어 먹던 간식이고, 가을 빨간 열매는 새의 먹이예요."
+   ]
+  },
+  {
+   "id": "weigela",
+   "name": "병꽃나무",
+   "scientificName": "Weigela subsessilis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄 산의 병 모양 꽃",
+   "flowerLanguage": "전설",
+   "art": {
+    "form": "funnel",
+    "color": "#F48FB1"
+   },
+   "facts": [
+    "꽃이 흰색에서 붉은색으로 변해요. 한국 특산 식물이에요."
+   ]
+  },
+  {
+   "id": "selfheal",
+   "name": "꿀풀",
+   "scientificName": "Prunella vulgaris",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "보라색 꽃이삭, 꿀이 많아요",
+   "flowerLanguage": "추억",
+   "art": {
+    "form": "spike",
+    "color": "#7E57C2"
+   },
+   "facts": [
+    "꽃을 빨면 단맛이 나 꿀풀이에요. 여름에 꽃이삭이 말라 '하고초'라 해요."
+   ]
+  },
+  {
+   "id": "lychnis",
+   "name": "동자꽃",
+   "scientificName": "Lychnis cognata",
+   "synonyms": [
+    "Silene cognata"
+   ],
+   "acceptGenus": false,
+   "hint": "여름 산의 주황색 꽃",
+   "flowerLanguage": "기다림",
+   "art": {
+    "form": "flower",
+    "color": "#FF7043",
+    "accent": "#F2C14E",
+    "petals": 5,
+    "petal": "notched"
+   },
+   "facts": [
+    "겨울에 스님을 기다리다 죽은 동자의 전설이 있어요."
+   ]
+  },
+  {
+   "id": "patrinia",
+   "name": "마타리",
+   "scientificName": "Patrinia scabiosifolia",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을 산의 노란 꽃 우산",
+   "flowerLanguage": "미인",
+   "art": {
+    "form": "cluster",
+    "color": "#F2C14E",
+    "variant": "umbel"
+   },
+   "facts": [
+    "가을의 일곱 풀(추칠초) 중 하나예요. 뿌리에서 장 냄새가 나요."
+   ]
+  },
+  {
+   "id": "bracken",
+   "name": "고사리",
+   "scientificName": "Pteridium aquilinum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄에 주먹 쥔 새순",
+   "flowerLanguage": "신뢰",
+   "art": {
+    "form": "sprout",
+    "color": "#4E8B3A"
+   },
+   "facts": [
+    "꽃이 피지 않고 포자로 번식해요. 새순은 삶아 나물로 먹어요."
+   ]
+  },
+  {
+   "id": "korean_maple",
+   "name": "당단풍나무",
+   "scientificName": "Acer pseudosieboldianum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "잎이 9~11갈래, 산의 단풍",
+   "flowerLanguage": "사양",
+   "art": {
+    "form": "leaf",
+    "color": "#E0452B",
+    "variant": "maple"
+   },
+   "facts": [
+    "설악산·내장산 단풍의 주인공이에요. 단풍나무보다 잎이 더 많이 갈라져요."
+   ]
+  },
+  {
+   "id": "sawtooth_oak",
+   "name": "상수리나무",
+   "scientificName": "Quercus acutissima",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "밤나무 같은 긴 잎, 큰 도토리",
+   "flowerLanguage": "번영",
+   "art": {
+    "form": "tree",
+    "color": "#4E8B3A"
+   },
+   "facts": [
+    "임금님 수라상에 도토리묵이 올라 '상수리'가 됐다는 이야기가 있어요."
+   ]
+  },
+  {
+   "id": "korean_pine",
+   "name": "잣나무",
+   "scientificName": "Pinus koraiensis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "잎이 다섯 개씩, 큰 솔방울",
+   "flowerLanguage": "영원",
+   "art": {
+    "form": "conifer",
+    "color": "#2E7D32",
+    "variant": "pine"
+   },
+   "facts": [
+    "잎이 다섯 개씩 모여나고, 솔방울 속 씨앗이 잣이에요."
+   ]
+  },
+  {
+   "id": "hardy_kiwi",
+   "name": "다래",
+   "scientificName": "Actinidia arguta",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을의 작은 키위 열매 덩굴",
+   "flowerLanguage": "깊은 사랑",
+   "art": {
+    "form": "berries",
+    "color": "#8BC34A",
+    "accent": "#4E8B3A"
+   },
+   "facts": [
+    "키위의 토종 친척이에요. '청산별곡'의 '머루랑 다래랑'이 이 열매예요."
+   ]
+  },
+  {
+   "id": "chocolate_vine",
+   "name": "으름덩굴",
+   "scientificName": "Akebia quinata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을에 벌어지는 바나나 같은 열매",
+   "flowerLanguage": "재능",
+   "art": {
+    "form": "berries",
+    "color": "#9575CD",
+    "accent": "#4E8B3A"
+   },
+   "facts": [
+    "열매가 벌어지면 하얀 속살이 바나나 같아 '한국의 바나나'라 불러요."
+   ]
+  },
+  {
+   "id": "kudzu",
+   "name": "칡",
+   "scientificName": "Pueraria montana",
+   "synonyms": [
+    "Pueraria lobata"
+   ],
+   "acceptGenus": false,
+   "hint": "여름 자주색 꽃, 덮어 버리는 덩굴",
+   "flowerLanguage": "사랑의 한숨",
+   "art": {
+    "form": "spike",
+    "color": "#7B1FA2",
+    "variant": "whorl"
+   },
+   "facts": [
+    "하루 30cm까지 자라요. 뿌리로 칡즙을 만들고, 등나무와 얽혀 '갈등'이란 말의 '갈(葛)'이에요."
+   ]
+  },
+  {
+   "id": "burnet",
+   "name": "오이풀",
+   "scientificName": "Sanguisorba officinalis",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을 산의 검붉은 꽃이삭",
+   "flowerLanguage": "변화",
+   "art": {
+    "form": "spike",
+    "color": "#880E4F",
+    "variant": "sausage"
+   },
+   "facts": [
+    "잎을 비비면 오이 냄새가 나요."
+   ]
+  },
+  {
+   "id": "gentian",
+   "name": "용담",
+   "scientificName": "Gentiana scabra",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을 산의 짙은 파란 종 꽃",
+   "flowerLanguage": "슬픈 그대가 좋아",
+   "art": {
+    "form": "bell",
+    "color": "#3F51B5",
+    "accent": "#5C6BC0"
+   },
+   "facts": [
+    "뿌리가 용의 쓸개처럼 쓰다고 용담이에요."
+   ]
+  },
+  {
+   "id": "japanese_iris",
+   "name": "꽃창포",
+   "scientificName": "Iris ensata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "6월 물가의 자주색 붓꽃",
+   "flowerLanguage": "우아한 마음",
+   "art": {
+    "form": "iris",
+    "color": "#7B1FA2"
+   },
+   "facts": [
+    "창포와 이름이 비슷하지만 붓꽃 무리예요. 바깥 꽃잎에 노란 줄무늬가 있어요."
+   ]
+  },
+  {
+   "id": "water_dropwort",
+   "name": "미나리",
+   "scientificName": "Oenanthe javanica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "물가의 향긋한 나물",
+   "flowerLanguage": "성의",
+   "art": {
+    "form": "cluster",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "variant": "umbel"
+   },
+   "facts": [
+    "물을 정화하는 힘이 있어 미나리꽝에서 길러요. 독미나리와 헷갈리지 않게 주의해요."
+   ]
+  },
+  {
+   "id": "water_pepper",
+   "name": "여뀌",
+   "scientificName": "Persicaria hydropiper",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "물가의 붉은 이삭, 매운 맛",
+   "flowerLanguage": "학업의 마침",
+   "art": {
+    "form": "spike",
+    "color": "#E57373",
+    "variant": "narrow"
+   },
+   "facts": [
+    "잎을 씹으면 매워서 옛날에 물고기를 잡을 때 짓찧어 썼어요."
+   ]
+  },
+  {
+   "id": "water_chestnut",
+   "name": "마름",
+   "scientificName": "Trapa natans",
+   "synonyms": [
+    "Trapa japonica"
+   ],
+   "acceptGenus": false,
+   "hint": "물 위에 뜬 마름모 잎",
+   "flowerLanguage": "동정",
+   "art": {
+    "form": "leaf",
+    "color": "#4E8B3A",
+    "variant": "heart"
+   },
+   "facts": [
+    "열매에 뿔이 있고 삶아 먹으면 밤 맛이 나요."
+   ]
+  },
+  {
+   "id": "duckweed",
+   "name": "개구리밥",
+   "scientificName": "Spirodela polyrhiza",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "물 위를 덮는 아주 작은 잎",
+   "flowerLanguage": "우애",
+   "art": {
+    "form": "leaf",
+    "color": "#7CB342"
+   },
+   "facts": [
+    "세계에서 가장 작은 꽃식물 무리예요. 뿌리가 물속에 늘어져요."
+   ]
+  },
+  {
+   "id": "water_snowflake",
+   "name": "노랑어리연꽃",
+   "scientificName": "Nymphoides peltata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "여름 연못의 작은 노란 꽃",
+   "flowerLanguage": "수줍음",
+   "art": {
+    "form": "flower",
+    "color": "#F2C14E",
+    "accent": "#FBC02D",
+    "petals": 5,
+    "petal": "wavy"
+   },
+   "facts": [
+    "수련처럼 보이지만 조름나물과 식물이에요. 꽃잎 가장자리가 술처럼 갈라져요."
+   ]
+  },
+  {
+   "id": "prickly_waterlily",
+   "name": "가시연꽃",
+   "scientificName": "Euryale ferox",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "온통 가시 돋친 거대한 둥근 잎",
+   "flowerLanguage": "청순한 마음",
+   "art": {
+    "form": "flower",
+    "color": "#7B1FA2",
+    "accent": "#F2C14E",
+    "petals": 8,
+    "petal": "pointed"
+   },
+   "facts": [
+    "잎이 지름 2m까지 자라는 한해살이 멸종위기 식물이에요."
+   ]
+  },
+  {
+   "id": "arrowhead",
+   "name": "벗풀",
+   "scientificName": "Sagittaria trifolia",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "화살촉 모양 잎, 흰 꽃",
+   "flowerLanguage": "신뢰",
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "petals": 3
+   },
+   "facts": [
+    "잎이 화살촉을 닮아 학명이 '화살'이에요."
+   ]
+  },
+  {
+   "id": "willow",
+   "name": "버드나무",
+   "scientificName": "Salix koreensis",
+   "synonyms": [
+    "Salix pierotii"
+   ],
+   "acceptGenus": false,
+   "hint": "물가의 늘어진 가지",
+   "flowerLanguage": "자유",
+   "art": {
+    "form": "tree",
+    "color": "#9CCC65"
+   },
+   "facts": [
+    "아스피린의 원료 살리실산이 버드나무 껍질에서 왔어요.",
+    "가지를 꽂으면 뿌리를 내릴 만큼 생명력이 강해요."
+   ]
+  },
+  {
+   "id": "alder",
+   "name": "오리나무",
+   "scientificName": "Alnus japonica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "물가의 나무, 작은 솔방울 열매",
+   "flowerLanguage": "장식",
+   "art": {
+    "form": "tree",
+    "color": "#4E8B3A"
+   },
+   "facts": [
+    "오 리마다 심어 길을 표시했다는 설이 있어요. 뿌리혹으로 땅을 기름지게 해요."
+   ]
+  },
+  {
+   "id": "loosestrife_purple",
+   "name": "부처꽃",
+   "scientificName": "Lythrum salicaria",
+   "synonyms": [
+    "Lythrum anceps"
+   ],
+   "acceptGenus": false,
+   "hint": "여름 물가의 자주색 꽃기둥",
+   "flowerLanguage": "사랑의 슬픔",
+   "art": {
+    "form": "spike",
+    "color": "#AB47BC"
+   },
+   "facts": [
+    "백중날 부처님께 바치던 꽃이라 부처꽃이에요."
+   ]
+  },
+  {
+   "id": "marsh_marigold",
+   "name": "동의나물",
+   "scientificName": "Caltha palustris",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "봄 습지의 노란 꽃",
+   "flowerLanguage": "다가올 행복",
+   "art": {
+    "form": "flower",
+    "color": "#F2C14E",
+    "accent": "#FBC02D",
+    "petals": 5
+   },
+   "facts": [
+    "곰취와 닮아 헷갈리지만 독이 있어요."
+   ]
+  },
+  {
+   "id": "st_johns_wort",
+   "name": "물레나물",
+   "scientificName": "Hypericum ascyron",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "여름 노란 바람개비 꽃",
+   "flowerLanguage": "추억",
+   "art": {
+    "form": "flower",
+    "color": "#F2C14E",
+    "accent": "#E39B12",
+    "petals": 5,
+    "petal": "wavy"
+   },
+   "facts": [
+    "꽃잎이 물레바퀴처럼 한쪽으로 휘어 물레나물이에요."
+   ]
+  },
+  {
+   "id": "sea_sedum",
+   "name": "땅채송화",
+   "scientificName": "Sedum oryzifolium",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "바닷가 바위의 노란 별 다육",
+   "flowerLanguage": "평온",
+   "art": {
+    "form": "flower",
+    "color": "#F2C14E",
+    "accent": "#FBC02D",
+    "petals": 5,
+    "petal": "pointed"
+   },
+   "facts": [
+    "잎이 쌀알처럼 통통해 학명이 '쌀알 잎'이에요."
+   ]
+  },
+  {
+   "id": "memorial_rose",
+   "name": "돌가시나무",
+   "scientificName": "Rosa wichuraiana",
+   "synonyms": [
+    "Rosa lucieae"
+   ],
+   "acceptGenus": false,
+   "hint": "바닷가 바위를 기는 흰 장미",
+   "flowerLanguage": "소박함",
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "petals": 5
+   },
+   "facts": [
+    "땅을 기며 자라 바닷바람을 피해요. 정원 덩굴장미의 조상 중 하나예요."
+   ]
+  },
+  {
+   "id": "crepidiastrum",
+   "name": "갯고들빼기",
+   "scientificName": "Crepidiastrum lanceolatum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "바닷가 바위의 가을 노란 꽃",
+   "flowerLanguage": "순박함",
+   "art": {
+    "form": "daisy",
+    "color": "#F2C14E",
+    "accent": "#E39B12",
+    "petals": 12
+   },
+   "facts": [
+    "잎이 두껍고 윤기 나 소금기를 견뎌요."
+   ]
+  },
+  {
+   "id": "autumn_olive",
+   "name": "보리수나무",
+   "scientificName": "Elaeagnus umbellata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을 빨간 열매, 은빛 잎 뒷면",
+   "flowerLanguage": "부부의 사랑",
+   "art": {
+    "form": "berries",
+    "color": "#D32F2F",
+    "accent": "#9E9D24"
+   },
+   "facts": [
+    "열매를 '보리똥'이라 불러요. 석가모니의 보리수와는 다른 나무예요."
+   ]
+  },
+  {
+   "id": "machilus",
+   "name": "후박나무",
+   "scientificName": "Machilus thunbergii",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "남쪽 바닷가의 윤기 나는 큰 나무",
+   "flowerLanguage": "모정",
+   "art": {
+    "form": "tree",
+    "color": "#2E7D32"
+   },
+   "facts": [
+    "껍질은 '후박'이라는 약재로 쓰이고, 울릉도·남해안 마을 숲을 이뤄요."
+   ]
+  },
+  {
+   "id": "eurya",
+   "name": "우묵사스레피",
+   "scientificName": "Eurya emarginata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "바닷가 바위의 잎 끝이 오목한 나무",
+   "flowerLanguage": "겸손",
+   "art": {
+    "form": "leaf",
+    "color": "#2E7D32",
+    "variant": "shrub"
+   },
+   "facts": [
+    "꽃에서 가스 냄새 같은 독특한 향이 나요."
+   ]
+  },
+  {
+   "id": "rhaphiolepis",
+   "name": "다정큼나무",
+   "scientificName": "Rhaphiolepis indica",
+   "synonyms": [
+    "Rhaphiolepis umbellata"
+   ],
+   "acceptGenus": false,
+   "hint": "남해안 흰 꽃, 검은 열매",
+   "flowerLanguage": "친밀",
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "petals": 5
+   },
+   "facts": [
+    "열매를 삶아 어망을 물들였다고 해요."
+   ]
+  },
+  {
+   "id": "crinum",
+   "name": "문주란",
+   "scientificName": "Crinum asiaticum",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "제주 바닷가의 커다란 흰 꽃",
+   "flowerLanguage": "청순",
+   "art": {
+    "form": "flower",
+    "color": "#FFFFFF",
+    "accent": "#F2C14E",
+    "petals": 6,
+    "petal": "narrow"
+   },
+   "facts": [
+    "제주 토끼섬이 자생 북한계로 천연기념물이에요."
+   ]
+  },
+  {
+   "id": "nz_spinach",
+   "name": "번행초",
+   "scientificName": "Tetragonia tetragonioides",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "바닷가 모래의 두꺼운 세모 잎",
+   "flowerLanguage": "강인함",
+   "art": {
+    "form": "leaf",
+    "color": "#7CB342"
+   },
+   "facts": [
+    "쿡 선장 선원들이 괴혈병 예방으로 먹어 '뉴질랜드 시금치'라 불려요."
+   ]
+  },
+  {
+   "id": "seepweed",
+   "name": "나문재",
+   "scientificName": "Suaeda glauca",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "갯벌의 키 큰 가는 잎 풀",
+   "flowerLanguage": "인내",
+   "art": {
+    "form": "plume",
+    "color": "#9CCC65"
+   },
+   "facts": [
+    "어린순을 나물로 먹고, 가을엔 붉게 물들어요."
+   ]
+  },
+  {
+   "id": "beach_pine_grass",
+   "name": "갯잔디",
+   "scientificName": "Zoysia sinica",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "바닷가 소금기 있는 땅의 잔디",
+   "flowerLanguage": "끈기",
+   "art": {
+    "form": "plume",
+    "color": "#9CCC65"
+   },
+   "facts": [
+    "소금물에서도 자라 바닷가 둑을 지켜요."
+   ]
+  },
+  {
+   "id": "umbrella_pine",
+   "name": "금송",
+   "scientificName": "Sciadopitys verticillata",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "우산살처럼 돌려난 긴 잎",
+   "flowerLanguage": "영원한 사랑",
+   "art": {
+    "form": "conifer",
+    "color": "#2E7D32",
+    "variant": "pine"
+   },
+   "facts": [
+    "세계에서 한 종뿐인 희귀한 침엽수예요."
+   ]
+  },
+  {
+   "id": "daphne",
+   "name": "서향",
+   "scientificName": "Daphne odora",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "이른 봄 진한 향기의 분홍 꽃",
+   "flowerLanguage": "꿈속의 사랑",
+   "art": {
+    "form": "cluster",
+    "color": "#F48FB1",
+    "accent": "#FFFFFF",
+    "variant": "ball"
+   },
+   "facts": [
+    "향이 천 리를 간다고 '천리향'이라 불러요."
+   ]
+  },
+  {
+   "id": "wintersweet",
+   "name": "납매",
+   "scientificName": "Chimonanthus praecox",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "한겨울 밀랍 같은 노란 꽃",
+   "flowerLanguage": "자애",
+   "art": {
+    "form": "flower",
+    "color": "#FFF176",
+    "accent": "#F2C14E",
+    "petals": 6
+   },
+   "facts": [
+    "섣달(납월)에 피는 매화라 납매예요. 향이 아주 좋아요."
+   ]
+  },
+  {
+   "id": "sasanqua",
+   "name": "애기동백나무",
+   "scientificName": "Camellia sasanqua",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "늦가을부터 피는 작은 동백",
+   "flowerLanguage": "겸손",
+   "art": {
+    "form": "flower",
+    "color": "#E91E63",
+    "accent": "#F2C14E",
+    "petals": 5,
+    "variant": "stamen"
+   },
+   "facts": [
+    "동백과 달리 꽃잎이 한 장씩 떨어져요."
+   ]
+  },
+  {
+   "id": "sweet_osmanthus",
+   "name": "금목서",
+   "scientificName": "Osmanthus fragrans",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "가을 주황색 작은 꽃, 진한 향",
+   "flowerLanguage": "당신의 마음을 끌다",
+   "art": {
+    "form": "cluster",
+    "color": "#FF9800",
+    "accent": "#FFB74D",
+    "variant": "spray"
+   },
+   "facts": [
+    "향이 좋아 샤넬 No.5 같은 향수의 원료예요."
+   ]
+  },
+  {
+   "id": "cymbidium",
+   "name": "보춘화",
+   "scientificName": "Cymbidium goeringii",
+   "synonyms": [],
+   "acceptGenus": false,
+   "hint": "이른 봄 산의 연둣빛 난초",
+   "flowerLanguage": "소박한 마음",
+   "art": {
+    "form": "flower",
+    "color": "#C5E1A5",
+    "accent": "#F2C14E",
+    "petals": 5,
+    "petal": "pointed",
+    "spots": true
+   },
+   "facts": [
+    "봄을 알린다고 보춘화, 흔히 '춘란'이라 불러요."
+   ]
   }
  ],
  "catalogs": [
@@ -1738,7 +3837,45 @@
     "spirea",
     "maple",
     "euonymus",
-    "abelia"
+    "abelia",
+    "boxwood",
+    "privet",
+    "flowering_quince",
+    "peony_tree",
+    "peony",
+    "scarlet_sage",
+    "moss_rose",
+    "garden_balsam",
+    "cockscomb",
+    "zinnia",
+    "hollyhock",
+    "calendula",
+    "cornflower",
+    "daisy",
+    "plane_tree",
+    "zelkova",
+    "pagoda_tree",
+    "wisteria",
+    "quince",
+    "persimmon",
+    "jujube",
+    "chestnut",
+    "mulberry",
+    "boston_ivy",
+    "foxtail",
+    "chickweed",
+    "horseweed",
+    "red_clover",
+    "milk_vetch",
+    "rapeseed",
+    "redbud",
+    "horse_chestnut",
+    "katsura",
+    "paulownia",
+    "black_locust",
+    "goldenrain",
+    "tree_of_heaven",
+    "sweet_osmanthus"
    ]
   },
   {
@@ -1765,7 +3902,19 @@
     "salicornia",
     "farfugium",
     "hispid_aster",
-    "reed"
+    "reed",
+    "sea_sedum",
+    "memorial_rose",
+    "crepidiastrum",
+    "autumn_olive",
+    "machilus",
+    "eurya",
+    "rhaphiolepis",
+    "crinum",
+    "nz_spinach",
+    "seepweed",
+    "beach_pine_grass",
+    "sasanqua"
    ]
   },
   {
@@ -1803,7 +3952,36 @@
     "pasque",
     "silvergrass",
     "maple",
-    "mistletoe"
+    "mistletoe",
+    "chestnut",
+    "mountain_hydrangea",
+    "snowbell",
+    "giant_dogwood",
+    "birch",
+    "yellow_violet",
+    "corydalis",
+    "hylomecon",
+    "potentilla",
+    "wild_ginger",
+    "epimedium",
+    "fairy_bells",
+    "hosta",
+    "raspberry",
+    "multiflora_rose",
+    "weigela",
+    "selfheal",
+    "lychnis",
+    "patrinia",
+    "bracken",
+    "korean_maple",
+    "sawtooth_oak",
+    "korean_pine",
+    "hardy_kiwi",
+    "chocolate_vine",
+    "kudzu",
+    "burnet",
+    "gentian",
+    "cymbidium"
    ]
   },
   {
@@ -1824,7 +4002,20 @@
     "sweet_flag",
     "impatiens",
     "iris_sanguinea",
-    "astilbe"
+    "astilbe",
+    "japanese_iris",
+    "water_dropwort",
+    "water_pepper",
+    "water_chestnut",
+    "duckweed",
+    "water_snowflake",
+    "prickly_waterlily",
+    "arrowhead",
+    "willow",
+    "alder",
+    "loosestrife_purple",
+    "marsh_marigold",
+    "st_johns_wort"
    ]
   },
   {
@@ -1866,7 +4057,38 @@
     "celandine",
     "pussy_willow",
     "white_clover",
-    "camellia"
+    "camellia",
+    "flowering_quince",
+    "peony_tree",
+    "peony",
+    "calendula",
+    "cornflower",
+    "daisy",
+    "wisteria",
+    "chickweed",
+    "milk_vetch",
+    "rapeseed",
+    "redbud",
+    "horse_chestnut",
+    "giant_dogwood",
+    "paulownia",
+    "black_locust",
+    "yellow_violet",
+    "corydalis",
+    "hylomecon",
+    "potentilla",
+    "wild_ginger",
+    "epimedium",
+    "fairy_bells",
+    "multiflora_rose",
+    "weigela",
+    "bracken",
+    "water_dropwort",
+    "willow",
+    "marsh_marigold",
+    "rhaphiolepis",
+    "daphne",
+    "cymbidium"
    ]
   },
   {
@@ -1901,7 +4123,43 @@
     "petunia",
     "liriope",
     "rose",
-    "abelia"
+    "abelia",
+    "privet",
+    "peony",
+    "scarlet_sage",
+    "moss_rose",
+    "garden_balsam",
+    "cockscomb",
+    "zinnia",
+    "hollyhock",
+    "cornflower",
+    "pagoda_tree",
+    "mulberry",
+    "foxtail",
+    "horseweed",
+    "red_clover",
+    "mountain_hydrangea",
+    "snowbell",
+    "goldenrain",
+    "tree_of_heaven",
+    "hosta",
+    "raspberry",
+    "selfheal",
+    "lychnis",
+    "kudzu",
+    "japanese_iris",
+    "water_chestnut",
+    "duckweed",
+    "water_snowflake",
+    "prickly_waterlily",
+    "arrowhead",
+    "loosestrife_purple",
+    "st_johns_wort",
+    "sea_sedum",
+    "memorial_rose",
+    "crinum",
+    "nz_spinach",
+    "beach_pine_grass"
    ]
   },
   {
@@ -1927,7 +4185,32 @@
     "maple",
     "farfugium",
     "suaeda",
-    "abelia"
+    "abelia",
+    "scarlet_sage",
+    "cockscomb",
+    "zinnia",
+    "calendula",
+    "plane_tree",
+    "zelkova",
+    "quince",
+    "persimmon",
+    "jujube",
+    "chestnut",
+    "boston_ivy",
+    "foxtail",
+    "katsura",
+    "patrinia",
+    "korean_maple",
+    "sawtooth_oak",
+    "hardy_kiwi",
+    "chocolate_vine",
+    "burnet",
+    "gentian",
+    "water_pepper",
+    "crepidiastrum",
+    "autumn_olive",
+    "seepweed",
+    "sweet_osmanthus"
    ]
   },
   {
@@ -1949,7 +4232,17 @@
     "farfugium",
     "yew",
     "juniper",
-    "mistletoe"
+    "mistletoe",
+    "boxwood",
+    "birch",
+    "korean_pine",
+    "alder",
+    "machilus",
+    "eurya",
+    "umbrella_pine",
+    "daphne",
+    "wintersweet",
+    "sasanqua"
    ]
   }
  ]

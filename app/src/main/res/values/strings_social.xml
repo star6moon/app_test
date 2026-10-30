@@ -42,6 +42,10 @@
     <string name="badges_title">배지</string>
     <string name="badges_earned_title">새 배지를 얻었어요!</string>
     <string name="badges_earned_ok">멋져요</string>
+    <string name="levels_up_title">레벨 업!</string>
+    <string name="levels_next">다음 레벨 '%1$s'까지 %2$d종</string>
+    <string name="levels_max">가장 높은 레벨이에요!</string>
+    <string name="levels_species">식물 %1$d종</string>
     <string name="badges_back">뒤로</string>
 
     <!-- ui/navigation -->

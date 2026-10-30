@@ -58,13 +58,16 @@ class ShareCard(private val context: Context, private val client: OkHttpClient) 
         val canvas = Canvas(bitmap)
         canvas.drawColor(PAPER)
 
-        // 종이 카드
+        // 종이 카드 + 표본 라벨처럼 가는 이중 테두리
         val card = RectF(MARGIN, MARGIN, WIDTH - MARGIN, HEIGHT - MARGIN)
-        canvas.drawRoundRect(card, 48f, 48f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = CARD })
-        canvas.drawRoundRect(card, 48f, 48f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = OUTLINE; style = Paint.Style.STROKE; strokeWidth = 3f })
+        canvas.drawRoundRect(card, 44f, 44f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = CARD })
+        canvas.drawRoundRect(card, 44f, 44f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = OUTLINE; style = Paint.Style.STROKE; strokeWidth = 3f })
+        val inner = RectF(card).apply { inset(14f, 14f) }
+        canvas.drawRoundRect(inner, 34f, 34f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = OUTLINE; style = Paint.Style.STROKE; strokeWidth = 1.5f })
 
-        // 사진: 정사각형으로 가운데를 잘라 둥근 모서리로
-        val photoRect = RectF(MARGIN + INSET, MARGIN + INSET, WIDTH - MARGIN - INSET, MARGIN + INSET + PHOTO_SIZE)
+        // 사진: 정사각형으로 가운데를 잘라 둥근 모서리로, 얇은 테두리
+        val left = MARGIN + INSET
+        val photoRect = RectF(left, MARGIN + INSET, WIDTH - MARGIN - INSET, MARGIN + INSET + PHOTO_SIZE)
         val side = minOf(photo.width, photo.height)
         val scale = PHOTO_SIZE / side
         val matrix = Matrix().apply {
@@ -72,23 +75,40 @@ class ShareCard(private val context: Context, private val client: OkHttpClient) 
             postTranslate(photoRect.left - (photo.width * scale - PHOTO_SIZE) / 2, photoRect.top - (photo.height * scale - PHOTO_SIZE) / 2)
         }
         val shader = BitmapShader(photo, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP).apply { setLocalMatrix(matrix) }
-        canvas.drawRoundRect(photoRect, 36f, 36f, Paint(Paint.ANTI_ALIAS_FLAG).apply { this.shader = shader })
+        canvas.drawRoundRect(photoRect, 28f, 28f, Paint(Paint.ANTI_ALIAS_FLAG).apply { this.shader = shader })
+        canvas.drawRoundRect(photoRect, 28f, 28f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = OUTLINE; style = Paint.Style.STROKE; strokeWidth = 2f })
 
-        // 글
-        var y = photoRect.bottom + 84f
+        // 사진 왼쪽 위의 작은 라벨 (도감 기록)
+        label(canvas, "PlantDex 도감 기록", photoRect.left + 20f, photoRect.top + 20f)
+
+        // 글: 이름 크게, 영어·학명 작게, 가는 구분선, 날짜·장소
         val maxWidth = WIDTH - 2 * (MARGIN + INSET)
-        y = line(canvas, text.korean, y, 64f, INK, Typeface.DEFAULT_BOLD, maxWidth)
-        text.english?.let { y = line(canvas, it, y + 6f, 36f, MUTED, Typeface.DEFAULT, maxWidth) }
+        var y = photoRect.bottom + 56f
+        y = line(canvas, text.korean, y, 72f, INK, Typeface.DEFAULT_BOLD, maxWidth)
+        text.english?.let { y = line(canvas, it, y + 8f, 36f, MUTED, Typeface.DEFAULT, maxWidth) }
         y = line(canvas, text.scientificName, y + 6f, 36f, BARK, Typeface.create(Typeface.DEFAULT, Typeface.ITALIC), maxWidth)
-        y = line(canvas, text.whenWhere, y + 26f, 34f, MUTED, Typeface.DEFAULT, maxWidth)
-        text.memo?.let { y = line(canvas, "“$it”", y + 18f, 34f, INK, Typeface.DEFAULT, maxWidth) }
+        y += 26f
+        canvas.drawLine(left, y, WIDTH - MARGIN - INSET, y, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = OUTLINE; strokeWidth = 2f })
+        y = line(canvas, "📅 " + text.whenWhere, y + 22f, 34f, MUTED, Typeface.DEFAULT, maxWidth)
+        text.memo?.let { y = line(canvas, "\u201C$it\u201D", y + 16f, 34f, INK, Typeface.DEFAULT, maxWidth) }
 
         // 아래 꼬리표
-        val footer = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { color = LEAF; textSize = 32f; typeface = Typeface.DEFAULT_BOLD }
-        canvas.drawText("PlantDex 🌿", MARGIN + INSET, HEIGHT - MARGIN - INSET, footer)
+        val footerY = HEIGHT - MARGIN - INSET - 6f
+        val footer = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { color = LEAF; textSize = 34f; typeface = Typeface.DEFAULT_BOLD }
+        canvas.drawText("PlantDex 🌿", left, footerY, footer)
         val tag = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { color = MUTED; textSize = 28f; textAlign = Paint.Align.RIGHT }
-        canvas.drawText("#PlantDex", WIDTH - MARGIN - INSET, HEIGHT - MARGIN - INSET, tag)
+        canvas.drawText("나만의 식물 도감 · #PlantDex", WIDTH - MARGIN - INSET, footerY, tag)
         return bitmap
+    }
+
+    /** 사진 위에 얹는 작은 흰 알약 라벨 */
+    private fun label(canvas: Canvas, text: String, x: Float, y: Float) {
+        val paint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { color = LEAF; textSize = 26f; typeface = Typeface.DEFAULT_BOLD }
+        val w = paint.measureText(text)
+        val h = 44f
+        val rect = RectF(x, y, x + w + 32f, y + h)
+        canvas.drawRoundRect(rect, h / 2, h / 2, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(230, 255, 253, 248) })
+        canvas.drawText(text, x + 16f, y + h / 2 - (paint.fontMetrics.ascent + paint.fontMetrics.descent) / 2, paint)
     }
 
     /** 한 줄 쓰기 (넘치면 … 으로 줄임). 다음 줄의 y 를 돌려줍니다. */
@@ -102,7 +122,7 @@ class ShareCard(private val context: Context, private val client: OkHttpClient) 
 
     private companion object {
         const val WIDTH = 1080
-        const val HEIGHT = 1440
+        const val HEIGHT = 1520
         const val MARGIN = 40f
         const val INSET = 36f
         const val PHOTO_SIZE = 1080f - 2 * (40f + 36f)

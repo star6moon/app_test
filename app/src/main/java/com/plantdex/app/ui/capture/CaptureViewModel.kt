@@ -331,7 +331,7 @@ class CaptureViewModel(
     }
 
     fun selectCandidate(index: Int) = updateResults { it.copy(selectedIndex = index) }
-    fun onMemoChange(memo: String) = updateResults { it.copy(memo = memo) }
+    fun onMemoChange(memo: String) = updateResults { it.copy(memo = memo.take(MAX_MEMO)) }
     fun onPublicChange(isPublic: Boolean) = updateResults { it.copy(isPublic = isPublic) }
 
     /** 촬영 때 위치를 얻지 못했으면 지금 위치로 다시 시도합니다. */
@@ -515,3 +515,6 @@ class CaptureViewModel(
         _uiState.update { if (it is CaptureUiState.Results) transform(it) else it }
     }
 }
+
+/** 메모 최대 글자 수 (서버 규칙과 같음) */
+const val MAX_MEMO = 500

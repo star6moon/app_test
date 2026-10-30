@@ -273,7 +273,7 @@ fun SpeciesScreen(
                         }
                     }
                     // 알고 있나요?
-                    FactsSection(facts, factsLoading, community, Modifier.fillMaxWidth())
+                    FactsSection(scientificName, species?.facts.orEmpty(), facts, factsLoading, community, Modifier.fillMaxWidth())
                     // 분류 체계 그래프 (계 → 종)
                     TaxonomySection(
                         scientificName = scientificName,

@@ -24,9 +24,6 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -58,6 +55,7 @@ import com.plantdex.app.ui.components.LoadState
 import com.plantdex.app.ui.components.LoadingBox
 import com.plantdex.app.ui.components.MessageBox
 import com.plantdex.app.ui.components.PaperCard
+import com.plantdex.app.ui.components.PillToggle
 import com.plantdex.app.ui.components.ReactionBar
 import com.plantdex.app.ui.components.ScientificName
 import com.plantdex.app.ui.components.UserAvatar
@@ -109,16 +107,15 @@ fun FeedScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.feed_title)) },
                 actions = {
-                    SingleChoiceSegmentedButtonRow(Modifier.padding(end = 4.dp)) {
-                        listOf(false to R.string.feed_filter_all, true to R.string.feed_filter_following).forEachIndexed { i, (value, labelRes) ->
-                            SegmentedButton(
-                                selected = followingOnly == value,
-                                onClick = { followingOnly = value },
-                                shape = SegmentedButtonDefaults.itemShape(i, 2),
-                                icon = {},
-                            ) { Text(stringResource(labelRes), style = MaterialTheme.typography.labelMedium) }
-                        }
-                    }
+                    val all = stringResource(R.string.feed_filter_all)
+                    val following = stringResource(R.string.feed_filter_following)
+                    PillToggle(
+                        options = listOf(false, true),
+                        selected = followingOnly,
+                        label = { if (it) following else all },
+                        onSelect = { followingOnly = it },
+                        modifier = Modifier.padding(end = 4.dp),
+                    )
                     IconButton(onClick = onSearchClick) {
                         Icon(Icons.Outlined.Search, contentDescription = stringResource(R.string.feed_search))
                     }

@@ -295,10 +295,10 @@ def main():
     gbif_by_key = {binomial_key(n): ko for n, ko in gbif.items() if binomial_key(n)}
 
     names = {}
+    # 이름이 없는 종도 학명으로는 검색되도록 Pl@ntNet 이 아는 모든 종을 넣습니다.
     for k, (name, english) in sorted(species.items()):
         ko = OVERRIDES.get(k) or kpni.get(k) or korean.get(k, "") or gbif_by_key.get(k, "")
-        if ko or english:
-            names[k] = [ko, english]
+        names[k] = [ko, english]
     # Pl@ntNet 목록에 이름이 다르게 올라 있어도 찾을 수 있도록 GBIF 의 한국 식물도 넣습니다.
     for k, ko in {**gbif_by_key, **kpni, **OVERRIDES}.items():
         if k in names:

@@ -42,7 +42,7 @@ export const createEntry = onCall(async (request) => {
   if (lat === null || lng === null || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
     throw new HttpsError("failed-precondition", "LOCATION_REQUIRED");
   }
-  const memo = (str(d.memo, 1000) ?? "").trim();
+  const memo = (str(d.memo, 500) ?? "").trim();
   const isPublic = d.isPublic === true;
 
   const ref = db.collection("entries").doc(entryId);

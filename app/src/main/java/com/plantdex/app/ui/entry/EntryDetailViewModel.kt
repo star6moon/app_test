@@ -44,6 +44,13 @@ class EntryDetailViewModel(
         }
     }
 
+    fun setMemo(entry: CollectionEntry, memo: String) {
+        viewModelScope.launch {
+            runCatching { collectionRepository.setMemo(entry.id, memo) }
+                .onFailure { _message.value = "메모를 저장하지 못했습니다." }
+        }
+    }
+
     fun delete(entry: CollectionEntry) {
         viewModelScope.launch {
             runCatching { collectionRepository.deleteEntry(entry) }
