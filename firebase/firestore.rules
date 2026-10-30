@@ -107,13 +107,16 @@ service cloud.firestore {
         allow read, write: if false;
       }
 
-      // 비공개 설정: 푸시 토큰(fcm)은 본인이, 사용량(quota)·활동 정지(moderation)는 서버만
+      // 비공개 설정: 푸시 토큰(fcm)·알림 설정(prefs)은 본인이, 사용량(quota)·활동 정지(moderation)는 서버만
       match /private/{doc} {
         allow read: if isUser(uid);
         allow write: if isUser(uid) && doc == 'fcm'
           && request.resource.data.keys().hasOnly(['tokens'])
           && request.resource.data.tokens is list
           && request.resource.data.tokens.size() <= 10;
+        // 알림 설정(prefs): 본인이 종류별로 켜고 끕니다
+        allow write: if isUser(uid) && doc == 'prefs'
+          && request.resource.data.keys().hasOnly(['notifyLike', 'notifyComment', 'notifyFollow', 'push']);
       }
     }
 

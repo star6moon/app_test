@@ -38,6 +38,14 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.PersonAdd
+import androidx.compose.material3.Switch
+import androidx.compose.ui.semantics.Role
+import com.plantdex.app.data.repository.NotificationPrefs
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -128,6 +136,30 @@ fun SettingsScreen(onBlockedUsersClick: () -> Unit, onBack: () -> Unit) {
                 }
                 GroupDivider()
                 SettingRow(Icons.AutoMirrored.Outlined.Logout, stringResource(R.string.settings_sign_out), null, danger = true) { auth.signOut() }
+            }
+
+            SettingsGroup(stringResource(R.string.settings_section_notifications)) {
+                val social = container.socialRepository
+                val prefs by social.notificationPrefs.collectAsStateWithLifecycle()
+                fun save(updated: NotificationPrefs) = run(null) { social.setNotificationPrefs(updated) }
+                ToggleRow(Icons.Outlined.Favorite, stringResource(R.string.settings_notify_like), prefs.like) { save(prefs.copy(like = it)) }
+                GroupDivider()
+                ToggleRow(Icons.Outlined.ChatBubbleOutline, stringResource(R.string.settings_notify_comment), prefs.comment) { save(prefs.copy(comment = it)) }
+                GroupDivider()
+                ToggleRow(Icons.Outlined.PersonAdd, stringResource(R.string.settings_notify_follow), prefs.follow) { save(prefs.copy(follow = it)) }
+                GroupDivider()
+                ToggleRow(
+                    Icons.Outlined.NotificationsActive,
+                    stringResource(R.string.settings_notify_push),
+                    prefs.push,
+                    subtitle = stringResource(R.string.settings_notify_push_summary),
+                ) { save(prefs.copy(push = it)) }
+                Text(
+                    stringResource(R.string.settings_notify_note),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                )
             }
 
             SettingsGroup(stringResource(R.string.settings_section_community)) {
@@ -258,6 +290,43 @@ private fun SettingsGroup(title: String, content: @Composable ColumnScope.() -> 
 @Composable
 private fun GroupDivider() {
     HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+}
+
+/** 켜고 끄는 설정 한 줄: 둥근 아이콘 + 제목 + 스위치. 줄 전체를 눌러도 바뀝니다. */
+@Composable
+private fun ToggleRow(
+    icon: ImageVector,
+    title: String,
+    checked: Boolean,
+    subtitle: String? = null,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(20.dp))
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            if (subtitle != null) {
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        // 줄 전체가 스위치 역할을 하므로 스위치 자체는 읽기 전용으로 둡니다.
+        Switch(checked = checked, onCheckedChange = null)
+    }
 }
 
 /** 설정 한 줄: 둥근 아이콘 + 제목 + (선택) 설명. [danger] 이면 오류 색으로 표시합니다. */

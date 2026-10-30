@@ -1,6 +1,7 @@
 import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { FieldValue } from "firebase-admin/firestore";
 import { db, messaging } from "./admin";
+import { parsePrefs, wantsNotification } from "./notificationPrefs";
 
 type NotificationType = "like" | "comment" | "follow";
 
@@ -41,12 +42,16 @@ async function deliver(
   targetUid: string,
   n: { type: string; actorUid: string; actorName: string; entryId: string | null; body: string },
 ) {
+  // 설정에서 끈 종류는 알림 목록에도 남기지 않습니다. 푸시만 끈 경우는 목록에만 남깁니다.
+  const prefs = parsePrefs((await db.doc(`users/${targetUid}/private/prefs`).get()).data());
+  if (!wantsNotification(prefs, n.type)) return;
   await db.collection(`users/${targetUid}/notifications`).add({
     ...n,
     read: false,
     createdAt: FieldValue.serverTimestamp(),
   });
 
+  if (!prefs.push) return;
   const fcm = await db.doc(`users/${targetUid}/private/fcm`).get();
   const tokens = (fcm.get("tokens") as string[] | undefined) ?? [];
   if (tokens.length === 0) return;

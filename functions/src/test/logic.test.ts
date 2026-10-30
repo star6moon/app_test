@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { binomialKey, speciesKey } from "../catalog/species";
 import { distanceMeters, geohash } from "../geo";
+import { parsePrefs, wantsNotification } from "../notificationPrefs";
 
 test("binomial key matches the app's normalization", () => {
   assert.equal(binomialKey("Prunus × yedoensis Matsum."), "prunus yedoensis");
@@ -62,4 +63,14 @@ test("not-real photos are hidden without a strike, and wrong info alone never hi
 
 test("suspensions get longer", () => {
   assert.deepEqual([1, 2, 3, 4, 9].map(suspensionDays), [3, 7, 30, 30, 30]);
+});
+
+test("notification prefs default to on and moderation cannot be turned off", () => {
+  const all = parsePrefs(undefined);
+  assert.deepEqual(all, { notifyLike: true, notifyComment: true, notifyFollow: true, push: true });
+  const some = parsePrefs({ notifyLike: false, push: "no" });
+  assert.equal(wantsNotification(some, "like"), false);
+  assert.equal(wantsNotification(some, "comment"), true);
+  assert.equal(wantsNotification(some, "moderation"), true);
+  assert.equal(some.push, true);
 });

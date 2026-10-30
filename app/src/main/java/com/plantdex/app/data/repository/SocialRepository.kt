@@ -50,6 +50,28 @@ data class PublicProfile(
 )
 
 /** 앱 안의 알림 (좋아요, 댓글, 팔로우) */
+/** 알림 종류별 켜고 끄기. [push] 가 false 면 앱 안 목록에만 남고 휴대폰 알림은 오지 않습니다. 서비스 알림은 끌 수 없습니다. */
+data class NotificationPrefs(
+    val like: Boolean = true,
+    val comment: Boolean = true,
+    val follow: Boolean = true,
+    val push: Boolean = true,
+) {
+    fun toMap(): Map<String, Boolean> = mapOf("notifyLike" to like, "notifyComment" to comment, "notifyFollow" to follow, "push" to push)
+
+    companion object {
+        fun from(data: Map<String, Any?>?): NotificationPrefs {
+            fun bool(key: String, default: Boolean) = (data?.get(key) as? Boolean) ?: default
+            return NotificationPrefs(
+                like = bool("notifyLike", true),
+                comment = bool("notifyComment", true),
+                follow = bool("notifyFollow", true),
+                push = bool("push", true),
+            )
+        }
+    }
+}
+
 data class AppNotification(
     val id: String,
     val type: String,
@@ -189,6 +211,31 @@ class SocialRepository(
     }
 
     // ── 알림 ───────────────────────────────────────────
+
+    /** 내 알림 설정 (users/{uid}/private/prefs). 문서가 없으면 모두 켜짐. */
+    val notificationPrefs: StateFlow<NotificationPrefs> = authRepository.currentUser
+        .flatMapLatest { user ->
+            if (user == null) {
+                flowOf(NotificationPrefs())
+            } else {
+                callbackFlow {
+                    val registration = users.document(user.uid).collection("private").document("prefs")
+                        .addSnapshotListener { snapshot, error ->
+                            if (error != null) {
+                                close(error)
+                                return@addSnapshotListener
+                            }
+                            trySend(NotificationPrefs.from(snapshot?.data))
+                        }
+                    awaitClose { registration.remove() }
+                }.catch { emit(NotificationPrefs()) }
+            }
+        }
+        .stateIn(scope, SharingStarted.WhileSubscribed(5_000), NotificationPrefs())
+
+    suspend fun setNotificationPrefs(prefs: NotificationPrefs) {
+        users.document(requireUid()).collection("private").document("prefs").set(prefs.toMap()).await()
+    }
 
     val notifications: StateFlow<List<AppNotification>> = authRepository.currentUser
         .flatMapLatest { user ->
