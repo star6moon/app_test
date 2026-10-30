@@ -53,7 +53,7 @@
    "art": {
     "form": "leaf",
     "color": "#4FA44A",
-    "accent": "#FFFFFF",
+    "accent": "#F8BBD0",
     "variant": "clover"
    },
    "facts": [
@@ -128,7 +128,7 @@
    "art": {
     "form": "cup",
     "color": "#FBF7F0",
-    "accent": "#E7B3C6",
+    "accent": "#F48FB1",
     "variant": "open"
    },
    "facts": [
@@ -244,7 +244,7 @@
    "art": {
     "form": "daisy",
     "color": "#FFFFFF",
-    "accent": "#F5C518",
+    "accent": "#F2C14E",
     "petals": 28
    },
    "facts": [
@@ -329,7 +329,7 @@
    "art": {
     "form": "cluster",
     "color": "#FFFFFF",
-    "accent": "#E8F0D8",
+    "accent": "#9CCC65",
     "petals": 4,
     "petal": "narrow",
     "variant": "spray"
@@ -586,7 +586,7 @@
    "art": {
     "form": "flower",
     "color": "#FCE4EC",
-    "accent": "#D9577F",
+    "accent": "#F48FB1",
     "petals": 5,
     "petal": "round",
     "variant": "stamen"
@@ -804,7 +804,7 @@
    "art": {
     "form": "cluster",
     "color": "#FFFFFF",
-    "accent": "#F2E7A1",
+    "accent": "#F2C14E",
     "petals": 5,
     "variant": "spray"
    },
@@ -1058,7 +1058,8 @@
    "flowerLanguage": "틀림없이 행복해집니다, 순결",
    "art": {
     "form": "bell",
-    "color": "#FFFFFF"
+    "color": "#FFFFFF",
+    "accent": "#F2C14E"
    },
    "facts": [
     "향기가 좋아 향수에 쓰이지만 꽃·잎·열매 모두 독이 있어요.",
@@ -1265,8 +1266,9 @@
    "hint": "우리 산에 가장 흔한 참나무",
    "art": {
     "form": "tree",
-    "color": "#4E8B3A",
-    "accent": "#9C6B30"
+    "color": "#5E9E44",
+    "accent": "#A1662F",
+    "variant": "oak"
    },
    "facts": [
     "옛날 짚신 바닥에 잎을 깔아 '신갈이'에서 신갈나무가 됐다고 해요.",
@@ -1283,8 +1285,8 @@
    "flowerLanguage": "불로장생, 정절",
    "art": {
     "form": "conifer",
-    "color": "#2F6B3A",
-    "accent": "#B5532E",
+    "color": "#4E8B3A",
+    "accent": "#B5651D",
     "variant": "pine"
    },
    "facts": [
@@ -1304,7 +1306,7 @@
    "art": {
     "form": "flower",
     "color": "#FFFFFF",
-    "accent": "#8E1F4C",
+    "accent": "#E57373",
     "petals": 6,
     "petal": "round",
     "variant": "stamen"
@@ -1347,7 +1349,8 @@
    "art": {
     "form": "spike",
     "color": "#FFFFFF",
-    "variant": "curved"
+    "variant": "curved",
+    "accent": "#AED581"
    },
    "facts": [
     "꽃이삭이 한쪽으로 휘어 꼬리처럼 보여 '까치수염'이에요.",
@@ -1521,7 +1524,7 @@
    "art": {
     "form": "rosette",
     "color": "#4E8E3E",
-    "accent": "#FFFFFF",
+    "accent": "#AED581",
     "variant": "umbel"
    },
    "facts": [
@@ -1595,7 +1598,7 @@
    "art": {
     "form": "cluster",
     "color": "#FFFFFF",
-    "accent": "#F4E3A0",
+    "accent": "#AED581",
     "petals": 5,
     "variant": "cone"
    },
@@ -1649,8 +1652,8 @@
    "hint": "바닷바람에 강한 검은 줄기 소나무",
    "art": {
     "form": "conifer",
-    "color": "#234D2F",
-    "accent": "#4A3B32",
+    "color": "#2F6B3A",
+    "accent": "#3E2723",
     "variant": "pine"
    },
    "facts": [
@@ -1782,7 +1785,7 @@
    "art": {
     "form": "flower",
     "color": "#F48FB1",
-    "accent": "#F7D046",
+    "accent": "#F2C14E",
     "petals": 8,
     "petal": "pointed",
     "layers": 2
@@ -1801,9 +1804,9 @@
    "hint": "물 위에 뜬 잎과 꽃. 낮에 피고 밤에 오므려요",
    "flowerLanguage": "청순한 마음",
    "art": {
-    "form": "flower",
-    "color": "#FFFFFF",
-    "accent": "#F5C518",
+    "form": "lilypad",
+    "color": "#5E9E44",
+    "accent": "#F8BBD0",
     "petals": 12,
     "petal": "pointed",
     "layers": 2
@@ -2032,7 +2035,7 @@
    "art": {
     "form": "flower",
     "color": "#FFFFFF",
-    "accent": "#F5B700",
+    "accent": "#F2C14E",
     "petals": 6,
     "petal": "round",
     "variant": "corona"
@@ -2400,7 +2403,8 @@
    "flowerLanguage": "운명",
    "art": {
     "form": "tree",
-    "color": "#4E8B3A"
+    "color": "#4E8B3A",
+    "variant": "umbrella"
    },
    "facts": [
     "마을의 정자나무로 가장 많이 심어, 천연기념물로 지정된 느티나무가 많아요."
@@ -2419,7 +2423,8 @@
    "art": {
     "form": "spike",
     "color": "#FFFFFF",
-    "variant": "whorl"
+    "variant": "whorl",
+    "accent": "#AED581"
    },
    "facts": [
     "학자나무라 불려 서원과 궁궐에 심었어요. 열매는 염주처럼 잘록해요."
@@ -2541,9 +2546,9 @@
    "hint": "벽을 타고 오르는 빨판 덩굴",
    "flowerLanguage": "우정",
    "art": {
-    "form": "leaf",
+    "form": "vine",
     "color": "#E0452B",
-    "variant": "maple"
+    "variant": "lobed"
    },
    "facts": [
     "덩굴손 끝의 빨판으로 벽에 붙어 10층 건물도 올라요. 가을 단풍이 붉어요."
@@ -2558,8 +2563,9 @@
    "hint": "강아지 꼬리 같은 이삭",
    "flowerLanguage": "동심",
    "art": {
-    "form": "plume",
-    "color": "#9CCC65"
+    "form": "grass",
+    "color": "#C9B48A",
+    "accent": "#7CB342"
    },
    "facts": [
     "이삭이 강아지 꼬리를 닮았어요. 조(곡식)의 조상이에요."
@@ -2576,7 +2582,7 @@
    "art": {
     "form": "flower",
     "color": "#FFFFFF",
-    "accent": "#F2C14E",
+    "accent": "#9CCC65",
     "petals": 5,
     "petal": "notched"
    },
@@ -2597,7 +2603,7 @@
    "art": {
     "form": "daisy",
     "color": "#FFFFFF",
-    "accent": "#F2C14E",
+    "accent": "#AED581",
     "petals": 16
    },
    "facts": [
@@ -2743,7 +2749,7 @@
    "art": {
     "form": "cluster",
     "color": "#FFFFFF",
-    "accent": "#F2C14E",
+    "accent": "#AED581",
     "variant": "umbel"
    },
    "facts": [
@@ -2779,7 +2785,8 @@
    "flowerLanguage": "당신을 기다립니다",
    "art": {
     "form": "tree",
-    "color": "#FFFFFF"
+    "color": "#8BC34A",
+    "variant": "birch"
    },
    "facts": [
     "껍질이 종이처럼 벗겨져 옛날에 글을 쓰고, 불에 '자작자작' 타서 자작나무예요."
@@ -2814,7 +2821,8 @@
    "art": {
     "form": "spike",
     "color": "#FFFFFF",
-    "variant": "whorl"
+    "variant": "whorl",
+    "accent": "#F2C14E"
    },
    "facts": [
     "'아카시아'로 잘못 불리지만 진짜 아카시아는 다른 나무예요. 우리나라 꿀의 대부분이 이 꽃에서 나와요."
@@ -2847,7 +2855,8 @@
    "flowerLanguage": "은혜",
    "art": {
     "form": "tree",
-    "color": "#4E8B3A"
+    "color": "#6DA544",
+    "variant": "column"
    },
    "facts": [
     "'하늘의 나무'라는 뜻이지만 번식이 빨라 외국에서는 골칫거리예요."
@@ -3024,7 +3033,8 @@
     "form": "flower",
     "color": "#FFFFFF",
     "accent": "#F2C14E",
-    "petals": 5
+    "petals": 5,
+    "petal": "notched"
    },
    "facts": [
     "어린 순을 꺾어 먹던 간식이고, 가을 빨간 열매는 새의 먹이예요."
@@ -3109,8 +3119,9 @@
    "hint": "봄에 주먹 쥔 새순",
    "flowerLanguage": "신뢰",
    "art": {
-    "form": "sprout",
-    "color": "#4E8B3A"
+    "form": "fern",
+    "color": "#4E8B3A",
+    "accent": "#9CCC65"
    },
    "facts": [
     "꽃이 피지 않고 포자로 번식해요. 새순은 삶아 나물로 먹어요."
@@ -3143,7 +3154,9 @@
    "flowerLanguage": "번영",
    "art": {
     "form": "tree",
-    "color": "#4E8B3A"
+    "color": "#4E8B3A",
+    "variant": "oak",
+    "accent": "#8D5A2B"
    },
    "facts": [
     "임금님 수라상에 도토리묵이 올라 '상수리'가 됐다는 이야기가 있어요."
@@ -3160,7 +3173,7 @@
    "art": {
     "form": "conifer",
     "color": "#2E7D32",
-    "variant": "pine"
+    "variant": "straight"
    },
    "facts": [
     "잎이 다섯 개씩 모여나고, 솔방울 속 씨앗이 잣이에요."
@@ -3211,9 +3224,10 @@
    "hint": "여름 자주색 꽃, 덮어 버리는 덩굴",
    "flowerLanguage": "사랑의 한숨",
    "art": {
-    "form": "spike",
-    "color": "#7B1FA2",
-    "variant": "whorl"
+    "form": "vine",
+    "color": "#5B9B45",
+    "variant": "whorl",
+    "accent": "#7B1FA2"
    },
    "facts": [
     "하루 30cm까지 자라요. 뿌리로 칡즙을 만들고, 등나무와 얽혀 '갈등'이란 말의 '갈(葛)'이에요."
@@ -3280,7 +3294,7 @@
    "art": {
     "form": "cluster",
     "color": "#FFFFFF",
-    "accent": "#F2C14E",
+    "accent": "#AED581",
     "variant": "umbel"
    },
    "facts": [
@@ -3315,9 +3329,9 @@
    "hint": "물 위에 뜬 마름모 잎",
    "flowerLanguage": "동정",
    "art": {
-    "form": "leaf",
-    "color": "#4E8B3A",
-    "variant": "heart"
+    "form": "lilypad",
+    "color": "#5E9E44",
+    "variant": "rhombus"
    },
    "facts": [
     "열매에 뿔이 있고 삶아 먹으면 밤 맛이 나요."
@@ -3332,8 +3346,9 @@
    "hint": "물 위를 덮는 아주 작은 잎",
    "flowerLanguage": "우애",
    "art": {
-    "form": "leaf",
-    "color": "#7CB342"
+    "form": "lilypad",
+    "color": "#7CB342",
+    "variant": "duckweed"
    },
    "facts": [
     "세계에서 가장 작은 꽃식물 무리예요. 뿌리가 물속에 늘어져요."
@@ -3407,7 +3422,8 @@
    "flowerLanguage": "자유",
    "art": {
     "form": "tree",
-    "color": "#9CCC65"
+    "color": "#9CCC65",
+    "variant": "weeping"
    },
    "facts": [
     "아스피린의 원료 살리실산이 버드나무 껍질에서 왔어요.",
@@ -3424,7 +3440,8 @@
    "flowerLanguage": "장식",
    "art": {
     "form": "tree",
-    "color": "#4E8B3A"
+    "color": "#4E8B3A",
+    "accent": "#6D4C41"
    },
    "facts": [
     "오 리마다 심어 길을 표시했다는 설이 있어요. 뿌리혹으로 땅을 기름지게 해요."
@@ -3494,9 +3511,9 @@
    "hint": "바닷가 바위의 노란 별 다육",
    "flowerLanguage": "평온",
    "art": {
-    "form": "flower",
-    "color": "#F2C14E",
-    "accent": "#FBC02D",
+    "form": "succulent",
+    "color": "#8BC34A",
+    "accent": "#F2C14E",
     "petals": 5,
     "petal": "pointed"
    },
@@ -3569,7 +3586,8 @@
    "flowerLanguage": "모정",
    "art": {
     "form": "tree",
-    "color": "#2E7D32"
+    "color": "#2E7D32",
+    "accent": "#1B5E20"
    },
    "facts": [
     "껍질은 '후박'이라는 약재로 쓰이고, 울릉도·남해안 마을 숲을 이뤄요."
@@ -3605,8 +3623,9 @@
    "art": {
     "form": "flower",
     "color": "#FFFFFF",
-    "accent": "#F2C14E",
-    "petals": 5
+    "accent": "#F8BBD0",
+    "petals": 5,
+    "petal": "round"
    },
    "facts": [
     "열매를 삶아 어망을 물들였다고 해요."
@@ -3623,7 +3642,7 @@
    "art": {
     "form": "flower",
     "color": "#FFFFFF",
-    "accent": "#F2C14E",
+    "accent": "#AED581",
     "petals": 6,
     "petal": "narrow"
    },
@@ -3689,8 +3708,8 @@
    "flowerLanguage": "영원한 사랑",
    "art": {
     "form": "conifer",
-    "color": "#2E7D32",
-    "variant": "pine"
+    "color": "#43A047",
+    "variant": "tuft"
    },
    "facts": [
     "세계에서 한 종뿐인 희귀한 침엽수예요."

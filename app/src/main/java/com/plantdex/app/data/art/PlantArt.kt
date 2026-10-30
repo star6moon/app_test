@@ -9,7 +9,10 @@ import kotlinx.serialization.Serializable
  *
  * - form: flower(꽃잎이 둥글게 펼쳐진 꽃), daisy(국화형), cluster(작은 꽃 무리), funnel(나팔꽃형), cup(튤립·목련형), bell(종 모양),
  *   iris(붓꽃형), spike(이삭·꽃대), plume(억새·갈대), conifer(침엽수), tree(활엽수), leaf(잎이 특징인 식물),
- *   rosette(땅에 퍼진 잎), berries(열매), sprout(새싹·마디 줄기)
+ *   rosette(땅에 퍼진 잎), berries(열매), sprout(새싹·마디 줄기), fern(고사리), vine(덩굴), grass(풀 이삭),
+ *   lilypad(물 위에 뜬 잎), succulent(다육 로제트)
+ * - tree variant: round(기본)/shrub/umbrella(느티나무)/column(가죽나무)/weeping(버드나무)/birch(자작나무)/oak(참나무)
+ * - conifer variant: 기본(전나무형)/pine(소나무)/straight(잣나무)/tuft(금송)/narrow(메타세쿼이아)/berry(주목)
  * - color: 주색(꽃잎, 잎, 열매), accent: 보조색(꽃 중심, 무늬, 줄기 등)
  * - petals: 꽃잎 수, petal: 꽃잎 모양(round, pointed, notched, wavy, oblong, narrow)
  * - variant: 형태별 세부 모양 (예: cluster 의 ball/cone/spray, conifer 의 pine/narrow)
@@ -33,7 +36,8 @@ object PlantArts {
         fun put(vararg families: String, make: (String) -> PlantArt) = families.forEach { put(it, make) }
         put("asteraceae", "compositae") { PlantArt("daisy", it, "#F2C14E", petals = 18) }
         put("rosaceae") { PlantArt("flower", it, "#F2C14E", petals = 5, petal = "round") }
-        put("poaceae", "gramineae", "cyperaceae", "juncaceae") { PlantArt("plume", "#C9B48A") }
+        put("poaceae", "gramineae") { PlantArt("grass", "#C9B48A") }
+        put("cyperaceae", "juncaceae") { PlantArt("plume", "#C9B48A") }
         put("pinaceae", "cupressaceae", "taxaceae") { PlantArt("conifer", "#2F6B3A") }
         put("fagaceae", "betulaceae", "salicaceae", "ulmaceae", "moraceae", "juglandaceae", "lauraceae") {
             PlantArt("tree", "#4E8B3A")
@@ -57,9 +61,15 @@ object PlantArts {
         put("oxalidaceae") { PlantArt("leaf", "#7CB342", "#F7D046", variant = "clover") }
         put("aquifoliaceae") { PlantArt("leaf", "#2E7D32", "#D32F2F", variant = "holly") }
         put("amaranthaceae", "chenopodiaceae") { PlantArt("sprout", "#6E9E3A", variant = "jointed") }
-        put("cactaceae", "crassulaceae", "aizoaceae") { PlantArt("rosette", "#7FA35A") }
+        put("cactaceae", "aizoaceae") { PlantArt("rosette", "#7FA35A") }
+        put("crassulaceae") { PlantArt("succulent", "#8BC34A", "#F2C14E") }
+        put("vitaceae", "cucurbitaceae", "dioscoreaceae", "menispermaceae") { PlantArt("vine", "#5B9B45") }
+        put("dryopteridaceae", "pteridaceae", "polypodiaceae", "aspleniaceae", "athyriaceae", "dennstaedtiaceae", "osmundaceae", "thelypteridaceae") {
+            PlantArt("fern", "#4E8B3A")
+        }
+        put("lemnaceae", "araceae") { PlantArt("lilypad", "#7CB342", variant = "duckweed") }
+        put("nymphaeaceae", "nelumbonaceae") { PlantArt("lilypad", "#5E9E44", it) }
         put("typhaceae") { PlantArt("spike", "#7B4A26", variant = "sausage") }
-        put("nymphaeaceae", "nelumbonaceae") { PlantArt("flower", it, "#F5C518", petals = 12, petal = "pointed", layers = 2) }
         put("theaceae") { PlantArt("flower", it, "#F7D046", petals = 5, layers = 2, variant = "stamen") }
     }
 

@@ -11,12 +11,15 @@ object PlantArtRenderer {
 
     private const val OUTLINE = 1.1f
 
-    fun render(art: PlantArt): List<ArtOp> {
+    /**
+     * [small] 이면 지도 마커처럼 작게 보일 때를 위해 선을 굵게 그립니다 (가는 줄기·이삭이 사라지지 않도록).
+     */
+    fun render(art: PlantArt, small: Boolean = false): List<ArtOp> {
         val main = ArtColor.parse(art.color, 0xFFF4A7C0)
         val accent = art.accent?.let { ArtColor.parse(it, ArtColor.POLLEN) }
         val ops = mutableListOf<ArtOp>()
-        ops += CircleOp(50f, 50f, 50f, background(art.form, main))
-        val canvas = Canvas(ops)
+        ops += CircleOp(50f, 50f, 50f, background(art.form, main, accent))
+        val canvas = Canvas(ops, boldness = if (small) 1.9f else 1f)
         when (art.form) {
             "flower" -> canvas.flower(50f, 50f, 1f, art.petals, art.petal, main, accent, art.layers, art.spots, art.variant)
             "daisy" -> canvas.daisy(art.petals, main, accent, art.variant)
@@ -33,15 +36,24 @@ object PlantArtRenderer {
             "rosette" -> canvas.rosette(main, accent, art.variant)
             "berries" -> canvas.berries(main, accent, art.variant)
             "sprout" -> canvas.sprout(main, art.variant)
+            "fern" -> canvas.fern(main, accent)
+            "vine" -> canvas.vine(main, accent, art.variant)
+            "grass" -> canvas.grass(main, accent, art.variant)
+            "lilypad" -> canvas.lilypad(main, accent, art.variant)
+            "succulent" -> canvas.succulent(main, accent)
             else -> canvas.flower(50f, 50f, 1f, art.petals, art.petal, main, accent, art.layers, art.spots, art.variant)
         }
         return ops
     }
 
-    /** 꽃은 꽃색을 옅게, 흰 꽃·잎·나무는 연한 초록을 배경으로 씁니다. */
-    private fun background(form: String, main: Long): Long = when {
-        form in setOf("conifer", "tree", "leaf", "rosette", "sprout", "plume") -> 0xFFE6F2DF
-        ArtColor.luminance(main) > 0.85f -> 0xFFE3F0DC
+    /**
+     * 꽃은 꽃색을 옅게, 잎·나무는 연한 초록을 배경으로 씁니다.
+     * 흰 꽃은 서로 구별되도록 꽃 중심색(accent)을 옅게 한 바탕(크림·연분홍·민트·베이지)을 씁니다.
+     */
+    private fun background(form: String, main: Long, accent: Long?): Long = when {
+        form in setOf("conifer", "tree", "leaf", "rosette", "sprout", "plume", "fern", "vine", "grass", "succulent") -> 0xFFE6F2DF
+        form == "lilypad" -> 0xFFD9ECF5
+        ArtColor.luminance(main) > 0.85f -> accent?.let { lighten(it, 0.82f) } ?: 0xFFE3F0DC
         else -> lighten(main, 0.8f)
     }
 
@@ -77,7 +89,10 @@ object PlantArtRenderer {
 
     private val identity: (Float, Float) -> Pair<Float, Float> = { x, y -> x to y }
 
-    private class Canvas(val ops: MutableList<ArtOp>) {
+    private class Canvas(val ops: MutableList<ArtOp>, private val boldness: Float = 1f) {
+
+        /** 작은 크기 모드에서는 선을 굵게 (윤곽선은 조금만, 줄기·가지처럼 선만 있는 도형은 더 많이) */
+        private fun bold(width: Float, hasFill: Boolean): Float = if (boldness == 1f) width else width * (if (hasFill) 1.3f else boldness)
 
         fun path(
             fill: Long?,
@@ -87,11 +102,11 @@ object PlantArtRenderer {
             build: Path.() -> Unit,
         ) {
             val p = Path(transform).apply(build)
-            ops += PathOp(p.commands, fill, stroke, if (stroke != null) width else 0f)
+            ops += PathOp(p.commands, fill, stroke, if (stroke != null) bold(width, fill != null) else 0f)
         }
 
         fun circle(x: Float, y: Float, r: Float, fill: Long?, stroke: Long? = null, width: Float = OUTLINE) {
-            ops += CircleOp(x, y, r, fill, stroke, if (stroke != null) width else 0f)
+            ops += CircleOp(x, y, r, fill, stroke, if (stroke != null) bold(width, fill != null) else 0f)
         }
 
         fun line(x1: Float, y1: Float, x2: Float, y2: Float, color: Long, width: Float) =
@@ -504,8 +519,8 @@ object PlantArtRenderer {
                 val t = 0.42f + k * 0.05f
                 val (x, y) = cubicPoint(p0, p1, p2, p3, t)
                 val len = 10f - k * 0.45f
-                line(x, y, x - len, y - len * 0.5f, main, 2.4f)
-                line(x, y, x + len * 0.8f, y - len * 0.7f, lighten(main, 0.15f), 2.4f)
+                line(x, y, x - len, y - len * 0.5f, main, 3f)
+                line(x, y, x + len * 0.8f, y - len * 0.7f, lighten(main, 0.15f), 3f)
             }
         }
 
@@ -523,6 +538,29 @@ object PlantArtRenderer {
                     ellipse(32f, 44f, 17f, 8f, -6f, main, outline)
                     ellipse(66f, 34f, 17f, 8f, 8f, main, outline)
                     ellipse(48f, 22f, 14f, 7.5f, 0f, darken(main, 0.05f), outline)
+                }
+                "straight" -> {
+                    // 곧은 줄기에 가지가 층층이 수평으로 뻗은 소나무 (잣나무)
+                    val trunk = accent ?: ArtColor.TRUNK
+                    path(trunk, darken(trunk, 0.3f)) { moveTo(47f, 95f); lineTo(53f, 95f); lineTo(51.5f, 18f); lineTo(48.5f, 18f); close() }
+                    listOf(Triple(80f, 24f, 0.0f), Triple(64f, 20f, 0.04f), Triple(48f, 15f, 0.08f), Triple(33f, 10f, 0.12f)).forEach { (y, half, d) ->
+                        line(50f, y, 50f - half, y - 3f, trunk, 2.2f)
+                        line(50f, y, 50f + half, y - 3f, trunk, 2.2f)
+                        ellipse(50f - half * 0.7f, y - 5f, half * 0.6f, 5f, -4f, darken(main, d), outline)
+                        ellipse(50f + half * 0.7f, y - 5f, half * 0.6f, 5f, 4f, darken(main, d), outline)
+                    }
+                    ellipse(50f, 14f, 7f, 5f, 0f, darken(main, 0.14f), outline)
+                }
+                "tuft" -> {
+                    // 우산살처럼 돌려난 긴 잎 뭉치 (금송)
+                    val trunk = accent ?: ArtColor.TRUNK
+                    path(trunk, darken(trunk, 0.3f)) { moveTo(47f, 95f); lineTo(53f, 95f); lineTo(51.5f, 30f); lineTo(48.5f, 30f); close() }
+                    listOf(72f to 1f, 50f to 0.85f, 30f to 0.7f).forEach { (y, sc) ->
+                        for (a in listOf(-80f, -55f, -30f, 30f, 55f, 80f)) {
+                            val tip = place(50f, y, a)(0f, -22f * sc)
+                            line(50f, y, tip.first, tip.second, main, 2.6f)
+                        }
+                    }
                 }
                 "narrow" -> {
                     path(accent ?: ArtColor.TRUNK, null) { moveTo(47f, 95f); lineTo(53f, 95f); lineTo(52f, 78f); lineTo(48f, 78f); close() }
@@ -545,6 +583,13 @@ object PlantArtRenderer {
 
         fun tree(main: Long, accent: Long?, variant: String?) {
             val outline = darken(main, 0.3f)
+            when (variant) {
+                "umbrella" -> { treeUmbrella(main, outline, accent); return }
+                "column" -> { treeColumn(main, outline, accent); return }
+                "weeping" -> { treeWeeping(main, outline, accent); return }
+                "birch" -> { treeBirch(main, outline); return }
+                "oak" -> { treeOak(main, outline, accent); return }
+            }
             val dy = if (variant == "shrub") 14f else 0f
             path(ArtColor.TRUNK, darken(ArtColor.TRUNK, 0.3f)) {
                 moveTo(45f, 95f); lineTo(47f, 60f + dy); lineTo(53f, 60f + dy); lineTo(55f, 95f); close()
@@ -559,6 +604,246 @@ object PlantArtRenderer {
             accent?.let { a ->
                 val fruits = if (variant == "shrub") listOf(38f to 56f, 60f to 60f, 50f to 48f) else listOf(40f to 32f, 62f to 40f, 48f to 50f, 66f to 26f, 32f to 48f)
                 fruits.forEach { (x, y) -> circle(x, y, 2.8f, a, darken(a, 0.3f)) }
+            }
+        }
+
+        /** 넓고 납작한 우산 모양 수관 (느티나무) */
+        private fun treeUmbrella(main: Long, outline: Long, accent: Long?) {
+            path(ArtColor.TRUNK, darken(ArtColor.TRUNK, 0.3f)) { moveTo(45f, 95f); lineTo(47f, 58f); lineTo(53f, 58f); lineTo(55f, 95f); close() }
+            path(null, darken(ArtColor.TRUNK, 0.1f), 2.4f) { moveTo(49f, 66f); quadTo(36f, 58f, 26f, 54f) }
+            path(null, darken(ArtColor.TRUNK, 0.1f), 2.4f) { moveTo(51f, 64f); quadTo(64f, 56f, 74f, 52f) }
+            val blobs = listOf(Triple(50f, 40f, 24f), Triple(24f, 50f, 13f), Triple(76f, 50f, 13f), Triple(35f, 48f, 15f), Triple(65f, 48f, 15f), Triple(50f, 52f, 14f))
+            blobs.forEach { (x, y, r) -> circle(x, y, r + OUTLINE, outline) }
+            blobs.forEachIndexed { i, (x, y, r) -> circle(x, y, r, if (i % 2 == 0) main else lighten(main, 0.08f)) }
+            // 납작한 윗면 느낌: 아래쪽을 바탕색으로 살짝 깎습니다
+            path(0xFFE6F2DF, null) { moveTo(6f, 62f); lineTo(94f, 62f); lineTo(94f, 72f); lineTo(6f, 72f); close() }
+            path(ArtColor.TRUNK, null) { moveTo(47f, 60f); lineTo(53f, 60f); lineTo(54f, 74f); lineTo(46f, 74f); close() }
+            accent?.let { a -> listOf(34f to 44f, 60f to 38f, 72f to 50f).forEach { (x, y) -> circle(x, y, 2.6f, a, darken(a, 0.3f)) } }
+        }
+
+        /** 높고 좁은 수관 (가죽나무·포플러) */
+        private fun treeColumn(main: Long, outline: Long, accent: Long?) {
+            path(ArtColor.TRUNK, darken(ArtColor.TRUNK, 0.3f)) { moveTo(46f, 95f); lineTo(48f, 70f); lineTo(52f, 70f); lineTo(54f, 95f); close() }
+            val blobs = listOf(Triple(50f, 16f, 10f), Triple(43f, 30f, 13f), Triple(57f, 30f, 13f), Triple(40f, 46f, 14f), Triple(60f, 46f, 14f), Triple(50f, 60f, 15f), Triple(50f, 38f, 13f))
+            blobs.forEach { (x, y, r) -> circle(x, y, r + OUTLINE, outline) }
+            blobs.forEachIndexed { i, (x, y, r) -> circle(x, y, r, if (i % 2 == 0) main else lighten(main, 0.08f)) }
+            accent?.let { a -> listOf(44f to 28f, 58f to 44f, 48f to 58f).forEach { (x, y) -> circle(x, y, 2.4f, a, darken(a, 0.3f)) } }
+        }
+
+        /** 가지가 아래로 늘어진 버드나무 */
+        private fun treeWeeping(main: Long, outline: Long, accent: Long?) {
+            path(ArtColor.TRUNK, darken(ArtColor.TRUNK, 0.3f)) { moveTo(45f, 95f); lineTo(47f, 50f); lineTo(53f, 50f); lineTo(55f, 95f); close() }
+            circle(50f, 36f, 18f + OUTLINE, outline)
+            circle(50f, 36f, 18f, lighten(main, 0.05f))
+            val branch = darken(main, 0.12f)
+            listOf(26f to 84f, 34f to 90f, 42f to 93f, 58f to 93f, 66f to 90f, 74f to 84f, 20f to 72f, 80f to 72f).forEachIndexed { i, (x, yEnd) ->
+                val x0 = 50f + (x - 50f) * 0.45f
+                path(null, branch, 2.6f) { moveTo(x0, 30f); cubicTo(x - 6f, 36f, x + 2f, 60f, x, yEnd) }
+                for (k in 1..3) {
+                    val t = 0.35f + k * 0.2f
+                    val px = x0 + (x - x0) * t
+                    val py = 30f + (yEnd - 30f) * t
+                    petal("narrow", 0f, 7f, 2.2f, place(px, py, if (i % 2 == 0) 115f else -115f), main, null)
+                }
+            }
+            accent?.let { a -> circle(50f, 36f, 3f, a) }
+        }
+
+        /** 흰 줄기에 검은 무늬가 있는 자작나무 */
+        private fun treeBirch(main: Long, outline: Long) {
+            val bark = 0xFFF7F3EC
+            path(bark, 0xFF9E9E9E) { moveTo(46f, 95f); lineTo(47.5f, 36f); lineTo(52.5f, 36f); lineTo(54f, 95f); close() }
+            listOf(50f, 60f, 70f, 80f, 88f).forEachIndexed { i, y ->
+                val x = if (i % 2 == 0) 47.5f else 50.5f
+                path(0xFF4A4A4A, null) { moveTo(x, y); lineTo(x + 3f, y - 1f); lineTo(x + 3.4f, y + 1.2f); lineTo(x + 0.4f, y + 2.2f); close() }
+            }
+            path(null, 0xFF9E9E9E, 2f) { moveTo(49f, 62f); quadTo(38f, 54f, 30f, 46f) }
+            path(null, 0xFF9E9E9E, 2f) { moveTo(51f, 54f); quadTo(62f, 46f, 70f, 40f) }
+            val blobs = listOf(Triple(50f, 24f, 15f), Triple(32f, 36f, 11f), Triple(68f, 32f, 11f), Triple(42f, 40f, 10f), Triple(58f, 42f, 10f))
+            blobs.forEach { (x, y, r) -> circle(x, y, r + OUTLINE, outline) }
+            blobs.forEachIndexed { i, (x, y, r) -> circle(x, y, r, if (i % 2 == 0) main else lighten(main, 0.1f)) }
+        }
+
+        /** 넓고 울퉁불퉁한 참나무 수관 + 도토리 */
+        private fun treeOak(main: Long, outline: Long, accent: Long?) {
+            path(ArtColor.TRUNK, darken(ArtColor.TRUNK, 0.3f)) { moveTo(44f, 95f); lineTo(46f, 62f); lineTo(54f, 62f); lineTo(56f, 95f); close() }
+            path(null, darken(ArtColor.TRUNK, 0.1f), 2.6f) { moveTo(48f, 70f); quadTo(36f, 62f, 28f, 58f) }
+            path(null, darken(ArtColor.TRUNK, 0.1f), 2.6f) { moveTo(52f, 68f); quadTo(64f, 60f, 72f, 54f) }
+            val blobs = listOf(
+                Triple(50f, 34f, 20f), Triple(28f, 46f, 14f), Triple(72f, 44f, 14f), Triple(38f, 28f, 12f), Triple(62f, 26f, 12f),
+                Triple(40f, 52f, 13f), Triple(60f, 52f, 13f), Triple(22f, 36f, 9f), Triple(78f, 34f, 9f),
+            )
+            blobs.forEach { (x, y, r) -> circle(x, y, r + OUTLINE, outline) }
+            blobs.forEachIndexed { i, (x, y, r) -> circle(x, y, r, if (i % 2 == 0) main else lighten(main, 0.08f)) }
+            val acorn = accent ?: 0xFF8D5A2B
+            listOf(34f to 44f, 64f to 40f, 50f to 54f).forEach { (x, y) ->
+                ellipse(x, y + 2f, 2.6f, 3.4f, 0f, lighten(acorn, 0.2f), darken(acorn, 0.3f))
+                path(darken(acorn, 0.25f), null) { moveTo(x - 3.2f, y - 1f); quadTo(x, y - 4.5f, x + 3.2f, y - 1f); lineTo(x + 2.4f, y + 0.4f); lineTo(x - 2.4f, y + 0.4f); close() }
+            }
+        }
+
+        /** 고사리: 가운데 잎줄기 양쪽에 깃털처럼 작은 잎, 끝은 돌돌 말린 새순 */
+        fun fern(main: Long, accent: Long?) {
+            val rachis = darken(main, 0.25f)
+            val p0 = 50f to 95f
+            val p1 = 48f to 70f
+            val p2 = 50f to 45f
+            val p3 = 60f to 22f
+            path(null, rachis, 2.4f) { moveTo(p0.first, p0.second); cubicTo(p1.first, p1.second, p2.first, p2.second, p3.first, p3.second) }
+            for (k in 0 until 8) {
+                val t = 0.12f + k * 0.1f
+                val (x, y) = cubicPoint(p0, p1, p2, p3, t)
+                val len = 22f - k * 2.2f
+                val w = 5.5f - k * 0.4f
+                petal("pointed", 1f, len, w, place(x, y, -62f - k * 2f), if (k % 2 == 0) main else lighten(main, 0.08f), darken(main, 0.3f))
+                petal("pointed", 1f, len, w, place(x, y, 62f + k * 2f), if (k % 2 == 0) lighten(main, 0.08f) else main, darken(main, 0.3f))
+            }
+            // 새순 (돌돌 말린 끝)
+            val curl = accent ?: lighten(main, 0.1f)
+            path(null, darken(curl, 0.2f), 2.4f) { moveTo(60f, 22f); cubicTo(66f, 12f, 76f, 14f, 74f, 22f); cubicTo(72f, 28f, 64f, 26f, 66f, 20f) }
+            circle(68f, 20f, 2.2f, curl)
+        }
+
+        /** 덩굴: 구불구불한 줄기, 잎 세 장, 덩굴손. lobed(담쟁이 세 갈래 잎), heart(기본 하트 잎) */
+        fun vine(main: Long, accent: Long?, variant: String?) {
+            val stem = darken(main, 0.25f)
+            val p0 = 18f to 92f
+            val p1 = 30f to 60f
+            val p2 = 60f to 60f
+            val p3 = 82f to 18f
+            path(null, stem, 2.6f) { moveTo(p0.first, p0.second); cubicTo(p1.first, p1.second, p2.first, p2.second, p3.first, p3.second) }
+            // 덩굴손
+            path(null, stem, 1.6f) { moveTo(72f, 34f); cubicTo(80f, 30f, 88f, 36f, 84f, 42f); cubicTo(81f, 46f, 76f, 42f, 79f, 39f) }
+            val leafAt = listOf(Triple(0.22f, -70f, 1f), Triple(0.5f, 60f, 1.1f), Triple(0.78f, -60f, 0.9f))
+            leafAt.forEachIndexed { i, (t, angle, sc) ->
+                val (x, y) = cubicPoint(p0, p1, p2, p3, t)
+                val color = if (i == 1) lighten(main, 0.08f) else main
+                if (variant == "lobed") {
+                    path(color, darken(main, 0.3f), transform = place(x, y, angle, sc)) {
+                        moveTo(0f, 0f)
+                        cubicTo(-12f, -4f, -18f, -14f, -14f, -18f); lineTo(-6f, -14f)
+                        cubicTo(-6f, -22f, -2f, -30f, 0f, -32f)
+                        cubicTo(2f, -30f, 6f, -22f, 6f, -14f); lineTo(14f, -18f)
+                        cubicTo(18f, -14f, 12f, -4f, 0f, 0f)
+                        close()
+                    }
+                } else {
+                    path(color, darken(main, 0.3f), transform = place(x, y, angle, sc)) {
+                        moveTo(0f, 0f)
+                        cubicTo(-16f, -6f, -16f, -24f, -6f, -24f)
+                        cubicTo(-3f, -24f, -1f, -22f, 0f, -20f)
+                        cubicTo(1f, -22f, 3f, -24f, 6f, -24f)
+                        cubicTo(16f, -24f, 16f, -6f, 0f, 0f)
+                        close()
+                    }
+                }
+                val tip = place(x, y, angle, sc)(0f, -20f)
+                line(x, y, tip.first, tip.second, lighten(main, 0.3f), 0.9f)
+            }
+            accent?.let { a -> listOf(40f to 52f, 46f to 58f, 52f to 54f).forEach { (x, y) -> circle(x, y, 3f, a, darken(a, 0.3f)) } }
+        }
+
+        /** 풀 이삭: 잎 뭉치 위로 보송한 이삭 (foxtail 강아지풀 기본, 'spike' 가는 이삭) */
+        fun grass(main: Long, accent: Long?, variant: String?) {
+            val blade = accent ?: ArtColor.LEAF
+            listOf(-28f to 44f, -14f to 56f, 10f to 58f, 26f to 46f, 40f to 40f).forEach { (a, len) ->
+                path(null, blade, 2.8f, place(50f, 95f, a)) { moveTo(0f, 0f); quadTo(2f, -len * 0.5f, 0f, -len) }
+            }
+            val p0 = 50f to 95f
+            val p1 = 50f to 70f
+            val p2 = 52f to 48f
+            val p3 = 62f to 24f
+            path(null, darken(blade, 0.1f), 2.2f) { moveTo(p0.first, p0.second); cubicTo(p1.first, p1.second, p2.first, p2.second, p3.first, p3.second) }
+            if (variant == "spike") {
+                for (k in 0 until 9) {
+                    val (x, y) = cubicPoint(p0, p1, p2, p3, 0.5f + k * 0.06f)
+                    ellipse(x, y, 2.4f, 3.6f, 20f, main, darken(main, 0.3f))
+                }
+                return
+            }
+            // 보송한 이삭: 짧은 털을 여러 겹
+            for (k in 0 until 10) {
+                val t = 0.5f + k * 0.055f
+                val (x, y) = cubicPoint(p0, p1, p2, p3, t)
+                for (a in listOf(-70f, -30f, 30f, 70f)) {
+                    val tip = place(x, y, a + 20f)(0f, -7f)
+                    line(x, y, tip.first, tip.second, lighten(main, 0.1f), 1.6f)
+                }
+            }
+            for (k in 0 until 10) {
+                val t = 0.5f + k * 0.055f
+                val (x, y) = cubicPoint(p0, p1, p2, p3, t)
+                circle(x, y, 3.2f, main, darken(main, 0.25f), 0.8f)
+            }
+        }
+
+        /** 물 위에 뜬 잎: 기본(수련잎처럼 한쪽이 파인 둥근 잎), duckweed(개구리밥 작은 잎 여럿), rhombus(마름 마름모 잎) */
+        fun lilypad(main: Long, accent: Long?, variant: String?) {
+            val outline = darken(main, 0.3f)
+            val water = 0xFF9ECBE0
+            // 잔물결
+            listOf(22f to 78f, 70f to 82f, 48f to 90f).forEach { (x, y) -> path(null, water, 1.6f) { moveTo(x - 8f, y); quadTo(x - 4f, y - 3f, x, y); quadTo(x + 4f, y + 3f, x + 8f, y) } }
+            when (variant) {
+                "duckweed" -> {
+                    listOf(Triple(40f, 40f, 9f), Triple(58f, 36f, 8f), Triple(50f, 54f, 9.5f), Triple(32f, 58f, 7.5f), Triple(66f, 54f, 8f), Triple(48f, 24f, 6.5f), Triple(72f, 70f, 6f), Triple(28f, 44f, 5.5f))
+                        .forEachIndexed { i, (x, y, r) ->
+                            ellipse(x, y, r, r * 0.8f, i * 25f, if (i % 2 == 0) main else lighten(main, 0.1f), outline)
+                            circle(x - r * 0.3f, y - r * 0.2f, r * 0.18f, lighten(main, 0.4f))
+                        }
+                    accent?.let { a -> line(50f, 60f, 50f, 72f, a, 1.2f) }
+                }
+                "rhombus" -> {
+                    listOf(Quad(50f, 50f, 0f, 1f), Quad(30f, 46f, -40f, 0.8f), Quad(70f, 48f, 40f, 0.8f), Quad(42f, 66f, -15f, 0.75f), Quad(60f, 68f, 15f, 0.75f))
+                        .forEachIndexed { i, (x, y, a, sc) ->
+                            path(if (i % 2 == 0) main else lighten(main, 0.1f), outline, transform = place(x, y, a, sc)) {
+                                moveTo(0f, -14f); lineTo(13f, -2f); lineTo(0f, 10f); lineTo(-13f, -2f); close()
+                            }
+                            val t = place(x, y, a, sc)
+                            listOf(-6f, 0f, 6f).forEach { dx ->
+                                val tip = t(dx, 10f)
+                                val base = t(0f, -14f)
+                                line(base.first, base.second, tip.first, tip.second, lighten(main, 0.35f), 0.8f)
+                            }
+                        }
+                    accent?.let { a -> circle(50f, 30f, 3.2f, a, darken(a, 0.3f)) }
+                }
+                else -> {
+                    listOf(Triple(36f, 54f, 24f) to 0.9f, Triple(66f, 44f, 20f) to 1f).forEachIndexed { i, (t, _) ->
+                        val (x, y, r) = t
+                        path(if (i == 0) main else lighten(main, 0.1f), outline) {
+                            moveTo(x, y)
+                            lineTo(x + r * 0.5f, y - r * 0.86f)
+                            cubicTo(x + r * 1.3f, y - r * 0.3f, x + r * 1.1f, y + r * 0.9f, x, y + r)
+                            cubicTo(x - r * 1.1f, y + r * 0.9f, x - r * 1.35f, y - r * 0.5f, x - r * 0.6f, y - r * 0.8f)
+                            close()
+                        }
+                        for (k in 0 until 5) {
+                            val tip = place(x, y, 60f + k * 60f)(0f, -r * 0.75f)
+                            line(x, y, tip.first, tip.second, lighten(main, 0.35f), 0.8f)
+                        }
+                    }
+                    accent?.let { a -> flower(70f, 26f, 0.42f, 8, "pointed", a, ArtColor.POLLEN, 1, false, null) }
+                }
+            }
+        }
+
+        private data class Quad(val x: Float, val y: Float, val a: Float, val sc: Float)
+
+        /** 다육 로제트: 통통한 잎이 겹쳐 둥글게, 위에 작은 별꽃 */
+        fun succulent(main: Long, accent: Long?) {
+            val outline = darken(main, 0.3f)
+            for ((ring, count, r, w) in listOf(Quad(0f, 10f, 34f, 9f), Quad(1f, 8f, 26f, 8f), Quad(2f, 6f, 17f, 7f))) {
+                val n = count.toInt()
+                for (i in 0 until n) {
+                    val color = if (ring.toInt() % 2 == 0) main else lighten(main, 0.12f)
+                    val t = place(50f, 56f, i * 360f / n + ring * 18f)
+                    ellipse(t(0f, -r * 0.55f).first, t(0f, -r * 0.55f).second, w * 0.55f, r * 0.5f, i * 360f / n + ring * 18f, color, outline)
+                }
+            }
+            circle(50f, 56f, 5f, lighten(main, 0.2f), outline)
+            accent?.let { a ->
+                line(50f, 56f, 64f, 26f, darken(ArtColor.LEAF, 0.1f), 1.6f)
+                flower(66f, 22f, 0.36f, 5, "pointed", a, ArtColor.POLLEN, 1, false, null)
             }
         }
 

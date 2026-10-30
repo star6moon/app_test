@@ -25,8 +25,9 @@ import com.plantdex.app.data.art.PlantArtRenderer
  * 이름이 옆에 없는 자리에서는 [contentDescription] 을 주어 화면 읽기(TalkBack)가 식물을 알 수 있게 합니다.
  */
 @Composable
-fun PlantArtImage(art: PlantArt, modifier: Modifier = Modifier, contentDescription: String? = null) {
-    val ops = remember(art) { PlantArtRenderer.render(art) }
+fun PlantArtImage(art: PlantArt, modifier: Modifier = Modifier, contentDescription: String? = null, small: Boolean = false) {
+    // 지도 마커처럼 작은 그림은 선을 굵게 그린 판을 씁니다.
+    val ops = remember(art, small) { PlantArtRenderer.render(art, small) }
     val described = if (contentDescription != null) {
         modifier.semantics { role = Role.Image; this.contentDescription = contentDescription }
     } else {

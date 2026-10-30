@@ -12,7 +12,7 @@ class PlantArtTest {
 
     private val forms = setOf(
         "flower", "daisy", "cluster", "funnel", "cup", "bell", "iris", "spike", "plume",
-        "conifer", "tree", "leaf", "rosette", "berries", "sprout",
+        "conifer", "tree", "leaf", "rosette", "berries", "sprout", "fern", "vine", "grass", "lilypad", "succulent",
     )
 
     @Test
@@ -27,8 +27,8 @@ class PlantArtTest {
 
     @Test
     fun `drawings stay inside the canvas`() {
-        for (s in catalog.species) {
-            val ops = PlantArtRenderer.render(s.art!!)
+        for (s in catalog.species) for (small in listOf(false, true)) {
+            val ops = PlantArtRenderer.render(s.art!!, small)
             assertTrue(s.id, ops.size > 3)
             for (op in ops) {
                 val points = when (op) {
@@ -71,7 +71,15 @@ class PlantArtTest {
                 append("<div class=\"c\">${ArtSvg.toSvg(PlantArtRenderer.render(s.art!!), 84)}<br>${s.name}</div>")
             }
             append("</div><p>small</p><div style=\"display:flex;flex-wrap:wrap;gap:4px\">")
-            for (s in catalog.species) append(ArtSvg.toSvg(PlantArtRenderer.render(s.art!!), 28))
+            for (s in catalog.species) append(ArtSvg.toSvg(PlantArtRenderer.render(s.art!!, small = true), 28))
+            append("</div><p>family fallbacks</p><div class=\"g\">")
+            val families = listOf("Asteraceae", "Rosaceae", "Poaceae", "Pinaceae", "Fagaceae", "Liliaceae", "Iridaceae", "Orchidaceae", "Lamiaceae", "Fabaceae",
+                "Campanulaceae", "Convolvulaceae", "Malvaceae", "Ericaceae", "Ranunculaceae", "Brassicaceae", "Apiaceae", "Hydrangeaceae", "Sapindaceae", "Araliaceae",
+                "Oxalidaceae", "Aquifoliaceae", "Amaranthaceae", "Cactaceae", "Crassulaceae", "Vitaceae", "Dryopteridaceae", "Lemnaceae", "Nymphaeaceae", "Typhaceae", "Theaceae", null)
+            for (f in families) {
+                val art = PlantArts.forPlant("Zzz $f", f, catalog)
+                append("<div class=\"c\">${ArtSvg.toSvg(PlantArtRenderer.render(art), 84)}<br>${f ?: "(없음)"}</div>")
+            }
             append("</div></body></html>")
         }
         File("build").mkdirs()
