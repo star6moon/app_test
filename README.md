@@ -291,13 +291,14 @@ Pl@ntNet 이 아는 모든 종(약 8.6만)의 학명·영어 이름에 한국어
 
 | 필드 | 값 |
 |------|----|
-| `form` | `flower` 꽃잎형, `daisy` 국화형, `cluster` 작은 꽃 무리, `funnel` 나팔꽃형, `cup` 튤립·목련형, `bell` 종 모양, `iris` 붓꽃형, `spike` 꽃대·이삭, `plume` 억새·갈대, `conifer` 침엽수, `tree` 활엽수, `leaf` 잎, `rosette` 땅에 퍼진 잎, `berries` 열매, `sprout` 새싹·마디 줄기 |
+| `form` | `flower` 꽃잎형, `daisy` 국화형, `cluster` 작은 꽃 무리, `funnel` 나팔꽃형, `cup` 튤립·목련형, `bell` 종 모양, `iris` 붓꽃형, `spike` 꽃대·이삭, `plume` 억새·갈대, `conifer` 침엽수, `tree` 활엽수, `leaf` 잎, `rosette` 땅에 퍼진 잎, `berries` 열매, `sprout` 새싹·마디 줄기, `fern` 고사리, `vine` 덩굴, `grass` 풀 이삭, `lilypad` 물 위에 뜬 잎, `succulent` 다육 로제트 |
 | `color` / `accent` | 주색(꽃잎·잎·열매) / 보조색(꽃 중심·무늬) `#RRGGBB` |
 | `petals`, `petal` | 꽃잎 수, 꽃잎 모양 `round` `pointed` `notched` `wavy` `oblong` `narrow` |
-| `variant` | 형태별 세부 모양 (예: `stamen` 수술, `face` 팬지 무늬, `corona` 수선화 부화관, cluster 의 `ball`/`cone`/`spray`, conifer 의 `pine`/`narrow`, leaf 의 `clover`/`fan`/`maple`/`hand`/`holly` 등) |
+| `variant` | 형태별 세부 모양 (예: `stamen` 수술, `face` 팬지 무늬, `corona` 수선화 부화관, cluster 의 `ball`/`cone`/`spray`, tree 의 `umbrella`/`column`/`weeping`/`birch`/`oak`/`shrub`, conifer 의 `pine`/`straight`/`tuft`/`narrow`/`berry`, vine 의 `lobed`, lilypad 의 `duckweed`/`rhombus`, leaf 의 `clover`/`fan`/`maple`/`hand`/`holly` 등) |
 | `spots`, `layers` | 꽃잎 반점, 꽃잎 겹 수 |
 
-`./gradlew testDebugUnitTest` 를 실행하면 모든 그림을 모은 `app/build/plant-art-gallery.html` 이 만들어져 브라우저로 확인할 수 있습니다.
+40dp 이하(지도 마커·목록)에서는 선을 굵게 그린 '작은 크기 판'을 써서 가는 줄기·이삭이 사라지지 않게 합니다.
+`./gradlew testDebugUnitTest` 를 실행하면 모든 그림(큰 판·작은 판·과별 대체 그림)을 모은 `app/build/plant-art-gallery.html` 이 만들어져 브라우저로 확인할 수 있습니다.
 
 ## 알아둘 점 / 다음 단계
 
